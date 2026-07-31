@@ -1,178 +1,241 @@
-# SponsorChain: Stellar-Powered Open Source Sponsorships
+# SponsorChain
 
-SponsorChain is a decentralized platform that connects open-source maintainers directly with sponsors, enabling instant, transparent, and fee-less XLM payments over the Stellar network.
+**Fund open source directly on the Stellar blockchain.** SponsorChain lets anyone with
+a Stellar wallet browse verified projects, sponsor them instantly with XLM, and — if you
+own a public non-fork GitHub repo — list it to receive sponsorships.
 
----
-
-## 1. Product Overview & Problem Statement
-
-### The Transparency Problem in Open Source Funding
-Traditional open-source sponsorship platforms act as centralized intermediaries. They introduce:
-- **High Fees & Payout Delays**: Centralized platforms take cuts and withhold funds for weeks.
-- **Trust Asymmetry**: Sponsors cannot independently verify that their contributions go directly to the developer's wallet or that the funds are allocated transparently.
-- **Lack of On-Chain Proof**: Payouts happen via traditional fiat rails, leaving no public cryptographic proof of sponsorship.
-
-### The SponsorChain Solution
-SponsorChain resolves these inefficiencies by routing payments directly on-chain from the sponsor's browser wallet to the maintainer's public ledger address.
-- **Horizon is the Source of Truth**: All financial balances, donation histories, and goals are computed live from Horizon (Stellar API) in the user's browser.
-- **No Escrow / Intermediaries**: SponsorChain does not touch or hold funds. Payments are signed locally via browser wallets (e.g., Freighter) and submitted directly to Stellar.
-- **Public Block Verification**: Anyone can independently verify a transaction hash using any public Stellar block explorer.
+No platform fees. No intermediaries. Every transaction is on-chain and verifiable.
 
 ---
 
-## 2. Platform Architecture & Core Mechanism
+## How It Works
 
-### Core Sponsorship Flow Sequence
-The sequence below illustrates the trustless flow where SponsorChain coordinates metadata but relies entirely on the Stellar ledger for financial state.
+Two core actions, both wallet-signed:
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Sponsor as Sponsor (Browser)
-    participant App as SponsorChain (Next.js)
-    participant Wallet as Wallet Extension (Freighter)
-    participant Horizon as Stellar Horizon API
-    participant DB as Postgres Cache
-
-    Sponsor->>App: Click "Sponsor with Wallet"
-    App->>App: Build plain payment operation transaction
-    App->>Wallet: Request signature for transaction envelope (XDR)
-    Wallet->>Sponsor: Prompt confirmation popup
-    Sponsor->>Wallet: Approve and sign transaction
-    Wallet-->>App: Return signed transaction envelope (XDR)
-    App->>Horizon: POST /transactions (Submit transaction)
-    Horizon-->>App: Return status 200 OK & Transaction Hash
-    App->>DB: POST /api/sponsorships (Cache tx hash & metadata)
-    Note over App,Horizon: Real-time update via Server-Sent Events (SSE)
-    Horizon-->>App: Stream transaction confirmation event
-    App->>Sponsor: Update Live Total Raised & transaction status overlay
+```
+                    ┌──────────────────────┐
+                    │   Stellar Testnet     │
+                    └──────────┬───────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              │                │                │
+         Browse/Sponsor    List Project     Read State
+              │                │                │
+    ┌─────────┴─────────┐  ┌──┴──────────┐  ┌──┴──────────┐
+    │ Sign sponsor() tx │  │ Sign        │  │ getProject()│
+    │ via wallet        │  │ createProject│  │ listProjects│
+    │ (SponsorshipMgr)  │  │ (Registry)   │  │ (contract   │
+    └───────────────────┘  └──────────────┘  │  simulation) │
+                                              └──────────────┘
 ```
 
+### Anyone can browse and sponsor
+
+1. **Connect your Stellar wallet** (Freighter, Albedo, or any Stellar wallet — we use
+   StellarWalletsKit on testnet). Your wallet public key is your identity.
+2. **Explore verified projects** — all project data is read directly from the on-chain
+   `ProjectRegistry` contract.
+3. **Sponsor a project** — enter an XLM amount, review, sign with your wallet. The
+   `SponsorshipManager.sponsor()` contract call transfers XLM from your wallet to the
+   project owner and updates the on-chain totals atomically.
+4. **See it in My Activity** — `getSponsorshipsBySponsor(yourAddress)` shows every
+   sponsorship you've made. Every entry is an on-chain record with a tx hash linkable
+   to the Stellar block explorer.
+
+### Listing a project (repository owners only)
+
+1. **Link your GitHub account** — one-time OAuth during the listing flow. We request
+   only `read:user` and `public_repo` scopes. This session is ephemeral (JWT in a
+   cookie, nothing stored server-side) and is never used as a platform login.
+2. **Pick a repository** — only public repos you own that are not forks appear. We
+   filter forks because SponsorChain is for original projects.
+3. **Review and sign** — the `create_project` transaction writes the project directly
+   to the `ProjectRegistry` contract. Your wallet signature binds your address as the
+   project owner — that address receives all future sponsorships.
+
+> **Important:** fork status is checked at listing time only. If a repo is later forked
+> or transferred, the listing is not automatically re-verified on-chain.
+
 ---
 
-## 3. Tech Stack & Features List
+## Contract Design
 
-### Tech Stack
-- **Framework**: Next.js 15 (App Router, TypeScript, React 19)
-- **Styling**: TailwindCSS & Custom Monochrome Design System
-- **Database / ORM**: PostgreSQL via Prisma
-- **Auth**: NextAuth.js (GitHub OAuth Provider)
-- **Stellar Tooling**: `@creit.tech/stellar-wallets-kit`, `stellar-sdk`
-- **Testing**: Vitest & React Testing Library (jsdom)
+Two Soroban contracts, deployed on Stellar Testnet:
 
-### Features List
-- **GitHub Verified Onboarding**: Secure NextAuth session validation ensuring only repository owners or administrators can register projects.
-- **Stellar Wallet Connect**: Unified modal connection matching Freighter, xBull, Albedo, Rabet, and Lobstr.
-- **Friendbot Auto-funding**: Detects unfunded accounts and funds them with 10,000 Testnet XLM.
-- **Horizon Real-Time Payments Stream**: Server-Sent Events (SSE) stream hook establishing immediate UI state changes for totals and payment lists with a polling fallback mechanism.
-- **Collapsible Sponsor Ledgers**: Project groupings on the Sponsor Dashboard with detailed transaction lists.
+### ProjectRegistry
+
+```
+create_project(owner, repo_full_name, name, description) → project_id
+get_project(id) → Project { owner, repo_full_name, name, description,
+                            total_raised, sponsor_count, created_at }
+list_projects(start, limit) → Vec<id>
+get_projects_by_owner(owner) → Vec<id>
+update_totals(id, amount)     // only callable by the registered SponsorshipManager
+```
+
+### SponsorshipManager
+
+```
+sponsor(sponsor, project_id, amount) → sponsorship_id
+  1. sponsor.require_auth()
+  2. Read project owner from Registry
+  3. Transfer XLM via the native Stellar Asset Contract (SAC)
+  4. Write Sponsorship record
+  5. Call Registry.update_totals()
+
+get_sponsorships_for_project(project_id) → Vec<id>
+get_sponsorships_by_sponsor(sponsor) → Vec<id>
+get_sponsorship(id) → Sponsorship { sponsor, project_id, amount, timestamp }
+```
+
+Full contract source in [`contracts/`](./contracts/). Built with `soroban-sdk` v27.
 
 ---
 
-## 4. Local Development Setup
+## Tech Stack
 
-To run SponsorChain locally:
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 15 (App Router), TypeScript, React 19, TailwindCSS |
+| Wallet | `@creit.tech/stellar-wallets-kit` (Freighter, Albedo, xBull, Lobstr, Rabet) |
+| GitHub linking | NextAuth.js v4 (GitHub OAuth, JWT session, stateless) |
+| Smart contracts | Soroban (Rust + `soroban-sdk` v27), `wasm32v1-none` target |
+| Contract deploy | `stellar` CLI v27, `scripts/deploy-contracts.sh` |
+| Testing | Vitest (frontend), `cargo test` (contracts) |
+| CI/CD | GitHub Actions → Vercel (frontend only, contracts are manually deployed) |
+| Explorer | [Stellar Expert (testnet)](https://stellar.expert/explorer/testnet) |
+
+There is **no server-side database**. Project listings, sponsorship records, and
+totals live exclusively in the Soroban contracts.
+
+---
+
+## Local Development
 
 ### Prerequisites
-- Node.js (version 18 or later)
-- Docker & Docker Compose (to run local PostgreSQL)
 
-### Setup Steps
-1. **Clone & Install Dependencies**:
-   ```bash
-   git clone <repository-url>
-   cd SponsorChain
-   npm install
-   ```
+- Node.js 18+
+- Rust 1.84+ with `wasm32v1-none` target (`rustup target add wasm32v1-none`)
+- [Stellar CLI](https://developers.stellar.org/docs/tools/cli) (`brew install stellar-cli`)
 
-2. **Launch Local Database**:
-   ```bash
-   docker-compose up -d
-   ```
+### Setup
 
-3. **Configure Environment Variables**:
-   Create a `.env` file in the root directory:
-   ```env
-   DATABASE_URL="postgresql://postgres:password@localhost:5432/sponsorchain_dev?schema=public"
-   NEXTAUTH_SECRET="your-development-nextauth-secret-here"
-   NEXTAUTH_URL="http://localhost:3000"
-   GITHUB_ID="your_github_client_id"
-   GITHUB_SECRET="your_github_client_secret"
-   SENTRY_DSN=""
-   ```
+```bash
+git clone <repo-url> && cd SponsorChain
+npm install
+```
 
-4. **Initialize Database & Seed**:
-   ```bash
-   npx prisma generate
-   npx prisma migrate dev --name init
-   npx prisma db seed
-   ```
+Create `.env.local`:
 
-5. **Start Dev Server**:
-   ```bash
-   npm run dev
-   ```
+```env
+NEXTAUTH_SECRET="$(openssl rand -base64 32)"
+NEXTAUTH_URL="http://localhost:3000"
+GITHUB_CLIENT_ID="your_oauth_app_client_id"
+GITHUB_CLIENT_SECRET="your_oauth_app_client_secret"
+NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS="CDTINQP4HOUWLLCUCGOVTLPYHVHVP3KIYVVCKWHPIWQEIOGO775FIDN6"
+NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS="CAV2XETV4LWJ5XG7N2MNHRSZZHNJQS3LMWLWK3J5FW5O5U45KPUSROLR"
+```
 
-6. **Execute Test Suite**:
-   ```bash
-   npm run test -- --run
-   ```
+For GitHub OAuth setup, see [`GITHUB_SETUP.md`](./GITHUB_SETUP.md).
 
----
+```bash
+npm run dev           # start at http://localhost:3000
+```
 
-## 5. CI/CD & Deployment Steps
+### Testing
 
-SponsorChain builds and deploys automatically using GitHub Actions workflows:
+```bash
+npm run test -- --run                           # frontend (Vitest)
+cargo test --manifest-path contracts/Cargo.toml  # contracts
+```
 
-### GitHub Actions Secrets Config
-Add these secrets under **Settings → Secrets and variables → Actions** in your repository:
-- `DATABASE_URL`: Production Postgres URL (e.g. Railway or Supabase connection string).
-- `VERCEL_TOKEN`: Vercel personal access token.
-- `VERCEL_ORG_ID`: Vercel Organisation ID.
-- `VERCEL_PROJECT_ID`: Vercel Project ID.
+### Deploying contracts
 
-### Workflow Automation
-- **Continuous Integration (`ci.yml`)**: Triggered on pull requests. Runs linting, typechecks, Vitest suites (with a database service container), and builds production assets.
-- **Continuous Deployment (`deploy.yml`)**: Triggered on push to `main`. Automatically runs `npx prisma migrate deploy` and deploys the prebuilt bundle to Vercel.
+Contracts are deployed manually via:
+
+```bash
+./scripts/deploy-contracts.sh
+```
+
+This builds, deploys, inits, cross-links, smoke-tests, and writes addresses to
+`.env.local`, `.env.example`, `CONTRACTS.md`, and `README.md`. Use
+`--confirm-redeploy` to overwrite existing deployments.
 
 ---
 
-## 6. Security Considerations
-- **Client-Side-Only Signing**: Secrets and signing keys never leave your browser extension. The app receives and submits signed XDR packages.
-- **Metadata-Only DB**: We do not store financial transactions or ledger balances in our PostgreSQL database. Postgres only caches project configuration metadata and transaction hashes to associate GitHub IDs.
-- **Horizon as Source of Truth**: All page balances and payment logs are checked live from Horizon.
-- **GitHub OAuth Scope Minimization**: The app requests `public_repo` read access only—the absolute minimum scope needed to list public repositories.
+## CI/CD
+
+| Workflow | Trigger | Job |
+|----------|---------|-----|
+| `ci.yml` | Every PR + push to main | Contracts (build + test) → Frontend (lint, typecheck, test, build) |
+| `deploy-frontend.yml` | Push to main | Deploy Next.js to Vercel |
+
+Contract deployment is **deliberately not automated** — redeploying changes contract
+addresses and orphans already-listed projects. It stays a manual step via the deploy
+script.
+
+### Required GitHub Actions Secrets
+
+Add these at **Repo Settings → Secrets and variables → Actions → New repository secret**:
+
+| Secret | How to obtain |
+|--------|--------------|
+| `VERCEL_TOKEN` | [Vercel Account Settings → Tokens](https://vercel.com/account/tokens) |
+| `VERCEL_ORG_ID` | `vercel link` then `cat .vercel/project.json` → `orgId` |
+| `VERCEL_PROJECT_ID` | Same file → `projectId` |
+| `NEXTAUTH_SECRET` | `openssl rand -base64 32` |
+| `NEXTAUTH_URL` | Vercel production URL (e.g. `https://sponsorchain.vercel.app`) |
+| `GITHUB_CLIENT_ID` | GitHub Developer Settings → OAuth App → Client ID |
+| `GITHUB_CLIENT_SECRET` | Same → Generate new client secret |
+| `NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS` | From [`CONTRACTS.md`](./CONTRACTS.md) |
+| `NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS` | From [`CONTRACTS.md`](./CONTRACTS.md) |
+
+### Branch Protection
+
+Require CI to pass before merging to main (manual repo setting):
+
+1. **Settings → Branches → Add branch protection rule**
+2. Branch name pattern: `main`
+3. Check **Require status checks to pass before merging**
+4. Add: `Contracts — Build & Test`, `Frontend — Lint, Typecheck, Test, Build`
+5. Check **Require branches to be up to date before merging**
+6. Click **Create**
 
 ---
 
-## 7. Screenshots
-*(Placeholders - Visual UI references will be attached post-beta launch)*
-- **Landing Page**: Modern white/monochrome hero layout.
-- **Onboarding Picker**: Repository picker with empty, rate-limited, and loading states.
-- **Real-Time Detail Page**: Live status indicators and payment overlay confirm drawers.
-- **Maintainer Dashboard**: Stats bento-grids and real-time ledger tables.
+## Security
+
+- **Client-side signing**: Private keys never leave your browser wallet. The app
+  constructs transactions and submits signed XDR blobs.
+- **Ephemeral GitHub linking**: NextAuth JWT is scoped to the listing flow. No
+  GitHub data is stored server-side. Your wallet public key is your identity.
+- **On-chain source of truth**: All project data, sponsorship records, and totals
+  live in Soroban contract state. Anyone can verify independently via a block explorer.
+- **Minimal GitHub scope**: `read:user` + `public_repo` — no code access, no private
+  repositories.
 
 ---
 
-## 8. Trust Verification: "Verify It Yourself" 🛡️
+## Known Limitations
 
-SponsorChain is built on the principle of **Don't Trust, Verify**. 
-
-If you make a sponsorship, you don't need to trust our database or dashboard. You can inspect the public ledger:
-1. Copy the transaction hash chip from either the Sponsor Dashboard or Project Detail payment confirmations.
-2. Open [Stellar Expert Testnet Explorer](https://stellar.expert/explorer/testnet).
-3. Paste the transaction hash into the search box.
-4. Verify:
-   - The **Source Account** is your public key.
-   - The **Destination Account** matches the project owner's public key.
-   - The **Amount** and asset type (XLM) match your chosen sponsorship tier exactly.
+- **Fork check is point-in-time**: A repo's fork status is verified at listing time
+  only. If a repo is forked or transferred after listing, it is not re-checked
+  on-chain.
+- **Testnet only**: All contracts and transactions run on Stellar Testnet.
+- **XLM only**: No custom tokens or USDC support in the current version.
+- **No recurring payments**: Every sponsorship requires a fresh wallet signature.
+- **Contract data is public**: Project descriptions and repo URLs are stored on the
+  Stellar ledger and are publicly readable.
 
 ---
 
-## 9. Scope Boundaries & Roadmap (Out of Scope for v1)
+## Contract Addresses
 
-The following cuts are intentional design choices to focus on a lightweight, fee-less payment protocol:
-- **No Soroban Smart Contracts**: All payments are plain Stellar payment operations. Avoids gas estimation latency, smart-contract risk, and audits.
-- **No USDC/Multi-Currency Support**: XLM is the only asset supported to avoid path-payment slippage and anchor configuration complexity.
-- **No Fiat On-Ramps**: Pure on-chain cryptographic ledger transactions. Eliminates KYC and centralized off-ramp delays.
-- **No Recurring Escrows**: Stellar transaction building requires local signature approval, so auto-recurring monthly payments are out of scope for v1.
+| Contract | Address |
+|----------|---------|
+| ProjectRegistry | `CDTINQP4HOUWLLCUCGOVTLPYHVHVP3KIYVVCKWHPIWQEIOGO775FIDN6` |
+| SponsorshipManager | `CAV2XETV4LWJ5XG7N2MNHRSZZHNJQS3LMWLWK3J5FW5O5U45KPUSROLR` |
+| Native XLM SAC | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
+
+> Deployed on Stellar Testnet. Full details with init tx hashes, smoke test results,
+> and explorer links in [`CONTRACTS.md`](./CONTRACTS.md).
