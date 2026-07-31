@@ -1,76 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import React from "react";
 import { useWallet } from "@/features/wallet/use-wallet";
 
 export default function WalletConnectPage() {
-  const router = useRouter();
   const wallet = useWallet();
-  const { status: sessionStatus } = useSession();
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-
-  // Persist walletPublicKey onto the backend User record. Runs automatically
-  // once the wallet connects and a session is available. This is a best-effort
-  // background sync: it never gates the Finish setup button, which is driven
-  // solely by the wallet's connected state (the single source of truth).
-  const saveWalletToAccount = useCallback(async () => {
-    if (!wallet.isConnected || !wallet.publicKey) return;
-    if (sessionStatus !== "authenticated") return;
-
-    setIsSaving(true);
-    setSaveError(null);
-
-    try {
-      const res = await fetch("/api/user/wallet", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ publicKey: wallet.publicKey }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        if (res.status === 401) {
-          setSaveError("Your session has expired. Please sign in again to link your wallet.");
-        } else {
-          setSaveError(data?.error || "Failed to save wallet address in your account.");
-        }
-        return;
-      }
-
-      setSaveError(null);
-    } catch (err) {
-      console.error("Failed to update wallet public key:", err);
-      setSaveError(err instanceof Error ? err.message : "Failed to save wallet address in your account.");
-    } finally {
-      setIsSaving(false);
-    }
-  }, [sessionStatus, wallet.isConnected, wallet.publicKey]);
-
-  // Sync wallet connection to backend User record
-  useEffect(() => {
-    if (wallet.isConnected && wallet.publicKey) {
-      if (sessionStatus === "loading") {
-        return; // Wait for the session to load
-      }
-      saveWalletToAccount();
-    } else {
-      // Clear save error if wallet is disconnected
-      setIsSaving(false);
-      setSaveError(null);
-    }
-  }, [wallet.isConnected, wallet.publicKey, sessionStatus, saveWalletToAccount]);
-
-  const handleFinish = () => {
-    if (wallet.isConnected && !isSaving) {
-      router.push("/dashboard/maintainer");
-    }
-  };
 
   const handleCopy = () => {
     if (wallet.publicKey) {
@@ -80,20 +14,6 @@ export default function WalletConnectPage() {
 
   return (
     <div className="flex-grow flex flex-col items-center w-full min-h-screen">
-      {/* Top Sticky Progress Bar */}
-      <div className="w-full bg-surface/80 backdrop-blur-sm sticky top-0 z-10 border-b border-outline-variant px-xl py-lg flex flex-col items-center">
-        <div className="max-w-container-max w-full">
-          <div className="flex justify-between items-center mb-sm">
-            <h2 className="font-label-caps text-label-caps text-primary uppercase font-bold">Step 3 of 3: Connect wallet</h2>
-            <span className="font-label-caps text-label-caps text-secondary font-bold">Final Step</span>
-          </div>
-          <div className="flex gap-sm w-full">
-            <div className="flex-1 h-1 bg-primary rounded-full"></div>
-            <div className="flex-1 h-1 bg-primary rounded-full"></div>
-            <div className="flex-1 h-1 bg-primary rounded-full shadow-[0_0_8px_rgba(17,17,17,0.2)]"></div>
-          </div>
-        </div>
-      </div>
 
       {/* Centered Onboarding Card */}
       <div className="flex-grow w-full flex items-center justify-center p-xl">
@@ -107,21 +27,13 @@ export default function WalletConnectPage() {
             {/* Headline & Subtext */}
             <h1 className="font-headline-lg text-headline-lg text-primary mb-md tracking-tight font-bold">Connect your Stellar wallet</h1>
             <p className="font-body-lg text-body-lg text-secondary mb-xl">
-              We use Freighter or other Stellar wallets to securely sign transactions. No private keys are ever shared with SponsorChain.
+              Your Stellar wallet IS your identity on SponsorChain. Connect Freighter, Albedo, or any Stellar wallet to sign in and start sponsoring.
             </p>
 
             {/* Error notifications */}
-            {(wallet.connectionError || wallet.fundingError || saveError) && (
+            {(wallet.connectionError || wallet.fundingError) && (
               <div className="w-full mb-md p-md bg-error-container text-on-error-container text-body-sm rounded-lg border border-error/15 text-left font-medium">
-                <div>{wallet.connectionError || wallet.fundingError || saveError}</div>
-                {saveError && !wallet.connectionError && !wallet.fundingError && (
-                  <button
-                    onClick={() => saveWalletToAccount()}
-                    className="mt-sm text-body-sm font-bold underline underline-offset-2 cursor-pointer"
-                  >
-                    Retry
-                  </button>
-                )}
+                <div>{wallet.connectionError || wallet.fundingError}</div>
               </div>
             )}
 
@@ -157,14 +69,6 @@ export default function WalletConnectPage() {
               >
                 <span className="animate-spin material-symbols-outlined">progress_activity</span>
                 Funding account via Friendbot...
-              </button>
-            ) : isSaving ? (
-              <button
-                disabled
-                className="w-full bg-primary text-on-primary font-body-lg py-md px-lg rounded-full flex items-center justify-center gap-sm opacity-80 cursor-not-allowed font-semibold"
-              >
-                <span className="animate-spin material-symbols-outlined">progress_activity</span>
-                Verifying setup...
               </button>
             ) : (
               <button
@@ -224,30 +128,14 @@ export default function WalletConnectPage() {
                     </div>
                   )}
                 </div>
-                {sessionStatus === "unauthenticated" ? (
-                  <Link href="/signin" className="w-full">
-                    <button className="w-full font-body-lg py-sm px-lg rounded-full font-semibold transition-all bg-primary [color:#ffffff] hover:opacity-90 active:scale-[0.98]">
-                      Sign in to save wallet
-                    </button>
-                  </Link>
-                ) : (
-                  <button
-                    onClick={handleFinish}
-                    disabled={!wallet.isConnected || isSaving}
-                    className={`w-full font-body-lg py-sm px-lg rounded-full font-semibold transition-all ${
-                      wallet.isConnected && !isSaving
-                        ? "bg-primary [color:#ffffff] hover:opacity-90 active:scale-[0.98]"
-                        : "bg-primary/20 text-primary/40 cursor-not-allowed"
-                    }`}
-                  >
-                    Finish setup
-                  </button>
+                {wallet.isConnected && (
+                  <div className="flex items-center gap-xs text-[11px] text-secondary justify-center">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]" />
+                    <span>Connected — ready to sponsor and list projects</span>
+                  </div>
                 )}
               </div>
             </div>
-            <p className="mt-md text-center font-body-sm text-body-sm text-on-surface-variant opacity-60">
-              Finish setup unlocks once your wallet is connected.
-            </p>
           </div>
         </div>
       </div>
