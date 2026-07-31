@@ -11,11 +11,11 @@ export function NavigationDrawer() {
   const pathname = usePathname();
 
   const menuItems = [
-    { label: "Explore", href: "/explore", icon: "search" },
-    { label: "Wallet Connect", href: "/wallet", icon: "account_balance_wallet" },
-    { label: "Create Project", href: "/projects/create", icon: "add_circle" },
-    { label: "Sponsor Dashboard", href: "/dashboard/sponsor", icon: "dashboard" },
-    { label: "Maintainer Dashboard", href: "/dashboard/maintainer", icon: "engineering" },
+    { label: "Home", href: "/", icon: "home" },
+    { label: "Explore", href: "/explore", icon: "travel_explore" },
+    { label: "My Activity", href: "/activity", icon: "monitoring" },
+    { label: "List a Project", href: "/list-project", icon: "add_circle" },
+    { label: "Wallet", href: "/wallet", icon: "account_balance_wallet" },
   ];
 
   return (
