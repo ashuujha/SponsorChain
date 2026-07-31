@@ -1,5 +1,7 @@
 # SponsorChain
 
+Demo Video link https://youtu.be/xRrEzkga6AU
+
 **Fund open source directly on the Stellar blockchain.** SponsorChain lets anyone with
 a Stellar wallet browse verified projects, sponsor them instantly with XLM, and — if you
 own a public non-fork GitHub repo — list it to receive sponsorships.
