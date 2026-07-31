@@ -121,7 +121,7 @@ totals live exclusively in the Soroban contracts.
 ### Setup
 
 ```bash
-git clone <repo-url> && cd SponsorChain
+git clone https://github.com/ashuujha/SponsorChain.git && cd SponsorChain
 npm install
 ```
 
