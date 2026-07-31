@@ -1,0 +1,6 @@
+[workspace]
+members = ["project-registry", "sponsorship-manager"]
+resolver = "2"
+
+[workspace.dependencies]
+soroban-sdk = "27"
