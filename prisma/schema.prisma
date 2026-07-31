@@ -1,0 +1,68 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+
+model User {
+  id              String        @id @default(uuid())
+  githubId        String        @unique
+  walletPublicKey String?       // Nullable if user hasn't connected a wallet yet
+  role            String        @default("BOTH")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  projects        Project[]     @relation("ProjectOwner")
+  sponsorships    Sponsorship[] @relation("SponsorSponsorships")
+}
+
+model Project {
+  id              String        @id @default(uuid())
+  ownerId         String
+  repoUrl         String        @unique
+  name            String
+  description     String
+  fundingGoalXLM  Decimal       // SQLite Decimal support
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  owner           User          @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  tiers           Tier[]
+  sponsorships    Sponsorship[]
+
+  @@index([ownerId])
+}
+
+model Tier {
+  id              String        @id @default(uuid())
+  projectId       String
+  amountXLM       Decimal
+  label           String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model Sponsorship {
+  id              String            @id @default(uuid())
+  sponsorId       String
+  projectId       String
+  txHash          String            @unique
+  amountXLM       Decimal
+  status          String            @default("PENDING")
+  createdAt       DateTime          @default(now())
+
+  sponsor         User              @relation("SponsorSponsorships", fields: [sponsorId], references: [id], onDelete: Cascade)
+  project         Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([sponsorId])
+  @@index([projectId])
+}
