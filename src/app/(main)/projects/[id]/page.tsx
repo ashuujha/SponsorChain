@@ -28,34 +28,123 @@ export default function ProjectDetailPage() {
   // the user even enters the review step so they get a clear error message.
   const [ownerKeyError, setOwnerKeyError] = useState<string | null>(null);
 
-  const loadProject = () => {
+  const loadProject = async () => {
     setIsLoading(true);
     setNotFound(false);
-    // Simulate RPC round trip
-    setTimeout(() => {
-      const p = getProject(projectId);
+
+    try {
+      const res = await fetch(`/api/projects/${idStr}`);
+      if (res.ok) {
+        const data = await res.json();
+        const p = data.project;
+        if (p) {
+          // Compute Live Total Raised via Horizon payments query
+          let liveTotalStroops = BigInt(0);
+          try {
+            const hRes = await fetch(
+              `https://horizon-testnet.stellar.org/accounts/${p.ownerWalletKey}/payments?limit=200`
+            );
+            if (hRes.ok) {
+              const hData = await hRes.json();
+              const payments = hData._embedded?.records || [];
+              for (const pay of payments) {
+                if (
+                  pay.type === "payment" &&
+                  pay.asset_type === "native" &&
+                  pay.to === p.ownerWalletKey
+                ) {
+                  const amountXlm = parseFloat(pay.amount || "0");
+                  liveTotalStroops += BigInt(Math.floor(amountXlm * 10_000_0000));
+                }
+              }
+            }
+          } catch (hErr) {
+            console.warn("Horizon live balance fetch warning:", hErr);
+          }
+
+          const projectData: ProjectData = {
+            id: p.id,
+            owner: p.ownerWalletKey || p.owner?.walletPublicKey || "",
+            repoFullName: p.repoUrl,
+            name: p.name,
+            description: p.description,
+            totalRaised: liveTotalStroops.toString(),
+            sponsorCount: p.sponsorships?.length || 0,
+            createdAt: BigInt(Math.floor(new Date(p.createdAt).getTime() / 1000)),
+          };
+
+          const mappedSponsorships: SponsorshipData[] = (p.sponsorships || []).map(
+            (s: any, idx: number) => ({
+              id: BigInt(idx),
+              sponsor: s.sponsorWalletKey || s.sponsor?.walletPublicKey || "Anonymous",
+              projectId: BigInt(0),
+              amount: (
+                BigInt(Math.floor(parseFloat(s.amountXLM || "0") * 10_000_0000))
+              ).toString(),
+              timestamp: BigInt(Math.floor(new Date(s.createdAt).getTime() / 1000)),
+              txHash: s.txHash,
+            })
+          );
+
+          setProject(projectData);
+          setSponsorships(mappedSponsorships);
+          setIsLoading(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to fetch project from DB, trying mock registry:", err);
+    }
+
+    // Fallback to mock registry if DB query failed
+    try {
+      const p = getProject(BigInt(idStr));
       if (!p) {
         setNotFound(true);
         setIsLoading(false);
         return;
       }
       setProject(p);
-      setSponsorships(getSponsorshipsForProject(projectId));
-      setIsLoading(false);
-    }, 300);
+      setSponsorships(getSponsorshipsForProject(BigInt(idStr)));
+    } catch {
+      setNotFound(true);
+    }
+    setIsLoading(false);
   };
 
   // onSuccess ref — always points to the latest project/publicKey/loadProject
-  // without causing useSponsorProject to re-mount on every render.
   const onSuccessRef = useRef<(txHash: string) => void>(() => {});
   useEffect(() => {
-    onSuccessRef.current = (txHash: string) => {
-      if (!wallet.publicKey) return;
-      // Record sponsorship in the in-memory registry with the real txHash.
+    onSuccessRef.current = async (txHash: string) => {
+      if (!wallet.publicKey || !project) return;
+      const amountXLM = sponsor.amount;
       const amountStroops = BigInt(
-        Math.floor(parseFloat(sponsor.amount) * 10_000_0000)
+        Math.floor(parseFloat(amountXLM) * 10_000_0000)
       );
-      mockSponsor(wallet.publicKey, projectId, amountStroops, txHash);
+
+      // 1. Write to in-memory fallback
+      try {
+        mockSponsor(wallet.publicKey, BigInt(idStr), amountStroops, txHash);
+      } catch (e) {
+        console.warn("Mock sponsor update notice:", e);
+      }
+
+      // 2. Persist to PostgreSQL via /api/sponsorships
+      try {
+        await fetch("/api/sponsorships", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            projectId: project.id,
+            sponsorWalletKey: wallet.publicKey,
+            amountXLM,
+            txHash,
+          }),
+        });
+      } catch (apiErr) {
+        console.error("Failed to post sponsorship to DB:", apiErr);
+      }
+
       loadProject();
     };
   });
@@ -64,7 +153,9 @@ export default function ProjectDetailPage() {
   const sponsor = useSponsorProject((txHash) => onSuccessRef.current(txHash));
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(loadProject, [idStr]);
+  useEffect(() => {
+    loadProject();
+  }, [idStr]);
 
   const formatXlm = (stroops: string): string => {
     const n = BigInt(stroops);

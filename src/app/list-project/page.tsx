@@ -148,10 +148,26 @@ export default function ListProjectPage() {
                     name: currentStep.name,
                     description: currentStep.description,
                   },
-                  async () => ({
-                    txHash: `mock_${Date.now().toString(16)}`,
-                    projectId: BigInt(1),
-                  })
+                  async () => {
+                    const res = await fetch("/api/projects", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        owner: wallet.publicKey,
+                        repoFullName: currentStep.repo.fullName,
+                        name: currentStep.name,
+                        description: currentStep.description,
+                      }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) {
+                      throw new Error(data.error || "Failed to create project listing.");
+                    }
+                    return {
+                      txHash: `db_${data.project.id}`,
+                      projectId: data.project.id,
+                    };
+                  }
                 );
               }}
               onReset={reset}
@@ -165,10 +181,26 @@ export default function ListProjectPage() {
                     name: currentStep.name,
                     description: currentStep.description,
                   },
-                  async () => ({
-                    txHash: `mock_${Date.now().toString(16)}`,
-                    projectId: BigInt(1),
-                  })
+                  async () => {
+                    const res = await fetch("/api/projects", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        owner: wallet.publicKey,
+                        repoFullName: currentStep.repo.fullName,
+                        name: currentStep.name,
+                        description: currentStep.description,
+                      }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) {
+                      throw new Error(data.error || "Failed to create project listing.");
+                    }
+                    return {
+                      txHash: `db_${data.project.id}`,
+                      projectId: data.project.id,
+                    };
+                  }
                 );
               }}
             />

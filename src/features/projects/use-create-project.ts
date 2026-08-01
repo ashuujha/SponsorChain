@@ -18,7 +18,7 @@ export interface UseCreateProjectReturn {
   buildReview: (params: CreateProjectParams) => void;
   submit: (
     params: CreateProjectParams,
-    signAndSubmit: (unsignedXdr: string) => Promise<{ txHash: string; projectId: bigint }>
+    signAndSubmit: (unsignedXdr: string) => Promise<{ txHash: string; projectId: string }>
   ) => Promise<void>;
   reset: () => void;
 }
@@ -51,7 +51,7 @@ export function useCreateProject(): UseCreateProjectReturn {
       params: CreateProjectParams,
       signAndSubmit: (
         unsignedXdr: string
-      ) => Promise<{ txHash: string; projectId: bigint }>
+      ) => Promise<{ txHash: string; projectId: string }>
     ) => {
       dispatch({ type: "SUBMIT" });
       try {

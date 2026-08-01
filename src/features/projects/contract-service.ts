@@ -71,8 +71,8 @@ export function buildUnsignedCreateProjectCall(
  */
 export async function submitCreateProject(
   params: CreateProjectParams,
-  _signAndSubmit: (unsignedXdr: string) => Promise<{ txHash: string; projectId: bigint }>
-): Promise<{ txHash: string; projectId: bigint }> {
+  _signAndSubmit: (unsignedXdr: string) => Promise<{ txHash: string; projectId: string }>
+): Promise<{ txHash: string; projectId: string }> {
   const unsigned = buildUnsignedCreateProjectCall(params);
 
   // In production, build the actual XDR and call the wallet for signing.

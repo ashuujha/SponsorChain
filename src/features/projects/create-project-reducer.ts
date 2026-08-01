@@ -1,6 +1,6 @@
 export interface CreateProjectState {
   status: "idle" | "review" | "pending" | "success" | "failed";
-  projectId: bigint | null;
+  projectId: string | null;
   txHash: string | null;
   errorType:
     | "insufficient_funds"
@@ -15,7 +15,7 @@ export type CreateProjectAction =
   | { type: "START_REVIEW" }
   | { type: "SUBMIT" }
   | { type: "RECEIVE_HASH"; txHash: string }
-  | { type: "SUCCESS"; projectId: bigint }
+  | { type: "SUCCESS"; projectId: string }
   | { type: "FAIL"; error: Error }
   | { type: "RESET" };
 

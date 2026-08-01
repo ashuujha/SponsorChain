@@ -31,22 +31,57 @@ export default function ActivityPage() {
 
   useEffect(() => {
     if (!wallet.publicKey) return;
-    setTimeout(() => {
-      const listed = getProjectsByOwner(wallet.publicKey!);
-      setListedProjects(listed);
+    let isMounted = true;
+    async function loadActivity() {
+      try {
+        const res = await fetch("/api/projects");
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data.projects) {
+            const myProjects = data.projects.filter(
+              (p: any) =>
+                (p.ownerWalletKey || p.owner?.walletPublicKey)?.toLowerCase() ===
+                wallet.publicKey!.toLowerCase()
+            );
+            const mapped: ProjectData[] = myProjects.map((p: any) => ({
+              id: p.id,
+              owner: p.ownerWalletKey || p.owner?.walletPublicKey || "",
+              repoFullName: p.repoUrl,
+              name: p.name,
+              description: p.description,
+              totalRaised: "0",
+              sponsorCount: p.sponsorships?.length || 0,
+              createdAt: BigInt(Math.floor(new Date(p.createdAt).getTime() / 1000)),
+            }));
+            setListedProjects(mapped);
+          }
+        }
+      } catch (err) {
+        console.warn("Activity API fetch notice:", err);
+      }
 
-      const sps = getSponsorshipsBySponsor(wallet.publicKey!);
-      const enriched = sps.map((s) => {
-        const p = getProject(s.projectId);
-        return {
-          ...s,
-          projectName: p?.name ?? "Unknown",
-          repoFullName: p?.repoFullName ?? "unknown/repo",
-        };
-      });
-      setSponsoredEntries(enriched);
-      setIsLoading(false);
-    }, 400);
+      // Fallback to local memory registry
+      if (isMounted) {
+        const listed = getProjectsByOwner(wallet.publicKey!);
+        if (listed.length > 0) setListedProjects(listed);
+
+        const sps = getSponsorshipsBySponsor(wallet.publicKey!);
+        const enriched = sps.map((s) => {
+          const p = getProject(s.projectId);
+          return {
+            ...s,
+            projectName: p?.name ?? "Unknown",
+            repoFullName: p?.repoFullName ?? "unknown/repo",
+          };
+        });
+        setSponsoredEntries(enriched);
+        setIsLoading(false);
+      }
+    }
+    loadActivity();
+    return () => {
+      isMounted = false;
+    };
   }, [wallet.publicKey]);
 
   return (
