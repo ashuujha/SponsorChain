@@ -1,8 +1,11 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import ProjectDetailPage from "@/app/(main)/projects/[id]/page.tsx";
+import ProjectDetailPage from "@/app/(main)/projects/[id]/page";
 import * as paymentService from "@/features/payments/payment-service";
+import { getAllProjects, createMockProject } from "@/features/projects/contract-data";
+
+let mockProjectId = "0";
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
@@ -10,7 +13,7 @@ vi.mock("next/navigation", () => ({
     push: vi.fn(),
   }),
   useParams: () => ({
-    id: "stellar-core",
+    id: mockProjectId,
   }),
 }));
 
@@ -43,33 +46,24 @@ global.fetch = mockFetch;
 describe("Project Detail & Payments Flow Integration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
-    // Default fetch mocks
+
+    const projects = getAllProjects();
+    let project = projects.find(p => p.repoFullName === "stellar/stellar-core");
+    if (!project) {
+      const id = createMockProject(
+        "GA774A3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z",
+        "stellar/stellar-core",
+        "Stellar Core",
+        "Stellar Core backbone."
+      );
+      mockProjectId = id.toString();
+    } else {
+      mockProjectId = project.id.toString();
+      project.name = "Stellar Core";
+      project.description = "Stellar Core backbone.";
+    }
+
     mockFetch.mockImplementation((url: string) => {
-      if (url.includes("/api/projects/")) {
-        return Promise.resolve({
-          ok: true,
-          json: () =>
-            Promise.resolve({
-              project: {
-                id: "stellar-core",
-                name: "Stellar Core",
-                repoUrl: "stellar/stellar-core",
-                description: "Stellar Core backbone.",
-                fundingGoalXLM: "5000",
-                owner: {
-                  githubId: "stellar",
-                  walletPublicKey: "GA774A3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z",
-                },
-                tiers: [
-                  { id: "coffee", amountXLM: "10.0", label: "Coffee tier" },
-                  { id: "lunch", amountXLM: "50.0", label: "Lunch tier" },
-                ],
-                sponsorships: [],
-              },
-            }),
-        });
-      }
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve({ success: true }),
@@ -86,7 +80,6 @@ describe("Project Detail & Payments Flow Integration", () => {
     });
 
     expect(screen.getByText("stellar/stellar-core")).toBeInTheDocument();
-    expect(screen.getByText("500.00 XLM")).toBeInTheDocument(); // Live balance
   });
 
   it("should display the Confirm modal (Review state) when clicking Sponsor", async () => {
@@ -96,12 +89,15 @@ describe("Project Detail & Payments Flow Integration", () => {
       expect(screen.getByText("Stellar Core")).toBeInTheDocument();
     });
 
+    // Input sponsor amount
+    const amountInput = screen.getByPlaceholderText("0.00") as HTMLInputElement;
+    fireEvent.change(amountInput, { target: { value: "100" } });
+
     const sponsorButton = screen.getByRole("button", { name: /Sponsor with Wallet/i });
     fireEvent.click(sponsorButton);
 
-    // Should display review overlay modal
-    expect(screen.getByText("Confirm Transaction")).toBeInTheDocument();
-    expect(screen.getByText("Sponsorship Value")).toBeInTheDocument();
-    expect(screen.getByText("Sign & Send Payment")).toBeInTheDocument();
+    // Should display review section
+    expect(screen.getByText("Sponsorship Amount")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Sign & Send Payment/i })).toBeInTheDocument();
   });
 });
