@@ -6,25 +6,13 @@
 
 :root {
   --background: #FAFAF8;
-  --foreground: #1C1B1B;
-  --surface: #FFFFFF;
-  --surface-hover: #F1EDEC;
-  --border-color: #E7E5E1;
-  --text-primary: #1C1B1B;
-  --text-secondary: #605E5A;
-  --accent-green: #2E7D32;
+  --foreground: #1c1b1b;
   --font-inter: 'Inter', sans-serif;
 }
 
 .dark {
   --background: #0E0F12;
   --foreground: #F4F4F6;
-  --surface: #16181D;
-  --surface-hover: #20232A;
-  --border-color: #2A2D35;
-  --text-primary: #F4F4F6;
-  --text-secondary: #9EA3B0;
-  --accent-green: #4CAF50;
 }
 
 @layer base {
@@ -122,14 +110,8 @@
 .text-on-surface, .text-on-background {
   color: #1c1b1b !important;
 }
-.dark .text-on-surface, .dark .text-on-background {
-  color: #F4F4F6 !important;
-}
 .text-on-surface-variant {
   color: #444748 !important;
-}
-.dark .text-on-surface-variant {
-  color: #9EA3B0 !important;
 }
 .text-on-primary-container {
   color: #ffffff !important;
