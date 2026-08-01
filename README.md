@@ -1,123 +1,252 @@
-# SponsorChain — Decentralized Sponsor Fund on Stellar
+<p align="center">
+  <img src="https://raw.githubusercontent.com/stellar/stellar-protocol/master/logo/stellar-symbol.png" alt="SponsorChain Logo" width="96" height="96"/>
+</p>
 
-<div align="center">
+<p align="center">
+  <strong>SponsorChain — Peer-to-Peer Developer Sponsorships on Stellar</strong><br/>
+  <em>Fund the open source you depend on. Directly. Transparently.</em>
+</p>
 
-**[Live Demo](https://sponsorchain.vercel.app)** &nbsp;|&nbsp; **[Demo Video](https://youtu.be/xRrEzkga6AU)** &nbsp;|&nbsp; **[Stellar Explorer](https://stellar.expert/explorer/testnet)**
-
-![CI](https://github.com/ashuujha/SponsorChain/actions/workflows/ci.yml/badge.svg)
-![Stellar](https://img.shields.io/badge/Stellar-Testnet-blue)
-![Next.js](https://img.shields.io/badge/Next.js-15-black)
-![Tests](https://img.shields.io/badge/Tests-68%20passing-brightgreen)
-
-</div>
-
----
-
-## Problem Statement
-
-Open source maintainers build and support the digital infrastructure of the global economy, yet the vast majority receive little to no compensation. Existing developer funding portals introduce heavy platform fees, delayed payout cycles, and complex administrative overhead. Furthermore, sponsors have no way to verify that their contributions reach the maintainers directly without intermediaries taking a cut.
-
-## Solution
-
-SponsorChain is a direct peer-to-peer developer sponsorship platform built on the Stellar blockchain. Maintainers verify repository ownership via GitHub OAuth and list public repos on the Soroban smart contracts. Sponsors browse repositories and send XLM directly to the maintainer's wallet address. Every transaction is fee-free, instant, and 100% verifiable on the Stellar blockchain.
+<p align="center">
+  <a href="https://github.com/ashuujha/SponsorChain/actions/workflows/ci.yml"><img src="https://github.com/ashuujha/SponsorChain/actions/workflows/ci.yml/badge.svg" alt="CI Build Status"/></a>
+  <a href="https://stellar.expert/explorer/testnet"><img src="https://img.shields.io/badge/Stellar-Testnet-blue?logo=stellar" alt="Stellar Testnet"/></a>
+  <img src="https://img.shields.io/badge/tests-77%20passing-brightgreen" alt="Tests Status"/>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License"/></a>
+</p>
 
 ---
 
-## Screenshots
+## Table of Contents
 
-### Desktop UI — Maintainer Dashboard
-<img width="880" alt="Maintainer Dashboard" src="screenshorts/desktop_dashboard.png" />
-
-### Mobile Responsive UI
-<div align="center">
-  <img width="200" alt="Mobile View - Landing" src="screenshorts/mobile_1.jpg" />
-  &nbsp;&nbsp;
-  <img width="200" alt="Mobile View - Dashboard" src="screenshorts/mobile_2.jpg" />
-  &nbsp;&nbsp;
-  <img width="200" alt="Mobile View - Explore" src="screenshorts/mobile_3.jpg" />
-  &nbsp;&nbsp;
-  <img width="200" alt="Mobile View - Project Detail" src="screenshorts/mobile_4.jpg" />
-</div>
-
-### CI/CD Pipeline
-<img width="880" alt="CI/CD Pipeline" src="screenshorts/ci_pipeline.png" />
-
-### Test Output — 68 Passing Tests
-<img width="880" alt="Test Output" src="screenshorts/test_output.png" />
+- [1. Product Overview & Problem Statement](#1-product-overview--problem-statement)
+- [2. Architecture](#2-architecture)
+- [3. Data Model](#3-data-model)
+- [4. Payment Flow](#4-payment-flow)
+- [5. Features & Tech Stack](#5-features--tech-stack)
+- [6. Local Development Setup](#6-local-development-setup)
+- [7. CI/CD & Deployment](#7-cicd--deployment)
+- [8. Security Considerations](#8-security-considerations)
+- [9. Screenshots](#9-screenshots)
+- [10. Resources & Links](#10-resources--links)
+- [11. Contributing](#11-contributing)
+- [12. License](#12-license)
 
 ---
 
-## Contract Information
+## 1. Product Overview & Problem Statement
 
-| Field | Value |
-|-------|-------|
-| Network | Stellar Testnet |
-| ProjectRegistry Contract | `CBNWNLUIZWJA3E2AXYAVSAIKMW4MLKIKP6YO74UJX7DW5VGETCFMX6EB` |
-| SponsorshipManager Contract | `CBRRVROJJDW22CMFBHOV5IS4UFC3V3KTDSC6SBU43NWXR33VLBK5J32U` |
-| Native XLM SAC | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
-| ProjectRegistry Init Tx | `e164f9e2730d27cbf4150cf61fd76dd3bcb634baa88a125013e461be4728075d` |
-| Linking Registry to Manager Tx | `2ba8e86d9e627c0622e7eea49be5403f5cf502b04546cb86fda6df6f27572be8` |
-| SponsorshipManager Init Tx | `d77e3f60faf0a6eeed264dc0fd3d9527a6029c5484dc155f57a8f3ec2133b689` |
+Open-source maintainers build and support the digital infrastructure of the global economy, yet the vast majority receive little to no compensation. Existing developer funding portals introduce heavy platform fees, delayed payout cycles, complex administrative overhead, and opaque donation routing.
 
-- [Verify ProjectRegistry on Explorer](https://stellar.expert/explorer/testnet/contract/CBNWNLUIZWJA3E2AXYAVSAIKMW4MLKIKP6YO74UJX7DW5VGETCFMX6EB)
-- [Verify SponsorshipManager on Explorer](https://stellar.expert/explorer/testnet/contract/CBRRVROJJDW22CMFBHOV5IS4UFC3V3KTDSC6SBU43NWXR33VLBK5J32U)
+**SponsorChain** solves this by establishing direct, peer-to-peer developer sponsorships on the Stellar network:
 
----
+| Pain point | SponsorChain solution |
+|---|---|
+| Opaque donation routing | Direct P2P transfers — funds go directly from sponsor's wallet to maintainer's wallet. |
+| High platform fees | Fee-free on-chain payments — no middleman treasury or platform fee cuts. |
+| Delayed payout cycles | Stellar native XLM settlement — transaction confirmation in under 5 seconds. |
+| Impersonation & fake projects | GitHub OAuth verification — maintainers must authenticate ownership to list a project. |
+| Manual accounting & tracking | Real-time tracking — instant dashboard logs sourced directly from Stellar Horizon network. |
 
-## How It Works
-
-**For Maintainers:**
-1. Connect your Stellar wallet (Freighter, Albedo, etc.) via the **Wallet** page or the button in the header.
-2. Navigate to **List a Project** and link your GitHub account via NextAuth OAuth to verify repository ownership.
-3. Select an eligible, public, non-fork repository you own from your GitHub repository list.
-4. Input project details, review, sign the Soroban transaction, and register your project on the Stellar blockchain.
-5. Track your listed projects, total funds raised, and sponsors in the *Projects I've Listed* section of the **My Activity** page.
-
-**For Sponsors:**
-1. Connect your Stellar wallet.
-2. Browse verified developer projects on the **Explore** page.
-3. Select a project, enter the XLM amount you want to sponsor, and sign the transaction with your wallet.
-4. The smart contract transfers XLM directly to the maintainer's destination wallet in under 5 seconds.
-5. Track all your sponsorships and contributions in the *Projects I've Sponsored* section of the **My Activity** page.
+SponsorChain links a Next.js 15 frontend and PostgreSQL metadata store with client-side wallet signing using StellarWalletsKit. Maintainers list verified projects, and sponsors send XLM directly to maintainer addresses with zero intermediary custody.
 
 ---
 
-## Features
+## 2. Architecture
 
-- **Direct P2P payments**: Payments go directly from the sponsor's wallet to the maintainer's wallet. No middleman treasury or platform fee.
-- **On-chain source of truth**: All project details and sponsorship totals are stored directly on-chain inside Soroban contract state.
-- **GitHub Verification**: NextAuth.js OAuth flows verify repository ownership at listing time to prevent impersonation.
-- **Freighter Wallet Integration**: Secure client-side signing of transactions directly in the browser.
-- **Live Horizon Streaming**: Listens to payments on Horizon via Server-Sent Events (SSE) to update user activity in real-time.
-- **Mobile Responsive Layout**: Premium look and feel adapting seamlessly from desktop to mobile screens.
-- **Fully Tested Suite**: Robust quality gate with 68 passing tests.
+SponsorChain utilizes two distinct data paths to ensure that web-facing project discoverability does not compromise on-chain financial sovereignty.
+
+```mermaid
+graph TD
+    subgraph Browser["Browser (Next.js 15 Client)"]
+        UI["UI Layer\n(React 19 / Tailwind CSS)"]
+        SWK["StellarWalletsKit\n(Freighter, Albedo, LOBSTR...)"]
+        SDK["stellar-sdk\n(Transaction Builder)"]
+        LiveStream["SSE Live Stream\n(Horizon EventStream Listener)"]
+    end
+
+    subgraph Backend["Backend (Next.js Server API)"]
+        API["API Routes\n(/api/projects, /api/sponsorships)"]
+        NextAuth["NextAuth.js\n(GitHub OAuth Verification)"]
+        Prisma["Prisma Client\n(Object Relational Mapping)"]
+    end
+
+    subgraph Database["Database Layer"]
+        Postgres[(PostgreSQL Database\nStores Project & User Metadata)]
+    end
+
+    subgraph StellarNetwork["Stellar Blockchain (Testnet)"]
+        Horizon["Stellar Horizon RPC\nhttps://horizon-testnet.stellar.org"]
+        Friendbot["Friendbot Faucet\nhttps://friendbot.stellar.org"]
+    end
+
+    UI -->|"GitHub login / Session check"| NextAuth
+    UI -->|"CRUD operations"| API
+    API --> Prisma
+    Prisma --> Postgres
+    
+    UI -->|"Request address/Sign"| SWK
+    SDK -->|"Build transaction"| UI
+    SWK -->|"Sign XDR envelope"| SDK
+    
+    SDK -->|"Submit Transaction XDR"| Horizon
+    LiveStream -->|"Stream payments (SSE)"| Horizon
+    UI -->|"Query balances / Accounts"| Horizon
+    UI -->|"Fund wallet (Friendbot)"| Friendbot
+```
+
+> **Key Routing Rule**: Project discoverability, user profiles, and transaction confirmation logs are cached and served via the **PostgreSQL metadata database** via Server-Side API routes. However, all actual financial truths (such as XLM balances, payment confirmations, and account states) are verified directly against **Stellar Horizon RPC** via browser-based calls.
 
 ---
 
-## Tech Stack
+## 3. Data Model
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | Next.js 15 (App Router) + React 19 |
-| Styling | Tailwind CSS |
-| Wallet Kit | `@creit.tech/stellar-wallets-kit` (Freighter, Albedo, xBull, Lobstr, Rabet) |
-| Blockchain | Stellar Testnet |
-| Smart Contracts | Soroban (Rust + `soroban-sdk` v27) |
-| SDK | `@stellar/stellar-sdk` |
-| Testing | Vitest + Testing Library |
-| CI/CD | GitHub Actions |
-| Deployment | Vercel |
+SponsorChain's metadata is defined via a relational Prisma schema targeting a PostgreSQL database.
+
+### 3.1 User Model
+Represents maintainers and sponsors registered on the platform.
+
+| Field | Type | Attributes | Description |
+|---|---|---|---|
+| `id` | `String` | `@id`, `@default(cuid())` | Unique user identifier |
+| `githubUsername` | `String?` | `@unique` | Linked GitHub account username (verified via OAuth) |
+| `walletPublicKey` | `String?` | `@unique` | 56-character Stellar StrKey (starts with 'G') |
+| `role` | `String` | `@default("USER")` | User type system role (`USER`, `MAINTAINER`, `SPONSOR`) |
+| `createdAt` | `DateTime` | `@default(now())` | User creation timestamp |
+| `updatedAt` | `DateTime` | `@updatedAt` | Profile last update timestamp |
+
+### 3.2 Project Model
+Represents the open-source repository listed by a maintainer for sponsorships.
+
+| Field | Type | Attributes | Description |
+|---|---|---|---|
+| `id` | `String` | `@id`, `@default(cuid())` | Unique project identifier |
+| `ownerId` | `String` | Foreign Key | Link to the creator's `User.id` |
+| `ownerWalletKey` | `String` | | 56-character Stellar public key of the receiving maintainer |
+| `repoUrl` | `String` | `@unique` | GitHub Repository full name (e.g., `owner/repo`) |
+| `name` | `String` | | Display name of the project |
+| `description` | `String` | | Extended description of the project (min 20 chars) |
+| `fundingGoalXLM` | `String?` | `@default("0")` | Optional funding goal in XLM |
+| `createdAt` | `DateTime` | `@default(now())` | Listing timestamp |
+| `updatedAt` | `DateTime` | `@updatedAt` | Project update timestamp |
+
+### 3.3 Tier Model
+Represents predefined sponsorship amounts configured for the project.
+
+| Field | Type | Attributes | Description |
+|---|---|---|---|
+| `id` | `String` | `@id`, `@default(cuid())` | Unique tier identifier |
+| `projectId` | `String` | Foreign Key | Link to `Project.id` (cascades on delete) |
+| `amountXLM` | `String` | | Amount in XLM (e.g. `"10"`, `"50"`, `"100"`) |
+| `label` | `String` | | Display label (e.g., `"Supporter"`, `"Backer"`, `"Sponsor"`) |
+| `createdAt` | `DateTime` | `@default(now())` | Creation timestamp |
+
+### 3.4 Sponsorship Model
+Represents a recorded on-chain transaction transaction log in PostgreSQL.
+
+| Field | Type | Attributes | Description |
+|---|---|---|---|
+| `id` | `String` | `@id`, `@default(cuid())` | Unique sponsorship identifier |
+| `sponsorId` | `String?` | Foreign Key | Link to the sponsor's `User.id` (nullable) |
+| `sponsorWalletKey` | `String` | | 56-character Stellar public key of the sponsor |
+| `projectId` | `String` | Foreign Key | Link to `Project.id` |
+| `txHash` | `String` | `@unique` | 64-character hash of the confirmed Stellar transaction |
+| `amountXLM` | `String` | | Amount sponsored in XLM |
+| `status` | `String` | `@default("CONFIRMED")` | Transaction verification state |
+| `createdAt` | `DateTime` | `@default(now())` | Log timestamp |
 
 ---
 
-## Getting Started
+## 4. Payment Flow
+
+Sponsorship payments are built and signed in-browser to keep private keys secure within the user's wallet extension.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Sponsor as Sponsor Wallet
+    participant Frontend as Client UI (React)
+    participant Horizon as Stellar Horizon RPC
+    participant Backend as Next.js API (/api/sponsorships)
+    participant Database as PostgreSQL
+
+    Sponsor->>Frontend: Click "Sponsor" & Enter XLM Amount
+    Frontend->>Horizon: Query Sponsor & Maintainer Account details
+    Horizon-->>Frontend: Retrieve account sequence & activate check
+    
+    rect rgb(30, 30, 30)
+        Note over Frontend: Build Transaction Envelope
+        Frontend->>Frontend: Create PaymentOperation (Sponsor -> Maintainer, amount)
+        Frontend->>Frontend: Build transaction (Base fee = 100 stroops)
+    end
+    
+    Frontend->>Sponsor: Request Signature via StellarWalletsKit
+    Sponsor->>Sponsor: Prompt user inside wallet popup (Freighter/Albedo)
+    Sponsor-->>Frontend: Return Signed XDR Envelope
+    
+    Frontend->>Horizon: Submit Transaction (submitTransaction)
+    Horizon-->>Frontend: Return Confirmed Transaction Receipt (txHash)
+    
+    rect rgb(40, 40, 40)
+        Note over Frontend, Database: Post-Payment Recording
+        Frontend->>Backend: POST /api/sponsorships (txHash, projectId, amount, sponsorWallet)
+        Backend->>Backend: Validate txHash & public keys server-side
+        Backend->>Database: Write record to Sponsorship table
+        Database-->>Backend: Confirmed write
+        Backend-->>Frontend: OK (201 Created)
+    end
+    
+    Frontend-->>Sponsor: Display Success Screen with Transaction Link
+```
+
+---
+
+## 5. Features & Tech Stack
+
+### Features
+- **Multi-Wallet Support**: Integrated `@creit.tech/stellar-wallets-kit` supporting Freighter, Albedo, LOBSTR, Rabet, and xBull.
+- **GitHub Verification**: Seamless GitHub OAuth linking using NextAuth.js to verify repository ownership.
+- **Direct P2P Settlements**: Payments flow directly into the maintainer's Stellar account without platform custody.
+- **Live Activity Streams**: Horizon Server-Sent Events (SSE) listener automatically updates recent donations in real-time, falling back to a client-side polling mechanism if disconnected.
+- **Comprehensive Error Handling**: Accurate diagnosis and user-friendly error dialogs for common failures (unfunded wallets, user cancellations, expired transactions, low reserves).
+- **Bugatti-Inspired Design**: Dark mode aesthetic prioritizing high-contrast typography, zero-pixel border-radius, and fluid responsiveness.
+- **Strict Quality Control**: Complete automated test suite using Vitest verifying layout states, session states, and payment state machines.
+
+### Tech Stack
+<p align="left">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=nextjs,react,ts,tailwind,postgres,prisma,nodejs,github,html,css" />
+  </a>
+</p>
+
+| Category | Technology | Purpose |
+|---|---|---|
+| **Core Framework** | Next.js 15 (App Router) | React Server Components & API routing |
+| **Language** | TypeScript | Strong typing and safety |
+| **Styling** | Tailwind CSS | Utility-first responsive design |
+| **Database** | PostgreSQL | Persistent metadata store |
+| **ORM** | Prisma | Schema migrations and client queries |
+| **Authentication** | NextAuth.js | GitHub OAuth integration |
+| **Stellar SDK** | `stellar-sdk` (v12) | Building and parsing XDR transaction envelopes |
+| **Wallet Connector** | `@creit.tech/stellar-wallets-kit` | Multi-wallet user connection API |
+| **State Management**| Zustand (v5) | Global application store and session persistence |
+| **Testing** | Vitest & Testing Library | Unit and integration test suite |
+
+---
+
+## 6. Local Development Setup
+
+Follow these steps to run SponsorChain locally in your development environment.
 
 ### Prerequisites
-- Node.js 18+
-- [Freighter Wallet](https://www.freighter.app/) set to **Testnet**
-- Rust 1.84+ with `wasm32v1-none` target (if editing contracts)
 
-### Installation
+| Tool | Version | Purpose |
+|---|---|---|
+| **Node.js** | `>= 18.0.0` | Server runtime environment |
+| **npm** | `>= 9.0.0` | Package manager |
+| **PostgreSQL** | `>= 14.0` | Database engine |
+| **Stellar Wallet** | Freighter / Albedo | Signing transaction requests during testing |
+
+### Clone & Install
 
 ```bash
 git clone https://github.com/ashuujha/SponsorChain.git
@@ -125,119 +254,122 @@ cd SponsorChain
 npm install
 ```
 
-### Environment Setup
-Create a `.env.local` file at the root:
+### Environment Configuration
+
+Create a `.env.local` file at the root of the project:
 
 ```env
-NEXTAUTH_SECRET="YOUR_NEXTAUTH_SECRET"
+# Database Settings
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/sponsorchain?schema=public"
+
+# NextAuth Configuration
+NEXTAUTH_SECRET="your_nextauth_jwt_signing_secret_hash"
 NEXTAUTH_URL="http://localhost:3000"
-GITHUB_CLIENT_ID="YOUR_GITHUB_CLIENT_ID"
-GITHUB_CLIENT_SECRET="YOUR_GITHUB_CLIENT_SECRET"
-NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS="CBNWNLUIZWJA3E2AXYAVSAIKMW4MLKIKP6YO74UJX7DW5VGETCFMX6EB"
-NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS="CBRRVROJJDW22CMFBHOV5IS4UFC3V3KTDSC6SBU43NWXR33VLBK5J32U"
+
+# GitHub OAuth Credentials
+GITHUB_CLIENT_ID="your_github_oauth_client_id"
+GITHUB_CLIENT_SECRET="your_github_oauth_client_secret"
+
+# Stellar Network Configuration
+NEXT_PUBLIC_STELLAR_NETWORK="TESTNET"
+NEXT_PUBLIC_HORIZON_URL="https://horizon-testnet.stellar.org"
+NEXT_PUBLIC_EXPLORER_BASE="https://stellar.expert/explorer/testnet"
 ```
 
-Refer to [`GITHUB_SETUP.md`](./GITHUB_SETUP.md) to register your GitHub OAuth application.
+> Refer to [GITHUB_SETUP.md](GITHUB_SETUP.md) for details on registering your GitHub OAuth Application.
 
-### Start local server
+### Database Setup & Seeding
+
+Deploy your Prisma schema to your local PostgreSQL instance and apply the mock project database seeds:
+
 ```bash
-npm run dev
+# Push database schema
+npx prisma db push
+
+# Generate Prisma Client
+npx prisma generate
+
+# Seed mock projects and users
+npx prisma db seed
 ```
 
-Open `http://localhost:3000`
+### Run Commands
+
+| Command | Action |
+|---|---|
+| `npm run dev` | Starts the Next.js development server at `http://localhost:3000` |
+| `npm run build` | Builds the production Next.js bundle |
+| `npm run lint` | Runs the ESLint checker |
+| `npm run typecheck` | Validates TypeScript types compile successfully |
+| `npm run test` | Launches the interactive Vitest unit and integration test suite |
 
 ---
 
-## Running Tests
+## 7. CI/CD & Deployment
 
-### Frontend (Vitest)
-```bash
-npm run test -- --run
-```
+SponsorChain utilizes automated build checks to maintain production stability.
 
-68 tests passing across 15 files:
+### CI Pipeline (GitHub Actions)
+On every Pull Request and push targeting the `main` branch, the `.github/workflows/ci.yml` pipeline triggers:
+1. **Linter & Typecheck**: Executes `npm run lint` and `npm run typecheck`.
+2. **Vitest Suite**: Runs 77 unit and integration tests covering wallet sessions, payment building, Horizon SSE stream error transitions, and repo-picker filters.
+3. **Next.js Build**: Validates compilation and static generation with `npm run build`.
 
-| Scope | File | Tests | Covers |
-|-------|------|-------|--------|
-| Unit | `wallet.test.ts` | 8 | freighter installation, connection & network logic |
-| Unit | `wallet-session.test.ts` | 10 | wrong-network state and persistence-across-reload |
-| Unit | `repo-fork-filter.test.ts` | 8 | fork check logic at repository fetch |
-| Unit | `repo-ownership.test.ts` | 4 | repo ownership verification utilities |
-| Unit | `project-validation.test.ts` | 6 | form description length & name validator checks |
-| Unit | `payment-state-machine.test.ts` | 8 | donation flows, idle, review, pending & success transitions |
-| Unit | `payment-builder.test.ts` | 3 | XLM amount and public key format validation |
-| Unit | `live-stream.test.ts` | 4 | Horizon SSE stream reconnects and fallback to polling |
-| Unit | `horizon-pagination.test.ts` | 1 | pagination parsing helper tests |
-| Unit | `dashboard-utils.test.ts` | 3 | project grouping & metrics calculations |
-| Integration | `wallet-connect.test.tsx` | 4 | wallet connection states, Freighter disconnect |
-| Integration | `onboarding-flow.test.tsx` | 1 | repository selection and project detail prep |
-| Integration | `payments-flow.test.tsx` | 2 | project detail page rendering and review overlays |
-| Integration | `list-project-flow.test.tsx` | 5 | multi-step wizard state flow transitions |
-| Integration | `verification.test.ts` | 1 | Horizon client connection health check |
-
-### Contracts (Rust)
-```bash
-cargo test --manifest-path contracts/Cargo.toml
-```
+### Production Deployment
+The production application is continuously deployed to **Vercel** via `.github/workflows/deploy-frontend.yml` when changes are merged to the `main` branch.
 
 ---
 
-## CI/CD Pipeline
+## 8. Security Considerations
 
-The GitHub Actions workflow runs on every push and PR to `main`:
-1. **Contracts Job**: Sets up stable Rust toolchain, installs target `wasm32v1-none`, builds contracts, and executes `cargo test`.
-2. **Frontend Job**: Installs dependencies, runs code linter and typecheck, executes 68 Vitest tests, and runs Next.js build verification.
-
----
-
-## Project Structure
-
-```
-SponsorChain/
-├── .github/
-│   └── workflows/
-│       ├── ci.yml                     # PR/Push checks
-│       └── deploy-frontend.yml        # Vercel deployment
-├── contracts/
-│   ├── project-registry/              # Registry smart contract
-│   └── sponsorship-manager/           # Direct payment & stats contract
-├── scripts/
-│   └── deploy-contracts.sh            # Build, deploy, init & cross-link contracts
-├── src/
-│   ├── app/
-│   │   ├── (main)/
-│   │   │   ├── explore/               # Browse listed projects
-│   │   │   ├── projects/[id]/         # Project details & sponsorship
-│   │   │   └── page.tsx               # Home landing page
-│   │   ├── (dashboard)/
-│   │   │   ├── dashboard/             # Developer dashboards
-│   │   │   └── wallet/                # Connect Stellar wallet page
-│   │   ├── list-project/              # List repo wizard
-│   │   └── globals.css
-│   ├── components/
-│   │   ├── shared/                    # Layout components (header, footer, drawer)
-│   │   └── providers.tsx
-│   ├── features/
-│   │   ├── projects/                  # Listing, contract data utilities, hooks
-│   │   ├── payments/                  # SSE Horizon polling, payments reducer
-│   │   ├── wallet/                    # Wallet connection hook and logic
-│   │   └── wallet-session/            # Persisted Zustand session store
-│   └── tests/                         # Unit and integration test suite
-├── CONTRACTS.md                       # Detailed on-chain deployment logs
-├── GITHUB_SETUP.md                    # Detailed guide to setup OAuth keys
-└── README.md                          # Main project documentation
-```
+- **Client-Side Signing Only**: At no point do private keys or secret seeds pass through the Next.js backend. All signing requests are handled isolated within browser extensions via the StellarWalletsKit interface.
+- **StrKey Validation**: Public keys are parsed using `StrKey.isValidEd25519PublicKey` on both the client and server-side before accepting data payload writes to prevent malformed account registration.
+- **NextAuth Session Enforcement**: Write routes such as project registration and sponsorship recording are guarded with `getServerSession` checks to prevent unauthorized database tampering.
+- **Metadata Isolation**: PostgreSQL stores metadata (name, description, repo link, txHash log) only. The actual ledger state of user balances and sponsorship transaction details rests on the Stellar Horizon blockchain.
 
 ---
 
-## Author
+## 9. Screenshots
 
-Built for the **Stellar Journey to Mastery** challenge.
+### 9.1 Desktop Layout
 
-- GitHub: [ashuujha](https://github.com/ashuujha)
-- Network: Stellar Testnet
-- Deployment: [https://sponsorchain.vercel.app](https://sponsorchain.vercel.app)
+| Main Landing Page | Explorer Catalog |
+|:---:|:---:|
+| <img src="screenshorts/desktop_footer.png" alt="Desktop Home Page" width="400"/> | <img src="screenshorts/desktop_dashboad.png" alt="Desktop Explore Page" width="400"/> |
 
-## License
+| Project Details & Wallet Signing |
+|:---:|
+| <img src="screenshorts/desktop_transaction.png" alt="Desktop Project Details Page" width="500"/> |
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+### 9.2 Automated Pipeline & Verification
+
+| CI/CD Pipeline Checks | Passing Vitest Suite |
+|:---:|:---:|
+| <img src="screenshorts/ci_pipeline.png" alt="CI/CD Pipeline" width="400"/> | <img src="screenshorts/test_output.png" alt="Vitest Output" width="400"/> |
+
+---
+
+## 10. Resources & Links
+
+- **Live Deployment**: [SponsorChain Portal](https://sponsor-chain.vercel.app)
+- **Demo Video**: [YouTube Product Walkthrough](https://youtu.be/sCsUeKcJUeQ)
+- **Stellar Horizon RPC**: [Testnet Endpoint](https://horizon-testnet.stellar.org)
+- **Stellar Expert**: [Explorer Home](https://stellar.expert/explorer/testnet)
+- **Stellar Faucet**: [Friendbot Wallet Funding tool](https://laboratory.stellar.org/#account-creator?network=testnet)
+- **Stellar Docs**: [Stellar Developer Documentation](https://developers.stellar.org)
+
+---
+
+## 11. Contributing
+
+1. Fork the repository on GitHub.
+2. Create a new feature branch (`git checkout -b feature/amazing-feature`).
+3. Commit your modifications with clear messages (`git commit -m 'feat: add amazing feature'`).
+4. Push to your fork (`git push origin feature/amazing-feature`).
+5. Open a Pull Request targeting the `main` branch.
+
+---
+
+## 12. License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
