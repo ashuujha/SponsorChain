@@ -86,23 +86,18 @@ export default function ExplorePage() {
   });
 
   return (
-    <div className="pb-16 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto overflow-x-hidden pt-6">
-      <header className="mb-10">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight mb-4">
-          Explore Projects
+    <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto overflow-x-hidden pt-12 bg-black min-h-screen text-white">
+      <header className="mb-12 border-b border-hairline pb-8">
+        <div className="caption-uppercase text-muted mb-2">CATALOG // REPOSITORIES</div>
+        <h1 className="display-lg text-3xl sm:text-4xl md:text-5xl font-normal text-white tracking-[3px] uppercase mb-6">
+          EXPLORE PROJECTS
         </h1>
-        <p className="text-text-secondary text-base mb-6 max-w-xl">
-          Discover open-source software repositories verified on GitHub and directly support maintainers over Stellar.
-        </p>
 
-        {/* Slacc Pill Search Input */}
+        {/* Bugatti Underline Text Input */}
         <div className="relative max-w-2xl">
-          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">
-            search
-          </span>
           <input
-            className="w-full h-12 pl-12 pr-4 bg-canvas-cream dark:bg-surface-container border border-border-color rounded-full focus:ring-2 focus:ring-aubergine outline-none text-base text-foreground transition-all shadow-xs"
-            placeholder="Search projects by name, repo, or description..."
+            className="bugatti-input w-full text-base"
+            placeholder="SEARCH REPOSITORIES BY NAME, REPO, OR DESCRIPTION..."
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -110,16 +105,16 @@ export default function ExplorePage() {
         </div>
       </header>
 
-      {/* Slacc Pill Filter Bar */}
-      <section className="flex gap-2.5 mb-10 overflow-x-auto hide-scrollbar pb-2">
+      {/* Bugatti Monospace Filter Bar */}
+      <section className="flex gap-3 mb-12 overflow-x-auto hide-scrollbar pb-2">
         {["All", "Most funded", "Active", "Recently listed"].map((f) => (
           <button
             key={f}
             onClick={() => setActiveFilter(f)}
-            className={`px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all ${
+            className={`px-6 py-2 rounded-full font-mono text-xs uppercase tracking-[2px] transition-all ${
               activeFilter === f
-                ? "bg-aubergine text-white shadow-xs"
-                : "bg-canvas-lavender dark:bg-surface-container text-ink dark:text-foreground hover:bg-canvas-cream dark:hover:bg-surface-hover"
+                ? "bg-white text-black font-semibold"
+                : "bg-transparent border border-hairline text-muted hover:border-white hover:text-white"
             }`}
           >
             {f}
@@ -128,69 +123,62 @@ export default function ExplorePage() {
       </section>
 
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <span className="animate-spin material-symbols-outlined text-[40px] text-aubergine dark:text-aubergine-mute">
+        <div className="flex flex-col items-center justify-center py-24 gap-4">
+          <span className="animate-spin material-symbols-outlined text-[36px] text-white">
             progress_activity
           </span>
-          <p className="font-semibold text-text-secondary text-base">
-            Querying contract state...
+          <p className="caption-uppercase text-muted">
+            READING CONTRACT STATE...
           </p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-20 border border-dashed border-border-color rounded-3xl bg-canvas-cream/50 dark:bg-surface-container/50">
-          <span className="material-symbols-outlined text-[48px] text-aubergine/40 dark:text-aubergine-mute/40 mb-3">
-            inventory_2
+        <div className="text-center py-24 border border-hairline bg-surface-card p-12">
+          <span className="material-symbols-outlined text-[48px] text-muted mb-4">
+            search_off
           </span>
-          <h3 className="font-bold text-xl text-foreground mb-1">
-            No projects found
+          <h3 className="font-mono text-lg text-white uppercase tracking-[2px] mb-2">
+            NO PROJECTS FOUND
           </h3>
-          <p className="text-text-secondary text-sm">
-            Try tweaking your search terms or be the first to{" "}
-            <Link href="/list-project" className="slacc-link font-semibold">
-              list a project
-            </Link>
-            .
+          <p className="body-serif text-muted text-sm mb-4">
+            Try adjusting your search terms or register a new project.
           </p>
+          <Link href="/list-project" className="bugatti-link">
+            LIST A PROJECT &rarr;
+          </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filtered.map((project) => (
             <Link key={project.id.toString()} href={`/projects/${project.id}`}>
-              <div className="bg-surface dark:bg-surface border border-border-color rounded-2xl p-6 h-full flex flex-col hover:border-aubergine/40 hover:shadow-md transition-all cursor-pointer group">
-                <div className="flex items-start justify-between mb-4">
+              <div className="bg-surface-card border border-hairline rounded-none p-6 h-full flex flex-col hover:border-white/60 transition-all cursor-pointer group">
+                <div className="flex items-start justify-between mb-6">
                   <ProjectAvatar name={project.name} size="md" />
-                  <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-700 dark:text-emerald-300">
-                      On-Chain
-                    </span>
+                  <div className="caption-uppercase text-xs text-white border border-hairline-strong px-2.5 py-1">
+                    ON-CHAIN
                   </div>
                 </div>
 
-                <div className="mb-3">
-                  <h3 className="text-xl text-foreground font-bold truncate group-hover:text-link-blue transition-colors">
+                <div className="mb-4">
+                  <h3 className="font-mono text-base text-white uppercase tracking-[1.5px] truncate group-hover:text-muted transition-colors">
                     {project.name}
                   </h3>
-                  <p className="font-mono text-xs text-text-secondary truncate mt-0.5">
+                  <p className="font-mono text-xs text-muted truncate mt-1">
                     {project.repoFullName}
                   </p>
                 </div>
 
-                <p className="text-text-secondary text-sm mb-6 line-clamp-2 leading-relaxed">
+                <p className="body-serif-sm text-muted mb-8 line-clamp-3 leading-relaxed">
                   {project.description}
                 </p>
 
-                <div className="mt-auto pt-4 border-t border-border-color/60 space-y-2">
+                <div className="mt-auto pt-4 border-t border-hairline space-y-2">
                   <div className="flex justify-between items-end">
-                    <span className="font-extrabold text-sm text-aubergine dark:text-aubergine-mute">
-                      {formatXlm(project.totalRaised)} XLM raised
+                    <span className="font-mono text-xs text-white uppercase tracking-[1.5px]">
+                      {formatXlm(project.totalRaised)} XLM RAISED
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-text-secondary text-xs">
-                    <span className="material-symbols-outlined text-[16px]">group</span>
-                    <span className="font-medium">
-                      {project.sponsorCount} sponsor{project.sponsorCount !== 1 ? "s" : ""}
-                    </span>
+                  <div className="caption-uppercase text-[10px] text-muted">
+                    {project.sponsorCount} SPONSOR{project.sponsorCount !== 1 ? "S" : ""}
                   </div>
                 </div>
               </div>

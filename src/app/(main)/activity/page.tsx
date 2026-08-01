@@ -99,13 +99,14 @@ export default function ActivityPage() {
 
   return (
     <RequireWallet>
-      <div className="pb-16 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto pt-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+      <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto pt-12 bg-black min-h-screen text-white">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-hairline pb-8">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">My Activity</h1>
-            <p className="text-text-secondary text-sm mt-1 flex items-center gap-2">
-              Connected as{" "}
-              <code className="font-mono text-xs bg-canvas-cream dark:bg-surface-container text-aubergine dark:text-aubergine-mute px-3 py-1 rounded-full border border-border-color/60 font-bold">
+            <div className="caption-uppercase text-muted mb-2">USER ACCOUNT // ACTIVITY</div>
+            <h1 className="display-lg text-3xl sm:text-4xl md:text-5xl font-normal text-white tracking-[3px] uppercase">MY ACTIVITY</h1>
+            <p className="caption-uppercase text-muted text-xs mt-3 flex items-center gap-2">
+              CONNECTED:{" "}
+              <code className="font-mono text-xs text-white border border-hairline px-3 py-1 bg-surface-card">
                 {wallet.publicKey
                   ? `${wallet.publicKey.slice(0, 8)}...${wallet.publicKey.slice(-6)}`
                   : "..."}
@@ -115,58 +116,55 @@ export default function ActivityPage() {
 
           <Link href="/list-project">
             <Button size="sm">
-              <span className="material-symbols-outlined mr-1 text-[18px]">add</span>
-              List New Project
+              LIST NEW PROJECT
             </Button>
           </Link>
         </div>
 
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <span className="animate-spin material-symbols-outlined text-[40px] text-aubergine dark:text-aubergine-mute">
+          <div className="flex flex-col items-center justify-center py-24 gap-4">
+            <span className="animate-spin material-symbols-outlined text-[40px] text-white">
               progress_activity
             </span>
-            <p className="font-semibold text-text-secondary text-base">
-              Reading contract state...
+            <p className="caption-uppercase text-muted">
+              READING CONTRACT STATE...
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Projects I've Listed */}
-            <section className="space-y-4">
-              <h2 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
-                <span className="material-symbols-outlined text-aubergine dark:text-aubergine-mute">engineering</span>
-                Projects I&apos;ve Listed
+            <section className="space-y-6">
+              <h2 className="font-mono text-base text-white uppercase tracking-[2px] border-b border-hairline pb-4">
+                LISTED REPOSITORIES ({listedProjects.length})
               </h2>
 
               {listedProjects.length === 0 ? (
-                <div className="bg-surface dark:bg-surface border border-border-color rounded-2xl p-8 text-center space-y-3">
-                  <span className="material-symbols-outlined text-[40px] text-text-secondary">folder_off</span>
-                  <p className="text-text-secondary font-medium text-sm">No projects listed yet</p>
+                <div className="bg-surface-card border border-hairline rounded-none p-10 text-center space-y-4">
+                  <p className="body-serif text-muted text-sm">No projects registered under this wallet identity.</p>
                   <Link href="/list-project">
-                    <Button variant="secondary" size="sm">List your first project</Button>
+                    <Button variant="secondary" size="sm">LIST FIRST PROJECT</Button>
                   </Link>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="divide-y divide-hairline">
                   {listedProjects.map((p) => (
                     <Link key={p.id.toString()} href={`/projects/${p.id}`}>
-                      <div className="bg-surface dark:bg-surface border border-border-color rounded-2xl p-4 hover:border-aubergine/40 transition-all flex items-center justify-between gap-4 shadow-xs">
-                        <div className="flex items-center gap-3 min-w-0">
+                      <div className="py-5 hover:bg-surface-card px-3 transition-colors flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-4 min-w-0">
                           <ProjectAvatar name={p.name} size="sm" />
                           <div className="min-w-0">
-                            <h3 className="font-bold text-foreground truncate text-base">{p.name}</h3>
-                            <p className="font-mono text-text-secondary text-xs truncate">
+                            <h3 className="font-mono text-sm uppercase tracking-[1.5px] text-white truncate">{p.name}</h3>
+                            <p className="font-mono text-xs text-muted truncate mt-0.5">
                               {p.repoFullName}
                             </p>
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <span className="font-extrabold text-aubergine dark:text-aubergine-mute block text-sm">
+                          <span className="font-mono text-xs text-white uppercase tracking-[1.5px] block">
                             {formatXlm(p.totalRaised)} XLM
                           </span>
-                          <span className="text-text-secondary text-xs">
-                            {p.sponsorCount} sponsor{p.sponsorCount !== 1 ? "s" : ""}
+                          <span className="caption-uppercase text-[10px] text-muted">
+                            {p.sponsorCount} SPONSOR{p.sponsorCount !== 1 ? "S" : ""}
                           </span>
                         </div>
                       </div>
@@ -177,39 +175,37 @@ export default function ActivityPage() {
             </section>
 
             {/* Projects I've Sponsored */}
-            <section className="space-y-4">
-              <h2 className="text-2xl font-extrabold text-foreground flex items-center gap-2">
-                <span className="material-symbols-outlined text-rose-500">favorite</span>
-                Projects I&apos;ve Sponsored
+            <section className="space-y-6">
+              <h2 className="font-mono text-base text-white uppercase tracking-[2px] border-b border-hairline pb-4">
+                SPONSORED REPOSITORIES ({sponsoredEntries.length})
               </h2>
 
               {sponsoredEntries.length === 0 ? (
-                <div className="bg-surface dark:bg-surface border border-border-color rounded-2xl p-8 text-center space-y-3">
-                  <span className="material-symbols-outlined text-[40px] text-text-secondary">volunteer_activism</span>
-                  <p className="text-text-secondary font-medium text-sm">No sponsorships yet</p>
+                <div className="bg-surface-card border border-hairline rounded-none p-10 text-center space-y-4">
+                  <p className="body-serif text-muted text-sm">No sponsorship contributions recorded yet.</p>
                   <Link href="/explore">
-                    <Button variant="secondary" size="sm">Explore projects to sponsor</Button>
+                    <Button variant="secondary" size="sm">EXPLORE REPOSITORIES</Button>
                   </Link>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="divide-y divide-hairline">
                   {sponsoredEntries.map((s) => (
                     <Link key={s.id.toString()} href={`/projects/${s.projectId}`}>
-                      <div className="bg-surface dark:bg-surface border border-border-color rounded-2xl p-4 hover:border-aubergine/40 transition-all flex items-center justify-between gap-4 shadow-xs">
-                        <div className="flex items-center gap-3 min-w-0">
+                      <div className="py-5 hover:bg-surface-card px-3 transition-colors flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-4 min-w-0">
                           <ProjectAvatar name={s.projectName || "Project"} size="sm" />
                           <div className="min-w-0">
-                            <h3 className="font-bold text-foreground truncate text-base">{s.projectName}</h3>
-                            <p className="font-mono text-text-secondary text-xs truncate">
+                            <h3 className="font-mono text-sm uppercase tracking-[1.5px] text-white truncate">{s.projectName}</h3>
+                            <p className="font-mono text-xs text-muted truncate mt-0.5">
                               {s.repoFullName}
                             </p>
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <span className="font-extrabold text-aubergine dark:text-aubergine-mute block text-sm">
+                          <span className="font-mono text-xs text-white uppercase tracking-[1.5px] block">
                             +{formatXlm(s.amount)} XLM
                           </span>
-                          <span className="text-text-secondary text-xs">
+                          <span className="caption-uppercase text-[10px] text-muted">
                             {new Date(Number(s.timestamp) * 1000).toLocaleDateString()}
                           </span>
                         </div>

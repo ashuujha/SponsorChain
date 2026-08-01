@@ -205,12 +205,12 @@ export default function ProjectDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-40 gap-4">
-        <span className="animate-spin material-symbols-outlined text-[40px] text-aubergine dark:text-aubergine-mute">
+      <div className="flex flex-col items-center justify-center py-40 gap-4 bg-black min-h-screen">
+        <span className="animate-spin material-symbols-outlined text-[40px] text-white">
           progress_activity
         </span>
-        <p className="font-semibold text-text-secondary text-base">
-          Reading from contract state...
+        <p className="caption-uppercase text-muted">
+          READING CONTRACT STATE...
         </p>
       </div>
     );
@@ -218,12 +218,12 @@ export default function ProjectDetailPage() {
 
   if (notFound) {
     return (
-      <div className="max-w-md mx-auto py-20 text-center space-y-4">
-        <span className="material-symbols-outlined text-[48px] text-text-secondary">search_off</span>
-        <h3 className="font-bold text-2xl text-foreground">Project not found</h3>
-        <p className="text-text-secondary text-sm">This project may have been removed.</p>
+      <div className="max-w-md mx-auto py-24 text-center space-y-4 bg-black min-h-screen text-white">
+        <span className="material-symbols-outlined text-[48px] text-muted">search_off</span>
+        <h3 className="display-md text-2xl text-white">PROJECT NOT FOUND</h3>
+        <p className="body-serif text-muted text-sm">This project may have been removed.</p>
         <Link href="/explore">
-          <Button size="lg">Browse Projects</Button>
+          <Button size="lg">EXPLORE PROJECTS</Button>
         </Link>
       </div>
     );
@@ -232,104 +232,99 @@ export default function ProjectDetailPage() {
   if (!project) return null;
 
   return (
-    <div className="pb-16 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto pt-6 relative">
+    <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto pt-12 relative bg-black min-h-screen text-white">
       <Link
         href="/explore"
-        className="inline-flex items-center gap-1.5 text-text-secondary hover:text-link-blue font-semibold text-sm transition-colors mb-6"
+        className="bugatti-link inline-flex items-center gap-2 mb-8"
       >
-        <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-        Back to Explore
+        &larr; BACK TO EXPLORE
       </Link>
 
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-12">
         {/* Main column */}
-        <div className="flex-grow space-y-8 max-w-4xl">
+        <div className="flex-grow space-y-12 max-w-4xl">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-6 border-b border-hairline pb-8">
             <ProjectAvatar name={project.name} size="lg" />
-            <div className="space-y-1">
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
+            <div className="space-y-2">
+              <h1 className="display-lg text-3xl sm:text-4xl md:text-5xl font-normal text-white tracking-[3px] uppercase">
                 {project.name}
               </h1>
               <a
-                className="inline-flex items-center gap-1.5 slacc-link font-mono text-sm"
+                className="font-mono text-xs text-muted hover:text-white uppercase tracking-[2px] inline-flex items-center gap-2"
                 href={`https://github.com/${project.repoFullName}`}
                 target="_blank"
                 rel="noreferrer"
               >
-                <span className="material-symbols-outlined text-[16px]">terminal</span>
-                {project.repoFullName}
+                <span>REPOSITORY:</span>
+                <span className="text-white underline">{project.repoFullName}</span>
               </a>
             </div>
           </div>
 
-          <p className="text-lg text-foreground leading-relaxed max-w-3xl">
+          <p className="body-serif text-lg md:text-xl text-body leading-relaxed max-w-3xl">
             {project.description}
           </p>
 
-          {/* Slacc Statistics Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-surface dark:bg-surface p-6 rounded-2xl border border-border-color flex flex-col justify-between h-36 shadow-xs">
-              <span className="text-text-secondary font-bold text-xs uppercase tracking-widest">
-                Total Raised
-              </span>
-              <span className="display-stat text-4xl font-extrabold">
+          {/* Bugatti Vehicle Spec Cells */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 py-6 border-y border-hairline">
+            <div className="space-y-1">
+              <div className="caption-uppercase text-muted">TOTAL RAISED</div>
+              <div className="display-md text-3xl font-normal text-white tracking-[2px]">
                 {formatXlm(project.totalRaised)} XLM
-              </span>
+              </div>
             </div>
 
-            <div className="bg-surface dark:bg-surface p-6 rounded-2xl border border-border-color flex flex-col justify-between h-36 shadow-xs">
-              <span className="text-text-secondary font-bold text-xs uppercase tracking-widest">
-                Sponsors
-              </span>
-              <span className="display-stat text-4xl font-extrabold">
+            <div className="space-y-1">
+              <div className="caption-uppercase text-muted">SPONSORS</div>
+              <div className="display-md text-3xl font-normal text-white tracking-[2px]">
                 {project.sponsorCount}
-              </span>
+              </div>
             </div>
 
-            <div className="bg-surface dark:bg-surface p-6 rounded-2xl border border-border-color flex flex-col justify-between h-36 shadow-xs">
-              <span className="text-text-secondary font-bold text-xs uppercase tracking-widest">
-                Owner
-              </span>
-              <span className="font-mono text-sm font-bold text-foreground truncate">
+            <div className="space-y-1">
+              <div className="caption-uppercase text-muted">OWNER WALLET</div>
+              <div className="font-mono text-sm font-normal text-white tracking-[1.5px] truncate pt-2">
                 {formatPublicKey(project.owner)}
-              </span>
+              </div>
             </div>
           </div>
 
-          {/* Sponsorships */}
-          <section className="space-y-4 pt-4">
-            <h3 className="text-2xl font-extrabold text-foreground">Sponsorship Activity</h3>
-            <div className="bg-surface dark:bg-surface rounded-2xl border border-border-color overflow-hidden shadow-xs">
+          {/* Sponsorship Activity */}
+          <section className="space-y-6 pt-4">
+            <h3 className="font-mono text-base text-white uppercase tracking-[2px]">
+              SPONSORSHIP TRANSACTIONS
+            </h3>
+            <div className="bg-surface-card border border-hairline rounded-none overflow-hidden">
               {sponsorships.length === 0 ? (
-                <div className="p-10 text-center text-text-secondary text-sm">
-                  No sponsorships yet — be the first to support this repository!
+                <div className="p-12 text-center body-serif text-muted text-sm">
+                  No sponsorships recorded yet.
                 </div>
               ) : (
-                <div className="divide-y divide-border-color/60">
+                <div className="divide-y divide-hairline">
                   {sponsorships.map((s) => {
                     const shortSponsor = `${s.sponsor.slice(0, 6)}...${s.sponsor.slice(-6)}`;
                     return (
                       <div
                         key={s.id.toString()}
-                        className="flex items-center justify-between p-4 hover:bg-canvas-cream/50 dark:hover:bg-surface-container/50 transition-colors"
+                        className="flex items-center justify-between p-5 hover:bg-surface-elevated transition-colors"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-canvas-lavender dark:bg-surface-container flex items-center justify-center border border-border-color/40">
-                            <span className="material-symbols-outlined text-aubergine dark:text-aubergine-mute text-[20px]">person</span>
+                        <div className="flex items-center gap-4">
+                          <div className="w-9 h-9 border border-hairline flex items-center justify-center font-serif text-white">
+                            S
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-bold text-foreground font-mono text-sm">
+                            <span className="font-mono text-xs text-white uppercase tracking-[1.5px]">
                               {shortSponsor}
                             </span>
-                            <span className="text-text-secondary text-xs">
+                            <span className="caption-uppercase text-[10px] text-muted mt-0.5">
                               {new Date(Number(s.timestamp) * 1000).toLocaleDateString()}
                             </span>
                           </div>
                         </div>
 
                         <div className="flex flex-col items-end gap-1">
-                          <span className="font-extrabold text-aubergine dark:text-aubergine-mute text-base">
+                          <span className="font-mono text-sm text-white uppercase tracking-[1.5px]">
                             {formatXlm(s.amount)} XLM
                           </span>
                           {s.txHash && (
@@ -337,10 +332,9 @@ export default function ProjectDetailPage() {
                               href={`https://stellar.expert/explorer/testnet/tx/${s.txHash}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-[11px] font-mono slacc-link"
+                              className="bugatti-link text-[10px]"
                             >
-                              {s.txHash.slice(0, 8)}…
-                              <span className="material-symbols-outlined text-[11px]">open_in_new</span>
+                              EXPLORER TX &rarr;
                             </a>
                           )}
                         </div>
@@ -354,44 +348,41 @@ export default function ProjectDetailPage() {
         </div>
 
         {/* Sponsor panel */}
-        <div className="lg:w-84 shrink-0">
+        <div className="lg:w-88 shrink-0">
           <div className="lg:sticky lg:top-24 space-y-6">
-            <div className="bg-surface dark:bg-surface p-6 rounded-2xl border border-border-color space-y-6 shadow-md">
-              <h3 className="text-xl font-extrabold text-foreground">
-                Sponsor this project
+            <div className="bg-surface-card border border-hairline rounded-none p-8 space-y-8">
+              <h3 className="font-mono text-base text-white uppercase tracking-[2px]">
+                SPONSOR REPOSITORY
               </h3>
 
               {sponsor.state.status === "idle" && (
                 <>
-                  <div className="relative">
+                  <div className="space-y-2">
+                    <label className="caption-uppercase text-muted block">AMOUNT (XLM)</label>
                     <input
-                      className="w-full bg-canvas-cream dark:bg-surface-container text-foreground border border-border-color rounded-2xl py-3.5 px-4 focus:ring-2 focus:ring-aubergine text-lg font-bold outline-none"
+                      className="bugatti-input w-full text-lg"
                       placeholder="0.00"
                       type="number"
                       value={sponsor.amount}
                       onChange={(e) => sponsor.setAmount(e.target.value)}
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 font-mono font-bold text-text-secondary text-sm">
-                      XLM
-                    </span>
                   </div>
 
                   <Button
                     onClick={handleSponsorClick}
-                    className="w-full shadow-md"
+                    className="w-full"
+                    size="lg"
                   >
-                    <span className="material-symbols-outlined mr-1">bolt</span>
-                    {wallet.isConnected ? "Sponsor with Wallet" : "Connect Wallet to Sponsor"}
+                    {wallet.isConnected ? "SPONSOR WITH WALLET" : "CONNECT WALLET"}
                   </Button>
 
-                  <p className="text-text-secondary text-xs text-center leading-relaxed">
-                    SponsorChain runs on Stellar Testnet. No real funds required.
+                  <p className="caption-uppercase text-[10px] text-muted text-center leading-relaxed">
+                    STELLAR TESTNET FACILITY // NO REAL FUNDS REQUIRED
                   </p>
 
                   {ownerKeyError && (
-                    <div className="p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-xl text-xs text-amber-900 dark:text-amber-300 leading-snug flex gap-2">
-                      <span className="material-symbols-outlined text-[18px] shrink-0">warning</span>
-                      <span>{ownerKeyError}</span>
+                    <div className="p-4 bg-surface-elevated border border-hairline-strong text-xs text-white font-mono leading-relaxed">
+                      {ownerKeyError}
                     </div>
                   )}
                 </>
@@ -400,53 +391,51 @@ export default function ProjectDetailPage() {
               {/* Review */}
               {sponsor.state.status === "review" && (
                 <div className="space-y-6">
-                  <div className="p-4 bg-canvas-cream dark:bg-surface-container rounded-2xl text-center space-y-1 border border-border-color">
-                    <span className="text-text-secondary text-xs font-bold uppercase tracking-widest block">
-                      Sponsorship Amount
+                  <div className="p-6 bg-black border border-hairline text-center space-y-2">
+                    <span className="caption-uppercase text-muted block">
+                      SPONSORSHIP AMOUNT
                     </span>
-                    <span className="display-stat text-3xl font-extrabold">
+                    <span className="display-md text-3xl font-normal text-white tracking-[2px]">
                       {sponsor.amount} XLM
                     </span>
                   </div>
 
-                  <div className="space-y-3 text-sm font-semibold">
-                    <div className="flex justify-between border-b border-border-color/60 pb-2">
-                      <span className="text-text-secondary">To Project</span>
-                      <span className="text-foreground">{project.name}</span>
+                  <div className="space-y-3 font-mono text-xs text-white">
+                    <div className="flex justify-between border-b border-hairline pb-2">
+                      <span className="text-muted">REPOS</span>
+                      <span>{project.name}</span>
                     </div>
                     <div className="flex justify-between pb-2">
-                      <span className="text-text-secondary">Owner Wallet</span>
-                      <span className="font-mono text-foreground">
-                        {formatPublicKey(project.owner)}
-                      </span>
+                      <span className="text-muted">OWNER WALLET</span>
+                      <span>{formatPublicKey(project.owner)}</span>
                     </div>
                   </div>
 
-                  <Button onClick={handleConfirmSponsor} className="w-full shadow-md">
-                    Sign &amp; Send Payment
+                  <Button onClick={handleConfirmSponsor} className="w-full" size="lg">
+                    SIGN &amp; SUBMIT PAYMENT
                   </Button>
                   <button
                     onClick={sponsor.reset}
-                    className="w-full text-text-secondary text-sm font-medium hover:text-foreground text-center"
+                    className="w-full font-mono text-xs uppercase tracking-[2px] text-muted hover:text-white text-center"
                   >
-                    Cancel
+                    CANCEL
                   </button>
                 </div>
               )}
 
               {/* Pending */}
               {sponsor.state.status === "pending" && (
-                <div className="py-10 flex flex-col items-center gap-4 text-center">
-                  <span className="animate-spin material-symbols-outlined text-[48px] text-aubergine dark:text-aubergine-mute">
+                <div className="py-12 flex flex-col items-center gap-4 text-center">
+                  <span className="animate-spin material-symbols-outlined text-[40px] text-white">
                     progress_activity
                   </span>
-                  <p className="font-bold text-base text-foreground">
+                  <p className="caption-uppercase text-white">
                     {sponsor.state.txHash
-                      ? "Confirming on-chain..."
-                      : "Please sign in your wallet..."}
+                      ? "CONFIRMING ON-CHAIN..."
+                      : "PLEASE SIGN TRANSACTION..."}
                   </p>
                   {sponsor.state.txHash && (
-                    <div className="w-full p-2.5 bg-canvas-cream dark:bg-surface-container text-foreground rounded-xl font-mono text-xs truncate">
+                    <div className="w-full p-3 bg-black border border-hairline font-mono text-[10px] text-muted truncate">
                       TX: {sponsor.state.txHash}
                     </div>
                   )}
@@ -456,28 +445,27 @@ export default function ProjectDetailPage() {
               {/* Success */}
               {sponsor.state.status === "success" && (
                 <div className="space-y-6 text-center">
-                  <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto text-emerald-600">
-                    <span className="material-symbols-outlined text-[36px]">verified</span>
+                  <div className="w-12 h-12 border border-white rounded-full flex items-center justify-center mx-auto text-white">
+                    <span className="material-symbols-outlined text-[24px]">done</span>
                   </div>
-                  <h4 className="font-extrabold text-xl text-foreground">
-                    Sponsored {sponsor.amount} XLM!
+                  <h4 className="font-mono text-base uppercase tracking-[2px] text-white">
+                    SPONSORED {sponsor.amount} XLM
                   </h4>
-                  <p className="text-text-secondary text-sm">
-                    Your contribution is live on the Stellar testnet.
+                  <p className="body-serif text-muted text-sm">
+                    Transaction verified on the Stellar testnet ledger.
                   </p>
                   {sponsor.state.txHash && (
                     <a
                       href={`https://stellar.expert/explorer/testnet/tx/${sponsor.state.txHash}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 bg-canvas-cream dark:bg-surface-container px-4 py-2 rounded-full font-mono text-xs text-foreground hover:bg-canvas-lavender"
+                      className="bugatti-link inline-block"
                     >
-                      View on Explorer
-                      <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                      VIEW ON EXPLORER &rarr;
                     </a>
                   )}
                   <Button onClick={sponsor.reset} className="w-full">
-                    Done
+                    DONE
                   </Button>
                 </div>
               )}
@@ -485,15 +473,15 @@ export default function ProjectDetailPage() {
               {/* Failed */}
               {sponsor.state.status === "failed" && (
                 <div className="space-y-6">
-                  <div className="p-4 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-300 text-sm rounded-2xl border border-rose-200 dark:border-rose-900 font-medium leading-relaxed">
+                  <div className="p-4 bg-black border border-hairline-strong text-xs font-mono text-white leading-relaxed">
                     {sponsor.state.errorMessage}
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex gap-4">
                     <Button variant="secondary" onClick={sponsor.reset} className="flex-1">
-                      Cancel
+                      CANCEL
                     </Button>
                     <Button onClick={handleConfirmSponsor} className="flex-1">
-                      Try Again
+                      RETRY
                     </Button>
                   </div>
                 </div>

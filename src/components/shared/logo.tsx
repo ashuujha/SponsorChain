@@ -8,22 +8,16 @@ export function BrandLogo({ className = "w-8 h-8" }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      <rect width="36" height="36" rx="10" className="fill-aubergine dark:fill-aubergine-press" />
-      {/* Slacc-inspired P2P Bridge Icon */}
+      {/* Bugatti Macaron Oval Badge */}
+      <ellipse cx="18" cy="18" rx="17" ry="13" fill="#000000" stroke="#ffffff" strokeWidth="1.5" />
+      {/* EB / P2P Interlocking Monogram */}
       <path
-        d="M10 18C10 13.5817 13.5817 10 18 10C22.4183 10 26 13.5817 26 18"
-        stroke="white"
-        strokeWidth="3.5"
-        strokeLinecap="round"
+        d="M12 13H21C23 13 24 14 24 15.5C24 17 22.5 18 20.5 18M12 18H22C24 18 25 19 25 20.5C25 22 23.5 23 21.5 23H12"
+        stroke="#ffffff"
+        strokeWidth="1.5"
+        strokeLinecap="square"
       />
-      <circle cx="11" cy="24" r="3" fill="white" />
-      <circle cx="25" cy="24" r="3" fill="white" />
-      <path
-        d="M11 24H25"
-        stroke="white"
-        strokeWidth="2.5"
-        strokeDasharray="2 2"
-      />
+      <line x1="12" y1="13" x2="12" y2="23" stroke="#ffffff" strokeWidth="1.5" />
     </svg>
   );
 }

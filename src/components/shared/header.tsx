@@ -11,52 +11,49 @@ export function Header() {
   const toggleDrawer = useUIStore((state) => state.toggleDrawer);
 
   return (
-    <header className="fixed top-0 w-full bg-surface/90 backdrop-blur-md z-40 border-b border-border-color transition-colors">
-      <div className="max-w-container-max mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-18 py-3">
-        <div className="flex items-center gap-4">
+    <header className="fixed top-0 w-full bg-black/90 backdrop-blur-md z-40 border-b border-hairline transition-colors h-[56px] flex items-center">
+      <div className="max-w-container-max mx-auto px-4 sm:px-6 lg:px-8 w-full flex justify-between items-center">
+        {/* Left: Navigation / Menu */}
+        <div className="flex items-center gap-6">
           <button
-            className="p-2 hover:bg-canvas-cream dark:hover:bg-surface-container rounded-full transition-colors md:hidden text-foreground"
+            className="p-1 hover:text-white transition-colors md:hidden text-muted"
             onClick={toggleDrawer}
             aria-label="Toggle Navigation Menu"
           >
-            <span className="material-symbols-outlined text-[22px]">menu</span>
+            <span className="material-symbols-outlined text-[20px]">menu</span>
           </button>
 
-          <Link href="/" className="flex items-center gap-2.5 mr-4 group">
-            <BrandLogo className="w-8 h-8 group-hover:scale-105 transition-transform" />
-            <span className="font-extrabold text-2xl text-aubergine dark:text-foreground tracking-tight">
-              SponsorChain
-            </span>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-6 ml-4">
-            <Link
-              href="/"
-              className="text-foreground/80 hover:text-link-blue font-semibold text-[15px] transition-colors"
-            >
-              Home
-            </Link>
+          <nav className="hidden md:flex items-center gap-6">
             <Link
               href="/explore"
-              className="text-foreground/80 hover:text-link-blue font-semibold text-[15px] transition-colors"
+              className="font-mono text-xs text-muted hover:text-white uppercase tracking-[2px] transition-colors"
             >
               Explore
             </Link>
             <Link
               href="/activity"
-              className="text-foreground/80 hover:text-link-blue font-semibold text-[15px] transition-colors"
+              className="font-mono text-xs text-muted hover:text-white uppercase tracking-[2px] transition-colors"
             >
-              My Activity
+              Activity
             </Link>
           </nav>
         </div>
 
+        {/* Center: Bugatti Display Wordmark */}
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <BrandLogo className="w-5 h-5 hidden sm:block" />
+          <span className="font-mono text-xs sm:text-sm text-white uppercase tracking-[6px] font-normal transition-opacity group-hover:opacity-80">
+            SPONSORCHAIN
+          </span>
+        </Link>
+
+        {/* Right: Actions & Theme Toggle */}
         <div className="flex items-center gap-3">
           <ThemeToggle />
           
           <Link href="/list-project" className="hidden sm:inline-block">
             <Button variant="default" size="sm">
-              List a Project
+              List Project
             </Button>
           </Link>
           <Link href="/wallet">

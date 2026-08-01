@@ -14,101 +14,97 @@ export default function WalletConnectPage() {
   };
 
   return (
-    <div className="flex-grow flex flex-col items-center w-full min-h-screen">
+    <div className="flex-grow flex flex-col items-center w-full min-h-screen bg-black text-white">
       {/* Centered Onboarding Card */}
-      <div className="flex-grow w-full flex items-center justify-center p-6 py-12">
-        <div className="bg-surface dark:bg-surface border border-border-color rounded-3xl w-full max-w-[520px] shadow-lg overflow-hidden flex flex-col">
+      <div className="flex-grow w-full flex items-center justify-center p-6 py-16">
+        <div className="bg-surface-card border border-hairline rounded-none w-full max-w-[520px] shadow-lg overflow-hidden flex flex-col">
           {/* Main Action Container */}
-          <div className="p-8 sm:p-10 flex flex-col items-center text-center">
+          <div className="p-8 sm:p-12 flex flex-col items-center text-center">
             {/* Icon Area */}
-            <div className="w-16 h-16 bg-canvas-cream dark:bg-surface-container rounded-full flex items-center justify-center mb-6 border border-border-color shadow-xs">
-              <span className="material-symbols-outlined text-aubergine dark:text-aubergine-mute text-[32px]">account_balance_wallet</span>
+            <div className="w-14 h-14 border border-hairline flex items-center justify-center mb-6">
+              <span className="material-symbols-outlined text-white text-[28px]">account_balance_wallet</span>
             </div>
 
             {/* Headline & Subtext */}
-            <h1 className="text-3xl font-extrabold text-foreground mb-4 tracking-tight">
-              Connect your Stellar wallet
+            <h1 className="display-md text-2xl sm:text-3xl text-white mb-4 tracking-[2px] font-normal">
+              CONNECT STELLAR WALLET
             </h1>
-            <p className="text-text-secondary text-base mb-8 leading-relaxed">
+            <p className="body-serif text-muted text-base mb-8 leading-relaxed">
               Your Stellar wallet IS your identity on SponsorChain. Connect Freighter, Albedo, or any Stellar wallet to sign in and start sponsoring.
             </p>
 
             {/* Error notifications */}
             {(wallet.connectionError || wallet.fundingError) && (
-              <div className="w-full mb-6 p-4 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-300 text-sm rounded-2xl border border-rose-200 dark:border-rose-900 text-left font-medium">
+              <div className="w-full mb-6 p-4 bg-black border border-hairline-strong text-xs font-mono text-white text-left leading-relaxed">
                 <div>{wallet.connectionError || wallet.fundingError}</div>
               </div>
             )}
 
             {/* Success Friendbot Notification */}
             {wallet.hasFunded && (
-              <div className="w-full mb-6 p-4 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 text-sm rounded-2xl border border-emerald-500/20 text-left font-semibold flex items-center gap-2">
-                <span className="material-symbols-outlined text-[20px]">verified</span>
-                <span>Funded via Friendbot: 10,000 test XLM</span>
+              <div className="w-full mb-6 p-4 bg-black border border-white text-xs font-mono text-white text-left uppercase tracking-[1.5px] flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">done</span>
+                <span>FUNDED VIA FRIENDBOT: 10,000 TEST XLM</span>
               </div>
             )}
 
             {/* Primary Action Button */}
             {wallet.isInitializing ? (
               <Button disabled className="w-full">
-                <span className="animate-spin material-symbols-outlined mr-2">progress_activity</span>
-                Verifying setup...
+                <span className="animate-spin material-symbols-outlined mr-2 text-[18px]">progress_activity</span>
+                VERIFYING SETUP...
               </Button>
             ) : !wallet.isConnected ? (
-              <Button onClick={wallet.connect} size="lg" className="w-full shadow-md">
-                <span className="material-symbols-outlined mr-2">account_balance_wallet</span>
-                Connect Wallet
+              <Button onClick={wallet.connect} size="lg" className="w-full">
+                CONNECT WALLET
               </Button>
             ) : wallet.isFunding ? (
               <Button disabled className="w-full">
-                <span className="animate-spin material-symbols-outlined mr-2">progress_activity</span>
-                Funding account via Friendbot...
+                <span className="animate-spin material-symbols-outlined mr-2 text-[18px]">progress_activity</span>
+                FUNDING ACCOUNT VIA FRIENDBOT...
               </Button>
             ) : (
               <Button
                 onClick={wallet.disconnect}
                 variant="outline"
                 size="lg"
-                className="w-full border-rose-500 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                className="w-full border-rose-500 text-rose-400 hover:bg-rose-950/30"
               >
-                <span className="material-symbols-outlined mr-2">check_circle</span>
-                Disconnect Wallet
+                DISCONNECT WALLET
               </Button>
             )}
 
             {/* Info Section */}
-            <div className="mt-8 w-full bg-canvas-cream dark:bg-surface-container rounded-2xl p-4 flex gap-3 text-left border border-border-color">
-              <span className="material-symbols-outlined text-aubergine dark:text-aubergine-mute text-[24px] shrink-0">info</span>
-              <div>
-                <p className="text-text-secondary text-xs leading-relaxed">
-                  <strong className="text-foreground">New to Stellar?</strong> We automatically fund your testnet account with 10,000 test XLM via Friendbot — no real funds needed.
-                </p>
-              </div>
+            <div className="mt-8 w-full bg-black border border-hairline p-4 text-left space-y-1">
+              <span className="caption-uppercase text-white">NEW TO STELLAR?</span>
+              <p className="body-serif text-muted text-xs leading-relaxed">
+                We automatically fund your testnet account with 10,000 test XLM via Friendbot — no real funds needed.
+              </p>
             </div>
           </div>
 
           {/* Hairline Divider */}
           <div className="px-8 flex items-center gap-4">
-            <div className="flex-1 h-[1px] bg-border-color"></div>
-            <span className="text-xs text-text-secondary uppercase tracking-widest shrink-0 font-bold">Connected Status</span>
-            <div className="flex-1 h-[1px] bg-border-color"></div>
+            <div className="flex-1 h-[1px] bg-hairline"></div>
+            <span className="caption-uppercase text-muted">CONNECTED STATUS</span>
+            <div className="flex-1 h-[1px] bg-hairline"></div>
           </div>
 
           {/* Connected Preview */}
           <div className="p-8 pt-6">
-            <div className="bg-canvas-cream dark:bg-surface-container rounded-2xl p-4 border border-border-color space-y-3">
+            <div className="bg-black border border-hairline p-4 space-y-3 font-mono text-xs">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 {/* Wallet Chip */}
-                <div className="bg-surface border border-border-color px-3 py-1.5 rounded-full flex items-center justify-between gap-2">
-                  <code className="font-mono text-xs text-aubergine dark:text-aubergine-mute font-bold truncate">
+                <div className="border border-hairline px-3 py-1.5 flex items-center justify-between gap-2">
+                  <code className="font-mono text-xs text-white uppercase tracking-[1.5px] font-normal truncate">
                     {wallet.isConnected && wallet.publicKey
                       ? `${wallet.publicKey.slice(0, 6)}...${wallet.publicKey.slice(-6)}`
-                      : "Not connected"}
+                      : "NOT CONNECTED"}
                   </code>
                   {wallet.isConnected && wallet.publicKey && (
                     <button
                       onClick={handleCopy}
-                      className="material-symbols-outlined text-text-secondary hover:text-foreground text-[16px] cursor-pointer"
+                      className="material-symbols-outlined text-muted hover:text-white text-[16px] cursor-pointer"
                       aria-label="Copy public key"
                     >
                       content_copy
@@ -118,17 +114,15 @@ export default function WalletConnectPage() {
 
                 {/* Balance Status Chip */}
                 {wallet.isConnected && wallet.balance && (
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    Balance: {parseFloat(wallet.balance).toLocaleString()} XLM
+                  <div className="caption-uppercase text-xs text-white border border-hairline px-3 py-1.5">
+                    BALANCE: {parseFloat(wallet.balance).toLocaleString()} XLM
                   </div>
                 )}
               </div>
 
               {wallet.isConnected && (
-                <div className="flex items-center gap-1.5 text-xs text-text-secondary justify-center pt-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  <span>Connected — ready to sponsor and list projects</span>
+                <div className="caption-uppercase text-[10px] text-muted text-center pt-1">
+                  CONNECTED // READY TO SPONSOR AND LIST REPOSITORIES
                 </div>
               )}
             </div>

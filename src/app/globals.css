@@ -1,92 +1,126 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Geist:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #1d1d1d;
-  --surface: #ffffff;
-  --surface-container: #f4ede4;
-  --surface-hover: #f9f0ff;
-  --border-color: #e6e6e6;
-  --text-primary: #1d1d1d;
-  --text-secondary: #696969;
-  --accent-green: #007a5a;
-  --primary-bg: #4a154b;
-  --primary-text: #ffffff;
-  --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
+  --background: #000000;
+  --foreground: #ffffff;
+  --surface: #141414;
+  --surface-container: #0d0d0d;
+  --surface-hover: #1f1f1f;
+  --border-color: #262626;
+  --text-primary: #ffffff;
+  --text-secondary: #999999;
+  --link-color: #c3d9f3;
+  --primary-bg: #ffffff;
+  --primary-text: #000000;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif: 'Cormorant Garamond', Garamond, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 .dark {
-  --background: #120914;
-  --foreground: #fcf8fd;
-  --surface: #1d1022;
-  --surface-container: #28142e;
-  --surface-hover: #34193c;
-  --border-color: #3d1a45;
-  --text-primary: #fcf8fd;
-  --text-secondary: #d9bdde;
-  --accent-green: #2ecc71;
-  --primary-bg: #a83bb0;
-  --primary-text: #ffffff;
+  --background: #000000;
+  --foreground: #ffffff;
+  --surface: #141414;
+  --surface-container: #0d0d0d;
+  --surface-hover: #1f1f1f;
+  --border-color: #262626;
+  --text-primary: #ffffff;
+  --text-secondary: #999999;
+  --link-color: #c3d9f3;
+  --primary-bg: #ffffff;
+  --primary-text: #000000;
 }
 
 @layer base {
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: var(--font-inter);
+    font-family: var(--font-sans);
     min-height: 100vh;
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 }
 
 @layer utilities {
-  /* Slacc Pastel-Mesh Atmospheric Gradient Wash */
-  .pastel-mesh-bg {
-    background-color: #ffffff;
-    background-image: 
-      radial-gradient(at 10% 15%, rgba(255, 240, 230, 0.8) 0px, transparent 55%),
-      radial-gradient(at 90% 10%, rgba(249, 240, 255, 0.85) 0px, transparent 50%),
-      radial-gradient(at 50% 85%, rgba(235, 247, 240, 0.7) 0px, transparent 60%);
-  }
-
-  .dark .pastel-mesh-bg {
-    background-color: #120914;
-    background-image: 
-      radial-gradient(at 10% 15%, rgba(74, 21, 75, 0.4) 0px, transparent 55%),
-      radial-gradient(at 90% 10%, rgba(97, 31, 105, 0.35) 0px, transparent 50%),
-      radial-gradient(at 50% 85%, rgba(30, 15, 35, 0.6) 0px, transparent 60%);
-  }
-
-  /* Slacc Typography Helpers */
-  .display-hero {
+  /* Bugatti Typography Trinity */
+  .display-xl {
     font-size: 64px;
-    line-height: 1.12;
-    font-weight: 800;
-    letter-spacing: -0.768px;
+    line-height: 1.1;
+    font-weight: 400;
+    letter-spacing: 4px;
+    text-transform: uppercase;
   }
 
-  .display-section {
+  .display-lg {
     font-size: 48px;
     line-height: 1.15;
-    font-weight: 700;
-    letter-spacing: -0.6px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
   }
 
-  .display-stat {
-    font-size: 50px;
-    line-height: 1.12;
-    font-weight: 800;
-    letter-spacing: -0.6px;
-    color: var(--primary-bg);
+  .display-md {
+    font-size: 32px;
+    line-height: 1.2;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .bugatti-wordmark {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+  }
+
+  .caption-uppercase {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .body-serif {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    line-height: 1.55;
+    font-weight: 400;
+    color: #cccccc;
+  }
+
+  .body-serif-sm {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 400;
+    color: #cccccc;
+  }
+
+  /* Bugatti Ice-Blue Link Token */
+  .bugatti-link {
+    color: #c3d9f3;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: underline;
+    transition: opacity 0.15s ease;
+  }
+  .bugatti-link:hover {
+    opacity: 0.8;
   }
 
   /* Material Symbols */
   .material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
     display: inline-block;
     line-height: 1;
     text-transform: none;
@@ -104,62 +138,26 @@
     scrollbar-width: none;
   }
 
-  /* Slacc Inline Link Color */
-  .slacc-link {
-    color: #1264a3;
-    font-weight: 500;
-    transition: color 0.15s ease;
+  /* Custom Underline Text Input */
+  .bugatti-input {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #3a3a3a;
+    border-radius: 0px;
+    padding: 12px 0;
+    color: #ffffff;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    letter-spacing: 1px;
+    outline: none;
+    transition: border-color 0.2s ease;
   }
-  .slacc-link:hover {
-    color: #3860be;
-    text-decoration: underline;
-  }
-  .dark .slacc-link {
-    color: #58a6ff;
-  }
-  .dark .slacc-link:hover {
-    color: #79c0ff;
+  .bugatti-input:focus {
+    border-bottom-color: #ffffff;
   }
 
-  /* Custom Typography Utility Mappings */
-  .font-body-sm, .text-body-sm {
-    font-size: 14px;
-    line-height: 1.55;
-    font-weight: 400;
-  }
-  .font-body-lg, .text-body-lg {
-    font-size: 18px;
-    line-height: 1.55;
-    font-weight: 400;
-    letter-spacing: -0.0216px;
-  }
-  .font-label-caps, .text-label-caps {
-    font-size: 12px;
-    line-height: 1;
-    letter-spacing: 0.96px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-  .font-headline-md, .text-headline-md {
-    font-size: 22px;
-    line-height: 1.4;
-    font-weight: 700;
-  }
-  .font-headline-lg, .text-headline-lg {
-    font-size: 32px;
-    line-height: 1.25;
-    letter-spacing: -0.256px;
-    font-weight: 700;
-  }
-  .font-headline-lg-mobile, .text-headline-lg-mobile {
-    font-size: 28px;
-    line-height: 1.2;
-    letter-spacing: -0.3px;
-    font-weight: 700;
-  }
-  .font-mono-code, .text-mono-code {
-    font-size: 13px;
-    line-height: 1.4;
-    font-weight: 500;
+  /* Hairline Divider Utility */
+  .hairline-divider {
+    border-bottom: 1px solid #262626;
   }
 }
