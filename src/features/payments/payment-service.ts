@@ -5,8 +5,23 @@ import {
   Networks,
   Operation,
   TransactionBuilder,
+  StrKey,
 } from "stellar-sdk";
 import { fetchAccountFromHorizon, HorizonAccountResponse } from "../wallet/wallet-service";
+
+/**
+ * Validates a Stellar public key using the canonical StrKey check.
+ * Rejects keys that merely look like "G" + 55 chars but have invalid base32 checksums.
+ */
+function assertValidPublicKey(key: string, label: string): void {
+  if (!StrKey.isValidEd25519PublicKey(key)) {
+    throw new Error(
+      `Invalid ${label} public key. Expected a 56-character Stellar StrKey (starts with "G"). ` +
+      `Received: "${key.slice(0, 8)}…" (length ${key.length}). ` +
+      `Make sure the ${label} has connected a real Stellar wallet.`
+    );
+  }
+}
 
 /**
  * Builds an unsigned Stellar payment transaction envelope (XDR).
@@ -26,12 +41,8 @@ export function buildPaymentTransaction({
   amountXLM: string;
   sequenceNumber: string;
 }): string {
-  if (!sponsorPublicKey || sponsorPublicKey.length !== 56 || !sponsorPublicKey.startsWith("G")) {
-    throw new Error("Invalid sponsor public key format.");
-  }
-  if (!destinationPublicKey || destinationPublicKey.length !== 56 || !destinationPublicKey.startsWith("G")) {
-    throw new Error("Invalid destination public key format.");
-  }
+  assertValidPublicKey(sponsorPublicKey, "sponsor");
+  assertValidPublicKey(destinationPublicKey, "destination (maintainer)");
   if (parseFloat(amountXLM) <= 0) {
     throw new Error("Sponsorship amount must be greater than zero.");
   }

@@ -24,7 +24,7 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@/features/wallet/use-wallet", () => ({
   useWallet: () => ({
-    publicKey: "GD6X4ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF",
+    publicKey: "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE",
     isConnected: true,
     network: "TESTNET",
     balance: "10000.0000000",
@@ -44,7 +44,7 @@ vi.mock("@/features/wallet-session/store", () => ({
   useWalletSessionStore: Object.assign(
     () => ({
       publicKey:
-        "GD6X4ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF",
+        "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE",
       network: "TESTNET",
       connectionError: null,
       isRestoring: false,
@@ -56,7 +56,7 @@ vi.mock("@/features/wallet-session/store", () => ({
     {
       getState: () => ({
         publicKey:
-          "GD6X4ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF",
+          "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE",
         network: "TESTNET",
         connectionError: null,
         isRestoring: false,
@@ -167,7 +167,7 @@ describe("List Project Flow — state transitions", () => {
     expect(screen.getByText("stellar/js-stellar-sdk")).toBeInTheDocument();
     expect(screen.getByText("My Custom SDK")).toBeInTheDocument();
     expect(
-      screen.getByText(/GD6X4A\.\.\.ABCDEF/)
+      screen.getByText(/GDWRIC\.\.\.Q3SE/)
     ).toBeInTheDocument();
 
     // Click "Sign & Submit to Network"

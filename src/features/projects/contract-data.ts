@@ -146,28 +146,37 @@ export function getAllProjects(): ProjectData[] {
 
 /* ── Seed some demo projects for the checkpoint ────────────────── */
 
+// These are real, cryptographically-valid Stellar testnet keypairs generated
+// via Keypair.random() from stellar-sdk. They pass StrKey.isValidEd25519PublicKey()
+// and can be funded via Friendbot. Replace with real maintainer wallets in production.
+//
+// Maintainer A: GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE
+// Maintainer B: GCA2ACE5I25ICOOI3DPTH6U7SA26HY3IHNRFAYU5K76YBI6WCFATIYAK
+const SEED_MAINTAINER_A = "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE";
+const SEED_MAINTAINER_B = "GCA2ACE5I25ICOOI3DPTH6U7SA26HY3IHNRFAYU5K76YBI6WCFATIYAK";
+
 // Seed runs once at import time in non-prod
 if (typeof window !== "undefined" && _projects.size === 0) {
   createMockProject(
-    "GD6X4ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF",
+    SEED_MAINTAINER_A,
     "stellar/js-stellar-sdk",
     "js-stellar-sdk",
     "JavaScript client library for communicating with a Horizon server."
   );
   createMockProject(
-    "GD6X4ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF",
+    SEED_MAINTAINER_A,
     "stellar/soroban-examples",
     "soroban-examples",
     "Essential example contracts for Soroban smart contract development on Stellar."
   );
   createMockProject(
-    "GXYZ9876543210FEDCBA9876543210FEDCBA9876543210FEDCBA98765432",
+    SEED_MAINTAINER_B,
     "stellar/stellar-core",
     "stellar-core",
     "Stellar Core — the reference implementation of the Stellar Consensus Protocol."
   );
   createMockProject(
-    "GXYZ9876543210FEDCBA9876543210FEDCBA9876543210FEDCBA98765432",
+    SEED_MAINTAINER_B,
     "stellar-freighter/freighter",
     "freighter",
     "Freighter is a Stellar wallet browser extension for Chrome, Firefox, and Brave."

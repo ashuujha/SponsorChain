@@ -24,6 +24,9 @@ export default function ProjectDetailPage() {
   const [sponsorships, setSponsorships] = useState<SponsorshipData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  // Set when the project's owner key fails StrKey validation — shown before
+  // the user even enters the review step so they get a clear error message.
+  const [ownerKeyError, setOwnerKeyError] = useState<string | null>(null);
 
   const loadProject = () => {
     setIsLoading(true);
@@ -72,12 +75,35 @@ export default function ProjectDetailPage() {
     return trimmed ? `${whole}.${trimmed}` : `${whole}.0`;
   };
 
-  const handleSponsorClick = () => {
+  /**
+   * DISPLAY ONLY — never use this value in transactions.
+   * Transactions always use the raw project.owner string directly.
+   */
+  const formatPublicKey = (key: string): string =>
+    key.length >= 12 ? `${key.slice(0, 6)}…${key.slice(-6)}` : key;
+
+  const handleSponsorClick = async () => {
     if (!wallet.isConnected) {
       wallet.connect();
       return;
     }
     if (parseFloat(sponsor.amount) <= 0 || isNaN(parseFloat(sponsor.amount))) return;
+
+    // ── Client-side StrKey guard ──────────────────────────────────────────
+    // Validate the destination key NOW, before building any transaction.
+    // This gives a clear, actionable error instead of a cryptic SDK failure.
+    if (project) {
+      const { StrKey } = await import("stellar-sdk");
+      if (!StrKey.isValidEd25519PublicKey(project.owner)) {
+        setOwnerKeyError(
+          "This project's maintainer hasn't connected a valid Stellar wallet yet. " +
+          "The owner address on record is not a valid Stellar public key. " +
+          "Sponsorship cannot proceed until the maintainer updates their wallet."
+        );
+        return;
+      }
+    }
+    setOwnerKeyError(null);
     sponsor.startReview();
   };
 
@@ -184,7 +210,7 @@ export default function ProjectDetailPage() {
                 Owner
               </span>
               <span className="font-mono-code text-body-sm text-primary font-bold truncate">
-                {project.owner.slice(0, 6)}...{project.owner.slice(-6)}
+                {formatPublicKey(project.owner)}
               </span>
             </div>
           </div>
@@ -276,6 +302,12 @@ export default function ProjectDetailPage() {
                   <p className="text-on-surface-variant text-[11px] text-center">
                     SponsorChain runs on Stellar Testnet. No real funds required.
                   </p>
+                  {ownerKeyError && (
+                    <div className="p-sm bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800 leading-snug flex gap-xs">
+                      <span className="material-symbols-outlined text-[14px] shrink-0 mt-0.5">warning</span>
+                      <span>{ownerKeyError}</span>
+                    </div>
+                  )}
                 </>
               )}
 
@@ -298,7 +330,7 @@ export default function ProjectDetailPage() {
                     <div className="flex justify-between pb-xs">
                       <span className="text-secondary">Owner Wallet</span>
                       <span className="font-mono-code text-primary">
-                        {project.owner.slice(0, 6)}...{project.owner.slice(-6)}
+                        {formatPublicKey(project.owner)}
                       </span>
                     </div>
                   </div>
