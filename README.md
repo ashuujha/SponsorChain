@@ -23,52 +23,27 @@ SponsorChain is a direct peer-to-peer developer sponsorship platform built on th
 
 ---
 
-## Live Demo
-
-**[https://sponsorchain.vercel.app](https://sponsorchain.vercel.app)**
-
----
-
-## Demo Video
-
-**[Watch Demo Video](https://youtu.be/xRrEzkga6AU)**
-
----
-
 ## Screenshots
 
-### Desktop UI — Landing Page
-> *[Instructions: Replace this placeholder link with your actual screenshot url]*
-<img width="880" alt="Landing Page Desktop" src="https://github.com/user-attachments/assets/f8010a3a-304e-40ea-a5f4-f0ff0f7c1f0e" />
-
 ### Desktop UI — Maintainer Dashboard
-> *[Instructions: Replace this placeholder link with your actual screenshot url]*
-<img width="880" alt="Maintainer Dashboard" src="https://github.com/user-attachments/assets/0fa32e5b-9df7-432a-a562-0a3db9856600" />
-
-### Desktop UI — Transaction Success
-> *[Instructions: Replace this placeholder link with your actual screenshot url]*
-<img width="880" alt="Transaction Success" src="https://github.com/user-attachments/assets/87fb522f-7da1-4bd0-a0f3-942c4dbf8f2c" />
+<img width="880" alt="Maintainer Dashboard" src="screenshorts/desktop_dashboard.png" />
 
 ### Mobile Responsive UI
-> *[Instructions: Replace these placeholder links with your actual mobile responsive view screenshots]*
 <div align="center">
-  <img width="220" alt="Mobile Landing" src="https://github.com/user-attachments/assets/82aee7e8-73c9-459c-bbbc-8c12f9ff50c7" />
+  <img width="200" alt="Mobile View - Landing" src="screenshorts/mobile_1.jpg" />
   &nbsp;&nbsp;
-  <img width="220" alt="Mobile How It Works" src="https://github.com/user-attachments/assets/cf5979ab-63b6-40d9-87e7-9c32cea5cc72" />
+  <img width="200" alt="Mobile View - Dashboard" src="screenshorts/mobile_2.jpg" />
   &nbsp;&nbsp;
-  <img width="220" alt="Mobile Explore View" src="https://github.com/user-attachments/assets/d151566d-643e-4e16-9e04-5c052e5345a9" />
+  <img width="200" alt="Mobile View - Explore" src="screenshorts/mobile_3.jpg" />
+  &nbsp;&nbsp;
+  <img width="200" alt="Mobile View - Project Detail" src="screenshorts/mobile_4.jpg" />
 </div>
 
 ### CI/CD Pipeline
-> *[Instructions: Replace this placeholder link with your actual GitHub Actions pipeline run screenshot]*
-<img width="880" alt="CI/CD Pipeline" src="https://github.com/user-attachments/assets/a074f647-1b94-444a-ac96-fbc87e272ed2" />
+<img width="880" alt="CI/CD Pipeline" src="screenshorts/ci_pipeline.png" />
 
 ### Test Output — 68 Passing Tests
-> *[Instructions: Replace this placeholder link with your actual Vitest test output screenshot]*
-<img width="680" alt="Test Output" src="https://github.com/user-attachments/assets/7ee7d410-3f80-4c94-a89b-8b6477171759" />
-
-### Analytics — Vercel Dashboard
-> *[Instructions: Take a screenshot of your Vercel Analytics dashboard after traffic/clicks and add here]*
+<img width="880" alt="Test Output" src="screenshorts/test_output.png" />
 
 ---
 
@@ -83,8 +58,6 @@ Real user wallet interactions on Stellar Testnet — verified on Stellar Explore
 | Tester 2 | GDUSXB52YV4WXT6JUXM25... | [View on Explorer](https://stellar.expert/explorer/testnet) |
 | Tester 3 | GDSA637FJDNSK6K4... | [View on Explorer](https://stellar.expert/explorer/testnet) |
 | + 7 more | See Feedback Sheet | [Feedback Sheet / Google Docs Link](https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=sharing) |
-
-> *[Instructions: Replace `YOUR_SPREADSHEET_ID` with the link to your actual feedback sheet detailing user wallet testing]*
 
 ---
 
