@@ -4,11 +4,14 @@ on:
   push:
     branches: [main]
 
+env:
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
 jobs:
   deploy:
     name: Deploy Next.js
     runs-on: ubuntu-latest
-    if: secrets.VERCEL_TOKEN != ''
+    if: ${{ env.VERCEL_TOKEN != '' }}
 
     steps:
       - uses: actions/checkout@v4
