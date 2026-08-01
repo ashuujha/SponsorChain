@@ -32,6 +32,11 @@ jobs:
         run: cargo build --target wasm32v1-none --release > build.log 2>&1
         working-directory: contracts
 
+      - name: Print build log on failure
+        if: failure()
+        run: cat build.log
+        working-directory: contracts
+
       - name: Upload build log on failure
         if: failure()
         uses: actions/upload-artifact@v4
