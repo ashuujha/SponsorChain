@@ -14,19 +14,19 @@ export default function WalletConnectPage() {
   };
 
   return (
-    <div className="flex-grow flex flex-col items-center w-full min-h-screen bg-black text-white">
+    <div className="flex-grow flex flex-col items-center w-full min-h-screen bg-background text-foreground transition-colors">
       {/* Centered Onboarding Card */}
       <div className="flex-grow w-full flex items-center justify-center p-6 py-16">
-        <div className="bg-surface-card border border-hairline rounded-none w-full max-w-[520px] shadow-lg overflow-hidden flex flex-col">
+        <div className="bg-surface border border-hairline rounded-none w-full max-w-[520px] shadow-lg overflow-hidden flex flex-col">
           {/* Main Action Container */}
           <div className="p-8 sm:p-12 flex flex-col items-center text-center">
             {/* Icon Area */}
             <div className="w-14 h-14 border border-hairline flex items-center justify-center mb-6">
-              <span className="material-symbols-outlined text-white text-[28px]">account_balance_wallet</span>
+              <span className="material-symbols-outlined text-foreground text-[28px]">account_balance_wallet</span>
             </div>
 
             {/* Headline & Subtext */}
-            <h1 className="display-md text-2xl sm:text-3xl text-white mb-4 tracking-[2px] font-normal uppercase">
+            <h1 className="display-md text-2xl sm:text-3xl text-foreground mb-4 tracking-[2px] font-normal uppercase">
               Connect your Stellar wallet
             </h1>
             <p className="body-serif text-muted text-base mb-8 leading-relaxed">
@@ -35,14 +35,14 @@ export default function WalletConnectPage() {
 
             {/* Error notifications */}
             {(wallet.connectionError || wallet.fundingError) && (
-              <div className="w-full mb-6 p-4 bg-black border border-hairline-strong text-xs font-mono text-white text-left leading-relaxed">
+              <div className="w-full mb-6 p-4 bg-background border border-hairline text-xs font-mono text-foreground text-left leading-relaxed">
                 <div>{wallet.connectionError || wallet.fundingError}</div>
               </div>
             )}
 
             {/* Success Friendbot Notification */}
             {wallet.hasFunded && (
-              <div className="w-full mb-6 p-4 bg-black border border-white text-xs font-mono text-white text-left uppercase tracking-[1.5px] flex items-center gap-2">
+              <div className="w-full mb-6 p-4 bg-background border border-hairline text-xs font-mono text-foreground text-left uppercase tracking-[1.5px] flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">done</span>
                 <span>Funded via Friendbot: 10,000 XLM</span>
               </div>
@@ -68,15 +68,15 @@ export default function WalletConnectPage() {
                 onClick={wallet.disconnect}
                 variant="outline"
                 size="lg"
-                className="w-full border-rose-500 text-rose-400 hover:bg-rose-950/30"
+                className="w-full border-rose-500 text-rose-500 hover:bg-rose-500/10"
               >
                 Disconnect Wallet
               </Button>
             )}
 
             {/* Info Section */}
-            <div className="mt-8 w-full bg-black border border-hairline p-4 text-left space-y-1">
-              <span className="caption-uppercase text-white">NEW TO STELLAR?</span>
+            <div className="mt-8 w-full bg-background border border-hairline p-4 text-left space-y-1">
+              <span className="caption-uppercase text-foreground">NEW TO STELLAR?</span>
               <p className="body-serif text-muted text-xs leading-relaxed">
                 We automatically fund your testnet account with 10,000 test XLM via Friendbot — no real funds needed.
               </p>
@@ -92,11 +92,11 @@ export default function WalletConnectPage() {
 
           {/* Connected Preview */}
           <div className="p-8 pt-6">
-            <div className="bg-black border border-hairline p-4 space-y-3 font-mono text-xs">
+            <div className="bg-background border border-hairline p-4 space-y-3 font-mono text-xs">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 {/* Wallet Chip */}
                 <div className="border border-hairline px-3 py-1.5 flex items-center justify-between gap-2">
-                  <code className="font-mono text-xs text-white uppercase tracking-[1.5px] font-normal truncate">
+                  <code className="font-mono text-xs text-foreground uppercase tracking-[1.5px] font-normal truncate">
                     {wallet.isConnected && wallet.publicKey
                       ? `${wallet.publicKey.slice(0, 6)}...${wallet.publicKey.slice(-6)}`
                       : "Not connected"}
@@ -104,7 +104,7 @@ export default function WalletConnectPage() {
                   {wallet.isConnected && wallet.publicKey && (
                     <button
                       onClick={handleCopy}
-                      className="material-symbols-outlined text-muted hover:text-white text-[16px] cursor-pointer"
+                      className="material-symbols-outlined text-muted hover:text-foreground text-[16px] cursor-pointer"
                       aria-label="Copy public key"
                     >
                       content_copy
@@ -114,7 +114,7 @@ export default function WalletConnectPage() {
 
                 {/* Balance Status Chip */}
                 {wallet.isConnected && wallet.balance && (
-                  <div className="caption-uppercase text-xs text-white border border-hairline px-3 py-1.5">
+                  <div className="caption-uppercase text-xs text-foreground border border-hairline px-3 py-1.5">
                     Balance: {parseFloat(wallet.balance).toLocaleString()} XLM
                   </div>
                 )}

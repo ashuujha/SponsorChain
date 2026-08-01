@@ -5,17 +5,19 @@
 @tailwind utilities;
 
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
-  --surface: #141414;
-  --surface-container: #0d0d0d;
-  --surface-hover: #1f1f1f;
-  --border-color: #262626;
-  --text-primary: #ffffff;
-  --text-secondary: #999999;
-  --link-color: #c3d9f3;
-  --primary-bg: #ffffff;
-  --primary-text: #000000;
+  --background: #FAFAF8;
+  --foreground: #1C1B1B;
+  --surface: #FFFFFF;
+  --surface-container: #F4F2EE;
+  --surface-hover: #EBE7E5;
+  --border-color: #E7E5E1;
+  --hairline-strong: #000000;
+  --text-primary: #1C1B1B;
+  --text-secondary: #605E5A;
+  --text-body: #33312E;
+  --link-color: #1264a3;
+  --primary-bg: #1C1B1B;
+  --primary-text: #FFFFFF;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-serif: 'Cormorant Garamond', Garamond, serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
@@ -28,8 +30,10 @@
   --surface-container: #0d0d0d;
   --surface-hover: #1f1f1f;
   --border-color: #262626;
+  --hairline-strong: #3a3a3a;
   --text-primary: #ffffff;
   --text-secondary: #999999;
+  --text-body: #cccccc;
   --link-color: #c3d9f3;
   --primary-bg: #ffffff;
   --primary-text: #000000;
@@ -86,6 +90,7 @@
     line-height: 1.4;
     letter-spacing: 2px;
     text-transform: uppercase;
+    color: var(--text-secondary);
   }
 
   .body-serif {
@@ -93,7 +98,7 @@
     font-size: 18px;
     line-height: 1.55;
     font-weight: 400;
-    color: #cccccc;
+    color: var(--text-body);
   }
 
   .body-serif-sm {
@@ -101,12 +106,12 @@
     font-size: 16px;
     line-height: 1.5;
     font-weight: 400;
-    color: #cccccc;
+    color: var(--text-secondary);
   }
 
   /* Bugatti Ice-Blue Link Token */
   .bugatti-link {
-    color: #c3d9f3;
+    color: var(--link-color);
     font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 1.5px;
@@ -142,10 +147,10 @@
   .bugatti-input {
     background-color: transparent;
     border: none;
-    border-bottom: 1px solid #3a3a3a;
+    border-bottom: 1px solid var(--border-color);
     border-radius: 0px;
     padding: 12px 0;
-    color: #ffffff;
+    color: var(--foreground);
     font-family: var(--font-mono);
     font-size: 14px;
     letter-spacing: 1px;
@@ -153,11 +158,11 @@
     transition: border-color 0.2s ease;
   }
   .bugatti-input:focus {
-    border-bottom-color: #ffffff;
+    border-bottom-color: var(--foreground);
   }
 
   /* Hairline Divider Utility */
   .hairline-divider {
-    border-bottom: 1px solid #262626;
+    border-bottom: 1px solid var(--border-color);
   }
 }

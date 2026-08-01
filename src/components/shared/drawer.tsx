@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useUIStore } from "@/lib/ui-store";
-import { BrandLogo } from "./logo";
+import { GithubLogo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
 
@@ -18,22 +18,28 @@ export function Drawer() {
   return (
     <div className="fixed inset-0 z-50 md:hidden">
       <div
-        className="fixed inset-0 bg-black/80 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-background/80 backdrop-blur-xs transition-opacity"
         onClick={closeDrawer}
       />
 
-      <div className="fixed inset-y-0 left-0 w-4/5 max-w-xs bg-black border-r border-hairline p-6 flex flex-col justify-between">
+      <div className="fixed inset-y-0 left-0 w-4/5 max-w-xs bg-background border-r border-hairline p-6 flex flex-col justify-between">
         <div>
           <div className="flex items-center justify-between pb-6 border-b border-hairline">
-            <Link href="/" onClick={closeDrawer} className="flex items-center gap-2">
-              <BrandLogo className="w-6 h-6" />
-              <span className="font-mono text-xs text-white uppercase tracking-[4px]">
+            <a
+              href="https://github.com/ashuujha/SponsorChain"
+              target="_blank"
+              rel="noreferrer"
+              onClick={closeDrawer}
+              className="flex items-center gap-2"
+            >
+              <GithubLogo className="w-5 h-5 text-foreground" />
+              <span className="font-mono text-xs text-foreground uppercase tracking-[4px]">
                 SPONSORCHAIN
               </span>
-            </Link>
+            </a>
             <button
               onClick={closeDrawer}
-              className="p-1 text-muted hover:text-white"
+              className="p-1 text-muted hover:text-foreground"
             >
               <span className="material-symbols-outlined">close</span>
             </button>
@@ -43,28 +49,28 @@ export function Drawer() {
             <Link
               href="/"
               onClick={closeDrawer}
-              className="font-mono text-sm uppercase tracking-[2px] text-white hover:text-muted transition-colors"
+              className="font-mono text-sm uppercase tracking-[2px] text-foreground hover:text-muted transition-colors"
             >
               Home
             </Link>
             <Link
               href="/explore"
               onClick={closeDrawer}
-              className="font-mono text-sm uppercase tracking-[2px] text-white hover:text-muted transition-colors"
+              className="font-mono text-sm uppercase tracking-[2px] text-foreground hover:text-muted transition-colors"
             >
               Explore Projects
             </Link>
             <Link
               href="/activity"
               onClick={closeDrawer}
-              className="font-mono text-sm uppercase tracking-[2px] text-white hover:text-muted transition-colors"
+              className="font-mono text-sm uppercase tracking-[2px] text-foreground hover:text-muted transition-colors"
             >
               My Activity
             </Link>
             <Link
               href="/wallet"
               onClick={closeDrawer}
-              className="font-mono text-sm uppercase tracking-[2px] text-white hover:text-muted transition-colors"
+              className="font-mono text-sm uppercase tracking-[2px] text-foreground hover:text-muted transition-colors"
             >
               Wallet Dashboard
             </Link>

@@ -4,21 +4,21 @@ import { Button } from "@/components/ui/button";
 
 export default function LandingPage() {
   return (
-    <div className="pb-24 overflow-x-hidden bg-black min-h-screen text-white">
-      {/* Hero Band: Austere Pure Black Canvas with Wide-Tracked Display Headline */}
+    <div className="pb-24 overflow-x-hidden bg-background min-h-screen text-foreground transition-colors">
+      {/* Hero Band: Austere Canvas with Centered Wide-Tracked Display Headline */}
       <section className="relative py-24 md:py-36 px-4 sm:px-6 lg:px-8 border-b border-hairline mb-20">
         <div className="max-w-container-max mx-auto flex flex-col items-center text-center">
           {/* Eyebrow Caption */}
           <div className="caption-uppercase text-muted mb-6 flex items-center justify-center gap-3">
-            <span className="w-1.5 h-1.5 bg-white" />
+            <span className="w-1.5 h-1.5 bg-foreground" />
             <span>THE STELLAR OPEN SOURCE FACILITY</span>
           </div>
 
-          <h1 className="display-xl text-3xl sm:text-5xl md:text-6xl font-normal text-white mb-8 tracking-[4px] uppercase leading-tight max-w-4xl">
+          <h1 className="display-xl text-3xl sm:text-5xl md:text-6xl font-normal text-foreground mb-8 tracking-[4px] uppercase leading-tight max-w-4xl text-center">
             FUND OPEN SOURCE DIRECTLY. UNCOMPROMISED.
           </h1>
 
-          <p className="body-serif text-lg md:text-xl text-body mb-12 max-w-2xl leading-relaxed">
+          <p className="body-serif text-lg md:text-xl text-muted mb-12 max-w-2xl leading-relaxed text-center">
             Connect your Stellar wallet to browse and sponsor open-source repositories over Horizon &amp; Soroban.
             Maintainers verify GitHub repository ownership and receive direct, transparent XLM sponsorships.
           </p>
@@ -40,34 +40,34 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-8 border-t border-hairline w-full text-center">
             <div className="flex flex-col items-center gap-1">
               <span className="caption-uppercase text-muted">SETTLEMENT SPEED</span>
-              <span className="font-mono text-sm uppercase tracking-[1.5px] text-white">~5 SECONDS ON-CHAIN</span>
+              <span className="font-mono text-sm uppercase tracking-[1.5px] text-foreground">~5 SECONDS ON-CHAIN</span>
             </div>
             <div className="flex flex-col items-center gap-1">
               <span className="caption-uppercase text-muted">TRANSACTION COST</span>
-              <span className="font-mono text-sm uppercase tracking-[1.5px] text-white">NEAR-ZERO FEES</span>
+              <span className="font-mono text-sm uppercase tracking-[1.5px] text-foreground">NEAR-ZERO FEES</span>
             </div>
             <div className="flex flex-col items-center gap-1">
               <span className="caption-uppercase text-muted">VERIFICATION</span>
-              <span className="font-mono text-sm uppercase tracking-[1.5px] text-white">100% AUDITABLE</span>
+              <span className="font-mono text-sm uppercase tracking-[1.5px] text-foreground">100% AUDITABLE</span>
             </div>
           </div>
         </div>
       </section>
 
       <div className="max-w-container-max mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Bugatti Vehicle-Spec Technical Callout Grid */}
+        {/* Technical Callout Grid */}
         <section className="mb-24">
-          <div className="caption-uppercase text-muted mb-8 tracking-[2px]">
+          <div className="caption-uppercase text-muted mb-8 tracking-[2px] text-center">
             PERFORMANCE METRICS
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-surface-card border border-hairline rounded-none p-8 flex flex-col justify-between h-48">
-              <div className="display-lg text-4xl sm:text-5xl font-normal text-white tracking-[3px]">
+            <div className="bg-surface border border-hairline rounded-none p-8 flex flex-col justify-between h-48">
+              <div className="display-lg text-4xl sm:text-5xl font-normal text-foreground tracking-[3px]">
                 100%
               </div>
               <div>
-                <h4 className="font-mono text-xs text-white uppercase tracking-[2px] mb-1">
+                <h4 className="font-mono text-xs text-foreground uppercase tracking-[2px] mb-1">
                   DIRECT TO MAINTAINER
                 </h4>
                 <p className="body-serif-sm text-muted text-sm">
@@ -76,12 +76,12 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="bg-surface-card border border-hairline rounded-none p-8 flex flex-col justify-between h-48">
-              <div className="display-lg text-4xl sm:text-5xl font-normal text-white tracking-[3px]">
+            <div className="bg-surface border border-hairline rounded-none p-8 flex flex-col justify-between h-48">
+              <div className="display-lg text-4xl sm:text-5xl font-normal text-foreground tracking-[3px]">
                 ~5.0s
               </div>
               <div>
-                <h4 className="font-mono text-xs text-white uppercase tracking-[2px] mb-1">
+                <h4 className="font-mono text-xs text-foreground uppercase tracking-[2px] mb-1">
                   STELLAR SETTLEMENT
                 </h4>
                 <p className="body-serif-sm text-muted text-sm">
@@ -90,12 +90,12 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="bg-surface-card border border-hairline rounded-none p-8 flex flex-col justify-between h-48">
-              <div className="display-lg text-4xl sm:text-5xl font-normal text-white tracking-[3px]">
+            <div className="bg-surface border border-hairline rounded-none p-8 flex flex-col justify-between h-48">
+              <div className="display-lg text-4xl sm:text-5xl font-normal text-foreground tracking-[3px]">
                 GITHUB
               </div>
               <div>
-                <h4 className="font-mono text-xs text-white uppercase tracking-[2px] mb-1">
+                <h4 className="font-mono text-xs text-foreground uppercase tracking-[2px] mb-1">
                   PROOF OF OWNERSHIP
                 </h4>
                 <p className="body-serif-sm text-muted text-sm">
@@ -106,12 +106,12 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Bugatti Model Showcase Cards Section */}
+        {/* Model Showcase Cards Section */}
         <section className="mb-24 space-y-12">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-hairline pb-6">
             <div>
               <div className="caption-uppercase text-muted mb-2">SYSTEM ARCHITECTURE</div>
-              <h2 className="display-md text-2xl sm:text-3xl text-white tracking-[2px] font-normal">
+              <h2 className="display-md text-2xl sm:text-3xl text-foreground tracking-[2px] font-normal">
                 ENGINEERED FOR OPEN SOURCE
               </h2>
             </div>
@@ -121,39 +121,39 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-surface-card border border-hairline rounded-none p-8 flex flex-col justify-between">
+            <div className="bg-surface border border-hairline rounded-none p-8 flex flex-col justify-between">
               <div>
                 <div className="caption-uppercase text-muted mb-4">STEP 01</div>
-                <h3 className="font-mono text-base text-white uppercase tracking-[2px] mb-3">
+                <h3 className="font-mono text-base text-foreground uppercase tracking-[2px] mb-3">
                   CONNECT WALLET
                 </h3>
-                <p className="body-serif-sm text-body leading-relaxed mb-6">
+                <p className="body-serif-sm text-muted leading-relaxed mb-6">
                   Freighter, Albedo, or any Stellar wallet — connect instantly with no account signup required.
                 </p>
               </div>
               <span className="caption-uppercase text-muted">01 // IDENTIFICATION</span>
             </div>
 
-            <div className="bg-surface-card border border-hairline rounded-none p-8 flex flex-col justify-between">
+            <div className="bg-surface border border-hairline rounded-none p-8 flex flex-col justify-between">
               <div>
                 <div className="caption-uppercase text-muted mb-4">STEP 02</div>
-                <h3 className="font-mono text-base text-white uppercase tracking-[2px] mb-3">
+                <h3 className="font-mono text-base text-foreground uppercase tracking-[2px] mb-3">
                   SPONSOR REPOS
                 </h3>
-                <p className="body-serif-sm text-body leading-relaxed mb-6">
+                <p className="body-serif-sm text-muted leading-relaxed mb-6">
                   Browse verified open-source projects and send XLM directly to maintainers on-chain.
                 </p>
               </div>
               <span className="caption-uppercase text-muted">02 // TRANSMISSION</span>
             </div>
 
-            <div className="bg-surface-card border border-hairline rounded-none p-8 flex flex-col justify-between">
+            <div className="bg-surface border border-hairline rounded-none p-8 flex flex-col justify-between">
               <div>
                 <div className="caption-uppercase text-muted mb-4">STEP 03</div>
-                <h3 className="font-mono text-base text-white uppercase tracking-[2px] mb-3">
+                <h3 className="font-mono text-base text-foreground uppercase tracking-[2px] mb-3">
                   LIST REPOSITORY
                 </h3>
-                <p className="body-serif-sm text-body leading-relaxed mb-6">
+                <p className="body-serif-sm text-muted leading-relaxed mb-6">
                   Link your GitHub account to prove repository ownership and list your project in seconds.
                 </p>
               </div>
@@ -163,16 +163,16 @@ export default function LandingPage() {
         </section>
 
         {/* Pre-Footer CTA Band */}
-        <section className="bg-surface-card border border-hairline rounded-none p-12 md:p-16 text-center">
+        <section className="bg-surface border border-hairline rounded-none p-12 md:p-16 text-center">
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="caption-uppercase text-muted">STELLAR TESTNET FACILITY</div>
-            <h2 className="display-md text-2xl sm:text-4xl text-white tracking-[3px] font-normal">
+            <h2 className="display-md text-2xl sm:text-4xl text-foreground tracking-[3px] font-normal">
               DISCOVER SPONSORCHAIN
             </h2>
-            <p className="body-serif text-base md:text-lg text-body leading-relaxed">
+            <p className="body-serif text-base md:text-lg text-muted leading-relaxed">
               All transactions run transparently on the Stellar testnet. No real funds required — connect a wallet and test.
             </p>
-            <div className="pt-4">
+            <div className="pt-4 flex justify-center">
               <Link href="/explore">
                 <Button size="lg">
                   EXPLORE PROJECTS

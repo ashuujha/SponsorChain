@@ -41,7 +41,7 @@ export function ThemeToggle() {
   const activeTheme = mounted ? theme : "system";
 
   return (
-    <div className="flex items-center bg-[#141414] border border-[#262626] p-1 rounded-full shadow-xs">
+    <div className="flex items-center bg-surface border border-hairline p-1 rounded-full shadow-xs">
       <button
         type="button"
         onClick={() => setTheme("light")}
@@ -49,8 +49,8 @@ export function ThemeToggle() {
         aria-label="Switch to Light Theme"
         className={`p-1.5 rounded-full transition-all duration-200 ${
           activeTheme === "light"
-            ? "bg-white text-black shadow-xs scale-105"
-            : "text-[#999999] hover:text-white"
+            ? "bg-foreground text-background shadow-xs scale-105"
+            : "text-muted hover:text-foreground"
         }`}
       >
         <SunIcon />
@@ -63,8 +63,8 @@ export function ThemeToggle() {
         aria-label="Switch to Dark Theme"
         className={`p-1.5 rounded-full transition-all duration-200 ${
           activeTheme === "dark"
-            ? "bg-white text-black shadow-xs scale-105"
-            : "text-[#999999] hover:text-white"
+            ? "bg-foreground text-background shadow-xs scale-105"
+            : "text-muted hover:text-foreground"
         }`}
       >
         <MoonIcon />
@@ -77,8 +77,8 @@ export function ThemeToggle() {
         aria-label="Switch to System Theme"
         className={`p-1.5 rounded-full transition-all duration-200 ${
           activeTheme === "system"
-            ? "bg-white text-black shadow-xs scale-105"
-            : "text-[#999999] hover:text-white"
+            ? "bg-foreground text-background shadow-xs scale-105"
+            : "text-muted hover:text-foreground"
         }`}
       >
         <MonitorIcon />

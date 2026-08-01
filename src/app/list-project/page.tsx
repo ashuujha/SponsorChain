@@ -43,11 +43,11 @@ export default function ListProjectPage() {
   if (state.status === "success" && state.projectId) {
     return (
       <RequireWallet>
-        <div className="flex-grow flex flex-col items-center justify-center p-8 text-center min-h-[60vh] bg-black text-white">
-          <div className="w-12 h-12 border border-white rounded-full flex items-center justify-center mx-auto text-white mb-6">
+        <div className="flex-grow flex flex-col items-center justify-center p-8 text-center min-h-[60vh] bg-background text-foreground transition-colors">
+          <div className="w-12 h-12 border border-foreground rounded-full flex items-center justify-center mx-auto text-foreground mb-6">
             <span className="material-symbols-outlined text-[24px]">done</span>
           </div>
-          <h2 className="display-md text-3xl text-white mb-2">Project Listed!</h2>
+          <h2 className="display-md text-3xl text-foreground mb-2">Project Listed!</h2>
           <p className="body-serif text-muted max-w-sm mb-8">
             Your project has been registered on-chain. You can now view it and start receiving sponsorships.
           </p>
@@ -61,7 +61,7 @@ export default function ListProjectPage() {
 
   return (
     <RequireWallet>
-      <div className="flex-grow flex flex-col items-center pt-12 px-4 sm:px-6 pb-24 overflow-y-auto w-full bg-black min-h-screen text-white">
+      <div className="flex-grow flex flex-col items-center pt-12 px-4 sm:px-6 pb-24 overflow-y-auto w-full bg-background min-h-screen text-foreground transition-colors">
         <div className="w-full max-w-[640px] space-y-8">
           {/* Step indicator */}
           <StepBar current={cur} total={4} stepLabel={currentStep.step} progressPct={progressPct} />
@@ -231,14 +231,14 @@ function StepBar({
   return (
     <>
       <div className="flex justify-between items-end mb-2">
-        <h2 className="font-mono text-base uppercase tracking-[2px] text-white">{labels[stepLabel] ?? ""}</h2>
+        <h2 className="font-mono text-base uppercase tracking-[2px] text-foreground">{labels[stepLabel] ?? ""}</h2>
         <span className="caption-uppercase text-muted">{progressPct}% Complete</span>
       </div>
       <div className="h-1 w-full bg-hairline rounded-none overflow-hidden flex gap-1">
         {Array.from({ length: total }).map((_, i) => (
           <div
             key={i}
-            className={`h-full flex-1 transition-all ${i < current ? "bg-white" : "bg-hairline"}`}
+            className={`h-full flex-1 transition-all ${i < current ? "bg-foreground" : "bg-hairline"}`}
           />
         ))}
       </div>
@@ -256,14 +256,14 @@ function GithubConnectStep({
   onContinue: () => void;
 }) {
   return (
-    <div className="bg-surface-card border border-hairline rounded-none p-8 space-y-6">
+    <div className="bg-surface border border-hairline rounded-none p-8 space-y-6">
       <div className="flex flex-col items-center text-center space-y-4">
         <div className="w-12 h-12 border border-hairline flex items-center justify-center">
-          <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 fill-foreground" viewBox="0 0 24 24">
             <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.042-1.416-4.042-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
           </svg>
         </div>
-        <h2 className="display-md text-2xl text-white">Link GitHub to Continue</h2>
+        <h2 className="display-md text-2xl text-foreground">Link GitHub to Continue</h2>
         <p className="body-serif text-muted text-sm max-w-[380px] leading-relaxed">
           We verify repository ownership via GitHub OAuth. Your connected wallet address remains your receiving identity.
         </p>
@@ -271,24 +271,24 @@ function GithubConnectStep({
 
       {ghStatus === "loading" ? (
         <div className="flex items-center gap-2 py-4 justify-center">
-          <div className="w-4 h-4 border border-white border-t-transparent rounded-full animate-spin" />
+          <div className="w-4 h-4 border border-foreground border-t-transparent rounded-full animate-spin" />
           <span className="caption-uppercase text-muted">Checking GitHub session...</span>
         </div>
       ) : ghStatus === "authenticated" && session ? (
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-black border border-hairline">
+          <div className="flex items-center justify-between p-4 bg-background border border-hairline">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 border border-hairline flex items-center justify-center font-serif text-white">
+              <div className="w-8 h-8 border border-hairline flex items-center justify-center font-serif text-foreground">
                 GH
               </div>
               <div>
-                <p className="font-mono text-xs text-white uppercase tracking-[1.5px]">@{session.githubUsername}</p>
+                <p className="font-mono text-xs text-foreground uppercase tracking-[1.5px]">@{session.githubUsername}</p>
                 <p className="caption-uppercase text-[10px] text-muted">Linked for this session</p>
               </div>
             </div>
             <button
               onClick={() => signOut()}
-              className="caption-uppercase text-muted hover:text-white underline"
+              className="caption-uppercase text-muted hover:text-foreground underline"
             >
               Disconnect
             </button>
@@ -319,8 +319,8 @@ function RepoPickerStep({
   onBack: () => void;
 }) {
   return (
-    <section className="bg-surface-card border border-hairline rounded-none p-8 space-y-4">
-      <h3 className="font-mono text-base text-white uppercase tracking-[2px]">Your Repositories</h3>
+    <section className="bg-surface border border-hairline rounded-none p-8 space-y-4">
+      <h3 className="font-mono text-base text-foreground uppercase tracking-[2px]">Your Repositories</h3>
       <p className="body-serif text-muted text-sm">
         Select a public repository you own. Forks are not shown.
       </p>
@@ -355,14 +355,14 @@ function DetailsStep({
   onReview: () => void;
 }) {
   return (
-    <section className="bg-surface-card border border-hairline rounded-none p-8 space-y-6">
+    <section className="bg-surface border border-hairline rounded-none p-8 space-y-6">
       <div>
         <label className="caption-uppercase text-muted block mb-2">
           Repository
         </label>
-        <div className="flex items-center gap-3 p-4 bg-black border border-hairline">
-          <span className="material-symbols-outlined text-white text-[18px]">code</span>
-          <span className="font-mono text-sm text-white uppercase tracking-[1.5px]">{repo.fullName}</span>
+        <div className="flex items-center gap-3 p-4 bg-background border border-hairline">
+          <span className="material-symbols-outlined text-foreground text-[18px]">code</span>
+          <span className="font-mono text-sm text-foreground uppercase tracking-[1.5px]">{repo.fullName}</span>
         </div>
       </div>
 
@@ -385,7 +385,7 @@ function DetailsStep({
           Short Description
         </label>
         <textarea
-          className="w-full p-3 bg-transparent border border-[#3a3a3a] text-white font-serif text-base focus:border-white outline-none resize-none"
+          className="w-full p-3 bg-transparent border border-hairline text-foreground font-serif text-base focus:border-foreground outline-none resize-none"
           placeholder="Briefly describe your project..."
           rows={4}
           maxLength={280}
@@ -442,13 +442,13 @@ function ReviewStep({
 }) {
   return (
     <div className="space-y-6">
-      <section className="bg-surface-card border border-hairline rounded-none p-8 space-y-4">
-        <h3 className="font-mono text-base text-white uppercase tracking-[2px]">Review Your Project Listing</h3>
+      <section className="bg-surface border border-hairline rounded-none p-8 space-y-4">
+        <h3 className="font-mono text-base text-foreground uppercase tracking-[2px]">Review Your Project Listing</h3>
         <p className="body-serif text-muted text-sm">
           All future sponsorships will be sent to the owner wallet address shown below.
         </p>
 
-        <div className="bg-black border border-hairline p-4 space-y-3 font-mono text-xs">
+        <div className="bg-background border border-hairline p-4 space-y-3 font-mono text-xs">
           <FieldRow label="Repository" value={repo.fullName} mono />
           <FieldRow label="Project Name" value={name} />
           <FieldRow label="Description" value={description} right />
@@ -465,11 +465,11 @@ function ReviewStep({
         </div>
 
         {unsignedCall && (
-          <div className="bg-black border border-hairline p-4">
+          <div className="bg-background border border-hairline p-4">
             <h4 className="caption-uppercase text-muted mb-1 font-bold">
               Contract Call
             </h4>
-            <pre className="font-mono text-xs text-white whitespace-pre-wrap overflow-x-auto leading-relaxed">
+            <pre className="font-mono text-xs text-foreground whitespace-pre-wrap overflow-x-auto leading-relaxed">
               {JSON.stringify(unsignedCall.args, null, 2)}
             </pre>
           </div>
@@ -491,13 +491,13 @@ function ReviewStep({
       )}
 
       {state.status === "pending" && (
-        <div className="bg-surface-card border border-hairline p-10 flex flex-col items-center gap-4 text-center">
-          <span className="animate-spin material-symbols-outlined text-[40px] text-white">progress_activity</span>
-          <p className="caption-uppercase text-white">
+        <div className="bg-surface border border-hairline p-10 flex flex-col items-center gap-4 text-center">
+          <span className="animate-spin material-symbols-outlined text-[40px] text-foreground">progress_activity</span>
+          <p className="caption-uppercase text-foreground">
             {state.txHash ? "Confirming on-chain..." : "Please sign the transaction in your wallet..."}
           </p>
           {state.txHash && (
-            <div className="w-full p-3 bg-black border border-hairline font-mono text-xs text-muted truncate">
+            <div className="w-full p-3 bg-background border border-hairline font-mono text-xs text-muted truncate">
               Tx Hash: {state.txHash}
             </div>
           )}
@@ -505,8 +505,8 @@ function ReviewStep({
       )}
 
       {state.status === "failed" && (
-        <div className="bg-surface-card border border-hairline p-6 space-y-4">
-          <div className="p-4 bg-black border border-hairline-strong text-xs font-mono text-white leading-relaxed">
+        <div className="bg-surface border border-hairline p-6 space-y-4">
+          <div className="p-4 bg-background border border-hairline text-xs font-mono text-foreground leading-relaxed">
             {state.errorType === "insufficient_funds" && (
               <span><strong>Insufficient funds:</strong> Your wallet does not have enough XLM for the transaction fee.</span>
             )}
@@ -551,7 +551,7 @@ function FieldRow({
     <div className="flex justify-between border-b border-hairline pb-2">
       <span className="caption-uppercase text-muted">{label}</span>
       <span
-        className={`${mono ? "font-mono" : ""} ${small ? "text-[10px]" : "text-xs"} uppercase tracking-[1.5px] text-white ${right ? "max-w-[280px] text-right leading-snug" : ""}`}
+        className={`${mono ? "font-mono" : ""} ${small ? "text-[10px]" : "text-xs"} uppercase tracking-[1.5px] text-foreground ${right ? "max-w-[280px] text-right leading-snug" : ""}`}
       >
         {value}
       </span>

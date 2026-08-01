@@ -14,13 +14,13 @@ export function ProjectAvatar({
   const sizeClasses = {
     sm: "w-8 h-8 text-sm font-serif border border-hairline",
     md: "w-10 h-10 text-base font-serif border border-hairline",
-    lg: "w-14 h-14 text-xl font-serif border border-hairline-strong",
-    xl: "w-20 h-20 text-3xl font-serif border border-hairline-strong",
+    lg: "w-14 h-14 text-xl font-serif border border-hairline",
+    xl: "w-20 h-20 text-3xl font-serif border border-hairline",
   }[size];
 
   return (
     <div
-      className={`inline-flex items-center justify-center shrink-0 bg-surface-card text-white rounded-none ${sizeClasses} ${className}`}
+      className={`inline-flex items-center justify-center shrink-0 bg-surface text-foreground rounded-none ${sizeClasses} ${className}`}
     >
       {initial}
     </div>

@@ -205,8 +205,8 @@ export default function ProjectDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-40 gap-4 bg-black min-h-screen">
-        <span className="animate-spin material-symbols-outlined text-[40px] text-white">
+      <div className="flex flex-col items-center justify-center py-40 gap-4 bg-background min-h-screen text-foreground">
+        <span className="animate-spin material-symbols-outlined text-[40px] text-foreground">
           progress_activity
         </span>
         <p className="caption-uppercase text-muted">
@@ -218,9 +218,9 @@ export default function ProjectDetailPage() {
 
   if (notFound) {
     return (
-      <div className="max-w-md mx-auto py-24 text-center space-y-4 bg-black min-h-screen text-white">
+      <div className="max-w-md mx-auto py-24 text-center space-y-4 bg-background min-h-screen text-foreground">
         <span className="material-symbols-outlined text-[48px] text-muted">search_off</span>
-        <h3 className="display-md text-2xl text-white">Project not found</h3>
+        <h3 className="display-md text-2xl text-foreground">Project not found</h3>
         <p className="body-serif text-muted text-sm">This project may have been removed.</p>
         <Link href="/explore">
           <Button size="lg">Browse Projects</Button>
@@ -232,7 +232,7 @@ export default function ProjectDetailPage() {
   if (!project) return null;
 
   return (
-    <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto pt-12 relative bg-black min-h-screen text-white">
+    <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto pt-12 relative bg-background min-h-screen text-foreground transition-colors">
       <Link
         href="/explore"
         className="bugatti-link inline-flex items-center gap-2 mb-8"
@@ -247,44 +247,44 @@ export default function ProjectDetailPage() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-6 border-b border-hairline pb-8">
             <ProjectAvatar name={project.name} size="lg" />
             <div className="space-y-2">
-              <h1 className="display-lg text-3xl sm:text-4xl md:text-5xl font-normal text-white tracking-[3px] uppercase">
+              <h1 className="display-lg text-3xl sm:text-4xl md:text-5xl font-normal text-foreground tracking-[3px] uppercase">
                 {project.name}
               </h1>
               <a
-                className="font-mono text-xs text-muted hover:text-white uppercase tracking-[2px] inline-flex items-center gap-2"
+                className="font-mono text-xs text-muted hover:text-foreground uppercase tracking-[2px] inline-flex items-center gap-2"
                 href={`https://github.com/${project.repoFullName}`}
                 target="_blank"
                 rel="noreferrer"
               >
                 <span>REPOSITORY:</span>
-                <span className="text-white underline">{project.repoFullName}</span>
+                <span className="text-foreground underline">{project.repoFullName}</span>
               </a>
             </div>
           </div>
 
-          <p className="body-serif text-lg md:text-xl text-body leading-relaxed max-w-3xl">
+          <p className="body-serif text-lg md:text-xl text-muted leading-relaxed max-w-3xl">
             {project.description}
           </p>
 
-          {/* Bugatti Vehicle Spec Cells */}
+          {/* Vehicle Spec Cells */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 py-6 border-y border-hairline">
             <div className="space-y-1">
               <div className="caption-uppercase text-muted">TOTAL RAISED</div>
-              <div className="display-md text-3xl font-normal text-white tracking-[2px]">
+              <div className="display-md text-3xl font-normal text-foreground tracking-[2px]">
                 {formatXlm(project.totalRaised)} XLM
               </div>
             </div>
 
             <div className="space-y-1">
               <div className="caption-uppercase text-muted">SPONSORS</div>
-              <div className="display-md text-3xl font-normal text-white tracking-[2px]">
+              <div className="display-md text-3xl font-normal text-foreground tracking-[2px]">
                 {project.sponsorCount}
               </div>
             </div>
 
             <div className="space-y-1">
               <div className="caption-uppercase text-muted">OWNER WALLET</div>
-              <div className="font-mono text-sm font-normal text-white tracking-[1.5px] truncate pt-2">
+              <div className="font-mono text-sm font-normal text-foreground tracking-[1.5px] truncate pt-2">
                 {formatPublicKey(project.owner)}
               </div>
             </div>
@@ -292,10 +292,10 @@ export default function ProjectDetailPage() {
 
           {/* Sponsorship Activity */}
           <section className="space-y-6 pt-4">
-            <h3 className="font-mono text-base text-white uppercase tracking-[2px]">
+            <h3 className="font-mono text-base text-foreground uppercase tracking-[2px]">
               Sponsorships
             </h3>
-            <div className="bg-surface-card border border-hairline rounded-none overflow-hidden">
+            <div className="bg-surface border border-hairline rounded-none overflow-hidden">
               {sponsorships.length === 0 ? (
                 <div className="p-12 text-center body-serif text-muted text-sm">
                   No sponsorships yet — be the first!
@@ -307,14 +307,14 @@ export default function ProjectDetailPage() {
                     return (
                       <div
                         key={s.id.toString()}
-                        className="flex items-center justify-between p-5 hover:bg-surface-elevated transition-colors"
+                        className="flex items-center justify-between p-5 hover:bg-surface-container transition-colors"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-9 h-9 border border-hairline flex items-center justify-center font-serif text-white">
+                          <div className="w-9 h-9 border border-hairline flex items-center justify-center font-serif text-foreground">
                             S
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-mono text-xs text-white uppercase tracking-[1.5px]">
+                            <span className="font-mono text-xs text-foreground uppercase tracking-[1.5px]">
                               {shortSponsor}
                             </span>
                             <span className="caption-uppercase text-[10px] text-muted mt-0.5">
@@ -324,7 +324,7 @@ export default function ProjectDetailPage() {
                         </div>
 
                         <div className="flex flex-col items-end gap-1">
-                          <span className="font-mono text-sm text-white uppercase tracking-[1.5px]">
+                          <span className="font-mono text-sm text-foreground uppercase tracking-[1.5px]">
                             {formatXlm(s.amount)} XLM
                           </span>
                           {s.txHash && (
@@ -350,8 +350,8 @@ export default function ProjectDetailPage() {
         {/* Sponsor panel */}
         <div className="lg:w-88 shrink-0">
           <div className="lg:sticky lg:top-24 space-y-6">
-            <div className="bg-surface-card border border-hairline rounded-none p-8 space-y-8">
-              <h3 className="font-mono text-base text-white uppercase tracking-[2px]">
+            <div className="bg-surface border border-hairline rounded-none p-8 space-y-8">
+              <h3 className="font-mono text-base text-foreground uppercase tracking-[2px]">
                 Sponsor this project
               </h3>
 
@@ -381,7 +381,7 @@ export default function ProjectDetailPage() {
                   </p>
 
                   {ownerKeyError && (
-                    <div className="p-4 bg-surface-elevated border border-hairline-strong text-xs text-white font-mono leading-relaxed">
+                    <div className="p-4 bg-surface-container border border-hairline text-xs text-foreground font-mono leading-relaxed">
                       {ownerKeyError}
                     </div>
                   )}
@@ -391,16 +391,16 @@ export default function ProjectDetailPage() {
               {/* Review */}
               {sponsor.state.status === "review" && (
                 <div className="space-y-6">
-                  <div className="p-6 bg-black border border-hairline text-center space-y-2">
+                  <div className="p-6 bg-background border border-hairline text-center space-y-2">
                     <span className="caption-uppercase text-muted block uppercase">
                       Sponsorship Amount
                     </span>
-                    <span className="display-md text-3xl font-normal text-white tracking-[2px]">
+                    <span className="display-md text-3xl font-normal text-foreground tracking-[2px]">
                       {sponsor.amount} XLM
                     </span>
                   </div>
 
-                  <div className="space-y-3 font-mono text-xs text-white">
+                  <div className="space-y-3 font-mono text-xs text-foreground">
                     <div className="flex justify-between border-b border-hairline pb-2">
                       <span className="text-muted">To Project</span>
                       <span>{project.name}</span>
@@ -416,7 +416,7 @@ export default function ProjectDetailPage() {
                   </Button>
                   <button
                     onClick={sponsor.reset}
-                    className="w-full font-mono text-xs uppercase tracking-[2px] text-muted hover:text-white text-center"
+                    className="w-full font-mono text-xs uppercase tracking-[2px] text-muted hover:text-foreground text-center"
                   >
                     Cancel
                   </button>
@@ -426,16 +426,16 @@ export default function ProjectDetailPage() {
               {/* Pending */}
               {sponsor.state.status === "pending" && (
                 <div className="py-12 flex flex-col items-center gap-4 text-center">
-                  <span className="animate-spin material-symbols-outlined text-[40px] text-white">
+                  <span className="animate-spin material-symbols-outlined text-[40px] text-foreground">
                     progress_activity
                   </span>
-                  <p className="caption-uppercase text-white">
+                  <p className="caption-uppercase text-foreground">
                     {sponsor.state.txHash
                       ? "Confirming on-chain..."
                       : "Please sign in your wallet..."}
                   </p>
                   {sponsor.state.txHash && (
-                    <div className="w-full p-3 bg-black border border-hairline font-mono text-[10px] text-muted truncate">
+                    <div className="w-full p-3 bg-background border border-hairline font-mono text-[10px] text-muted truncate">
                       TX: {sponsor.state.txHash}
                     </div>
                   )}
@@ -445,10 +445,10 @@ export default function ProjectDetailPage() {
               {/* Success */}
               {sponsor.state.status === "success" && (
                 <div className="space-y-6 text-center">
-                  <div className="w-12 h-12 border border-white rounded-full flex items-center justify-center mx-auto text-white">
+                  <div className="w-12 h-12 border border-foreground rounded-full flex items-center justify-center mx-auto text-foreground">
                     <span className="material-symbols-outlined text-[24px]">done</span>
                   </div>
-                  <h4 className="font-mono text-base uppercase tracking-[2px] text-white">
+                  <h4 className="font-mono text-base uppercase tracking-[2px] text-foreground">
                     Sponsored {sponsor.amount} XLM!
                   </h4>
                   <p className="body-serif text-muted text-sm">
@@ -473,7 +473,7 @@ export default function ProjectDetailPage() {
               {/* Failed */}
               {sponsor.state.status === "failed" && (
                 <div className="space-y-6">
-                  <div className="p-4 bg-black border border-hairline-strong text-xs font-mono text-white leading-relaxed">
+                  <div className="p-4 bg-background border border-hairline text-xs font-mono text-foreground leading-relaxed">
                     {sponsor.state.errorMessage}
                   </div>
                   <div className="flex gap-4">
