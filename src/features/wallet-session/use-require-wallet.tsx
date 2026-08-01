@@ -2,11 +2,11 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { useWalletSession } from "./use-wallet-session";
+import { useWallet } from "@/features/wallet/use-wallet";
 
 export function useRequireWallet() {
   const router = useRouter();
-  const { publicKey, isConnected, isInitializing } = useWalletSession();
+  const { publicKey, isConnected, isInitializing } = useWallet();
 
   const redirectToConnect = React.useCallback(() => {
     router.push("/wallet");
