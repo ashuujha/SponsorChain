@@ -6,6 +6,7 @@ import {
   getAllProjects,
   ProjectData,
 } from "@/features/projects/contract-data";
+import { ProjectAvatar } from "@/components/shared/project-avatar";
 
 interface ApiProject {
   id: string;
@@ -68,9 +69,7 @@ export default function ExplorePage() {
     const frac = n % BigInt(10_000_0000);
     const fracStr = frac.toString().padStart(7, "0");
     const trimmed = fracStr.replace(/0+$/, "");
-    return trimmed
-      ? `${whole}.${trimmed}`
-      : `${whole}.0`;
+    return trimmed ? `${whole}.${trimmed}` : `${whole}.0`;
   };
 
   const filtered = projects.filter((p) => {
@@ -87,17 +86,17 @@ export default function ExplorePage() {
   });
 
   return (
-    <div className="pb-xl px-gutter max-w-container-max mx-auto overflow-x-hidden pt-8">
+    <div className="pb-xl px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-x-hidden pt-8">
       <header className="mb-xl">
-        <h1 className="font-headline-lg text-headline-lg mb-lg font-bold">
+        <h1 className="font-headline-lg text-headline-lg mb-lg font-bold text-foreground">
           Explore Projects
         </h1>
         <div className="relative max-w-2xl">
-          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary dark:text-neutral-400">
             search
           </span>
           <input
-            className="w-full h-12 pl-12 pr-4 bg-[#F1F0ED] border-none rounded-full focus:ring-2 focus:ring-primary outline-none font-body-lg"
+            className="w-full h-12 pl-12 pr-4 bg-[#F1F0ED] dark:bg-neutral-900 border border-transparent dark:border-neutral-800 rounded-full focus:ring-2 focus:ring-primary dark:focus:ring-neutral-400 outline-none font-body-lg text-foreground transition-colors"
             placeholder="Search projects, repositories..."
             type="text"
             value={searchQuery}
@@ -113,8 +112,8 @@ export default function ExplorePage() {
             onClick={() => setActiveFilter(f)}
             className={`px-lg py-2 rounded-full font-semibold text-body-sm whitespace-nowrap transition-all ${
               activeFilter === f
-                ? "bg-primary text-on-primary"
-                : "bg-transparent border border-outline-variant text-on-surface-variant hover:bg-surface-container-low"
+                ? "bg-primary dark:bg-neutral-100 text-on-primary dark:text-neutral-900 shadow-xs"
+                : "bg-transparent border border-outline-variant dark:border-neutral-800 text-secondary dark:text-neutral-300 hover:bg-surface-container dark:hover:bg-neutral-800"
             }`}
           >
             {f}
@@ -124,63 +123,61 @@ export default function ExplorePage() {
 
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-20 gap-md">
-          <span className="animate-spin material-symbols-outlined text-[40px] text-primary">
+          <span className="animate-spin material-symbols-outlined text-[40px] text-primary dark:text-neutral-200">
             progress_activity
           </span>
-          <p className="font-semibold text-on-surface-variant text-body-md">
+          <p className="font-semibold text-secondary dark:text-neutral-400 text-body-md">
             Querying contract state...
           </p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-20 border border-dashed border-outline-variant rounded-2xl bg-white">
+        <div className="text-center py-20 border border-dashed border-outline-variant dark:border-neutral-800 rounded-2xl bg-white dark:bg-neutral-900">
           <span className="material-symbols-outlined text-[48px] text-neutral-400 mb-md">
             inventory_2
           </span>
-          <h3 className="font-bold text-headline-md text-primary mb-xs">
+          <h3 className="font-bold text-headline-md text-foreground mb-xs">
             No projects found
           </h3>
-          <p className="text-on-surface-variant text-body-sm">
+          <p className="text-secondary dark:text-neutral-400 text-body-sm">
             Try tweaking your search terms or be the first one to{" "}
-            <Link href="/list-project" className="text-primary underline font-semibold">
+            <Link href="/list-project" className="text-primary dark:text-neutral-200 underline font-semibold">
               list a project
             </Link>
             .
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((project) => (
             <Link key={project.id.toString()} href={`/projects/${project.id}`}>
-              <div className="bg-white border border-[#E7E5E1] rounded-[16px] p-lg h-full flex flex-col hover:shadow-[0px_4px_12px_rgba(0,0,0,0.03)] transition-shadow cursor-pointer">
-                <div className="flex items-start justify-between mb-md">
-                  <div className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center border border-outline-variant">
-                    <span className="material-symbols-outlined text-primary">hub</span>
-                  </div>
-                  <div className="flex items-center gap-1 px-sm py-1 bg-[#E8F5E9] rounded-lg">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E5D2A]">
+              <div className="bg-white dark:bg-neutral-900 border border-[#E7E5E1] dark:border-neutral-800 rounded-2xl p-6 h-full flex flex-col hover:shadow-md dark:hover:border-neutral-700 transition-all cursor-pointer group">
+                <div className="flex items-start justify-between mb-4">
+                  <ProjectAvatar name={project.name} size="md" />
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/20 rounded-lg">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
                       On-Chain
                     </span>
                   </div>
                 </div>
-                <div className="mb-md">
-                  <h3 className="font-headline-md text-headline-md text-[#141414] font-bold truncate">
+                <div className="mb-3">
+                  <h3 className="font-headline-md text-headline-md text-foreground font-bold truncate group-hover:text-primary dark:group-hover:text-neutral-100 transition-colors">
                     {project.name}
                   </h3>
-                  <p className="font-mono-code text-body-sm text-[#6E6C68] truncate">
+                  <p className="font-mono-code text-body-sm text-secondary dark:text-neutral-400 truncate mt-0.5">
                     {project.repoFullName}
                   </p>
                 </div>
-                <p className="text-[#6E6C68] font-body-sm mb-lg line-clamp-2">
+                <p className="text-secondary dark:text-neutral-400 font-body-sm mb-6 line-clamp-2 leading-relaxed">
                   {project.description}
                 </p>
-                <div className="mt-auto space-y-sm">
+                <div className="mt-auto pt-4 border-t border-outline-variant/50 dark:border-neutral-800/80 space-y-2">
                   <div className="flex justify-between items-end">
-                    <span className="font-bold font-body-sm text-near-black">
+                    <span className="font-bold font-body-sm text-emerald-600 dark:text-emerald-400">
                       {formatXlm(project.totalRaised)} XLM raised
                     </span>
                   </div>
-                  <div className="flex items-center gap-sm text-secondary text-[11px]">
+                  <div className="flex items-center gap-1.5 text-secondary dark:text-neutral-400 text-[11px]">
                     <span className="material-symbols-outlined text-[14px]">people</span>
                     <span className="font-semibold">
                       {project.sponsorCount} sponsor{project.sponsorCount !== 1 ? "s" : ""}

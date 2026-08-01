@@ -4,6 +4,8 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUIStore } from "@/lib/ui-store";
+import { BrandLogo } from "./logo";
+import { ThemeToggle } from "./theme-toggle";
 
 export function NavigationDrawer() {
   const isDrawerOpen = useUIStore((state) => state.isDrawerOpen);
@@ -23,27 +25,34 @@ export function NavigationDrawer() {
       {/* Overlay */}
       {isDrawerOpen && (
         <div
-          className="fixed inset-0 bg-black/20 z-50 transition-opacity duration-300"
+          className="fixed inset-0 bg-black/40 dark:bg-black/60 z-50 transition-opacity duration-300 backdrop-blur-xs"
           onClick={toggleDrawer}
         />
       )}
 
       {/* Drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 w-64 z-50 bg-surface-container-lowest border-r border-outline-variant transition-transform duration-300 ease-in-out flex flex-col p-md gap-sm ${
+        className={`fixed inset-y-0 left-0 w-72 z-50 bg-surface dark:bg-neutral-900 border-r border-outline-variant dark:border-neutral-800 transition-transform duration-300 ease-in-out flex flex-col p-md gap-sm ${
           isDrawerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between mb-lg">
-          <div className="flex items-center gap-xs">
-            <span className="material-symbols-outlined text-primary">hub</span>
-            <span className="font-headline-md text-headline-md font-bold text-primary">SponsorChain</span>
+        <div className="flex items-center justify-between mb-lg pt-sm">
+          <div className="flex items-center gap-2">
+            <BrandLogo className="w-6 h-6 text-primary dark:text-neutral-100" />
+            <span className="font-headline-md text-headline-md font-bold text-primary dark:text-neutral-100">
+              SponsorChain
+            </span>
           </div>
-          <button className="p-xs hover:bg-surface-container rounded-full" onClick={toggleDrawer} aria-label="Close menu">
+          <button
+            className="p-xs hover:bg-surface-container dark:hover:bg-neutral-800 rounded-full text-secondary dark:text-neutral-300"
+            onClick={toggleDrawer}
+            aria-label="Close menu"
+          >
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
-        <nav className="flex flex-col gap-xs">
+
+        <nav className="flex flex-col gap-xs flex-grow">
           {menuItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -51,18 +60,23 @@ export function NavigationDrawer() {
                 key={item.href}
                 href={item.href}
                 onClick={toggleDrawer}
-                className={`flex items-center gap-md p-md rounded-lg font-body-lg text-body-lg transition-colors ${
+                className={`flex items-center gap-md px-md py-3 rounded-xl font-semibold text-body-sm transition-colors ${
                   isActive
-                    ? "bg-secondary-container text-on-secondary-container"
-                    : "text-secondary hover:bg-surface-container-high"
+                    ? "bg-primary dark:bg-neutral-100 text-on-primary dark:text-neutral-900 shadow-xs"
+                    : "text-secondary dark:text-neutral-400 hover:bg-surface-container dark:hover:bg-neutral-800 hover:text-primary dark:hover:text-neutral-100"
                 }`}
               >
-                <span className="material-symbols-outlined">{item.icon}</span>
+                <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
                 {item.label}
               </Link>
             );
           })}
         </nav>
+
+        <div className="mt-auto pt-md border-t border-outline-variant dark:border-neutral-800 flex items-center justify-between text-secondary dark:text-neutral-400 text-body-sm">
+          <span>Appearance</span>
+          <ThemeToggle />
+        </div>
       </aside>
     </>
   );
