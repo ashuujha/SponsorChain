@@ -32,34 +32,10 @@ jobs:
           restore-keys: cargo-v3-${{ runner.os }}-
 
       - name: Build contracts
-        run: cargo build --target wasm32v1-none --release > build.log 2>&1
-        working-directory: contracts
-
-      - name: Print build log on failure
-        if: failure()
         run: |
-          cat build.log
-          echo "=== ix.io Pastebin Link ==="
-          curl -F 'f:1=@build.log' ix.io || true
+          cargo build --target wasm32v1-none --release -p project-registry
+          cargo build --target wasm32v1-none --release
         working-directory: contracts
-
-      - name: Commit and push build log on failure
-        if: failure()
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git checkout -b ci-debug-${{ github.run_id }}
-          git add build.log
-          git commit -m "ci: debug build failure log for run ${{ github.run_id }}"
-          git push origin ci-debug-${{ github.run_id }}
-        working-directory: contracts
-
-      - name: Upload build log on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cargo-build-log
-          path: contracts/build.log
 
       - name: Run contract tests
         run: cargo test -- --nocapture
