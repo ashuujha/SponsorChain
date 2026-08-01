@@ -218,12 +218,12 @@ export default function ProjectDetailPage() {
 
   if (notFound) {
     return (
-      <div className="max-w-md mx-auto py-24 text-center space-y-4 bg-background min-h-screen text-foreground">
+      <div className="max-w-md mx-auto py-24 text-center space-y-4 px-4 bg-background min-h-screen text-foreground">
         <span className="material-symbols-outlined text-[48px] text-muted">search_off</span>
         <h3 className="display-md text-2xl text-foreground">Project not found</h3>
         <p className="body-serif text-muted text-sm">This project may have been removed.</p>
         <Link href="/explore">
-          <Button size="lg">Browse Projects</Button>
+          <Button size="lg" className="min-h-[44px]">Browse Projects</Button>
         </Link>
       </div>
     );
@@ -232,59 +232,72 @@ export default function ProjectDetailPage() {
   if (!project) return null;
 
   return (
-    <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto pt-12 relative bg-background min-h-screen text-foreground transition-colors">
+    <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto pt-8 sm:pt-12 relative bg-background min-h-screen text-foreground transition-colors overflow-x-hidden">
       <Link
         href="/explore"
-        className="bugatti-link inline-flex items-center gap-2 mb-8"
+        className="bugatti-link inline-flex items-center gap-2 mb-6 sm:mb-8 text-xs min-h-[44px]"
       >
         &larr; BACK TO EXPLORE
       </Link>
 
-      <div className="flex flex-col lg:flex-row gap-12">
-        {/* Main column */}
-        <div className="flex-grow space-y-12 max-w-4xl">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-6 border-b border-hairline pb-8">
+      {/* Main Container: On mobile/tablet (<1024px), sponsor panel is ordered right after header */}
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+        {/* Header & Main Info */}
+        <div className="flex-grow space-y-8 sm:space-y-12 max-w-full lg:max-w-4xl min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-b border-hairline pb-6 sm:pb-8">
             <ProjectAvatar name={project.name} size="lg" />
-            <div className="space-y-2">
-              <h1 className="display-lg text-3xl sm:text-4xl md:text-5xl font-normal text-foreground tracking-[3px] uppercase">
+            <div className="space-y-2 min-w-0">
+              <h1 className="display-lg text-2xl sm:text-4xl md:text-5xl font-normal text-foreground tracking-[2px] sm:tracking-[3px] uppercase break-words">
                 {project.name}
               </h1>
               <a
-                className="font-mono text-xs text-muted hover:text-foreground uppercase tracking-[2px] inline-flex items-center gap-2"
+                className="font-mono text-xs text-muted hover:text-foreground uppercase tracking-[1.5px] inline-flex items-center gap-2 max-w-full truncate"
                 href={`https://github.com/${project.repoFullName}`}
                 target="_blank"
                 rel="noreferrer"
               >
-                <span>REPOSITORY:</span>
-                <span className="text-foreground underline">{project.repoFullName}</span>
+                <span className="shrink-0">REPO:</span>
+                <span className="text-foreground underline truncate">{project.repoFullName}</span>
               </a>
             </div>
           </div>
 
-          <p className="body-serif text-lg md:text-xl text-muted leading-relaxed max-w-3xl">
+          {/* Sponsor Panel on Mobile (<1024px): Prominently Placed First */}
+          <div className="block lg:hidden w-full">
+            <SponsorCard
+              project={project}
+              wallet={wallet}
+              sponsor={sponsor}
+              ownerKeyError={ownerKeyError}
+              handleSponsorClick={handleSponsorClick}
+              handleConfirmSponsor={handleConfirmSponsor}
+              formatPublicKey={formatPublicKey}
+            />
+          </div>
+
+          <p className="body-serif text-base sm:text-lg md:text-xl text-muted leading-relaxed max-w-3xl break-words">
             {project.description}
           </p>
 
           {/* Vehicle Spec Cells */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 py-6 border-y border-hairline">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 py-6 border-y border-hairline">
             <div className="space-y-1">
-              <div className="caption-uppercase text-muted">TOTAL RAISED</div>
-              <div className="display-md text-3xl font-normal text-foreground tracking-[2px]">
+              <div className="caption-uppercase text-muted text-[10px] sm:text-xs">TOTAL RAISED</div>
+              <div className="display-md text-2xl sm:text-3xl font-normal text-foreground tracking-[2px]">
                 {formatXlm(project.totalRaised)} XLM
               </div>
             </div>
 
             <div className="space-y-1">
-              <div className="caption-uppercase text-muted">SPONSORS</div>
-              <div className="display-md text-3xl font-normal text-foreground tracking-[2px]">
+              <div className="caption-uppercase text-muted text-[10px] sm:text-xs">SPONSORS</div>
+              <div className="display-md text-2xl sm:text-3xl font-normal text-foreground tracking-[2px]">
                 {project.sponsorCount}
               </div>
             </div>
 
-            <div className="space-y-1">
-              <div className="caption-uppercase text-muted">OWNER WALLET</div>
-              <div className="font-mono text-sm font-normal text-foreground tracking-[1.5px] truncate pt-2">
+            <div className="space-y-1 min-w-0">
+              <div className="caption-uppercase text-muted text-[10px] sm:text-xs">OWNER WALLET</div>
+              <div className="font-mono text-xs sm:text-sm font-normal text-foreground tracking-[1px] truncate pt-1 sm:pt-2">
                 {formatPublicKey(project.owner)}
               </div>
             </div>
@@ -292,12 +305,12 @@ export default function ProjectDetailPage() {
 
           {/* Sponsorship Activity */}
           <section className="space-y-6 pt-4">
-            <h3 className="font-mono text-base text-foreground uppercase tracking-[2px]">
+            <h3 className="font-mono text-sm sm:text-base text-foreground uppercase tracking-[2px]">
               Sponsorships
             </h3>
             <div className="bg-surface border border-hairline rounded-none overflow-hidden">
               {sponsorships.length === 0 ? (
-                <div className="p-12 text-center body-serif text-muted text-sm">
+                <div className="p-8 sm:p-12 text-center body-serif text-muted text-sm">
                   No sponsorships yet — be the first!
                 </div>
               ) : (
@@ -307,14 +320,14 @@ export default function ProjectDetailPage() {
                     return (
                       <div
                         key={s.id.toString()}
-                        className="flex items-center justify-between p-5 hover:bg-surface-container transition-colors"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 gap-3 hover:bg-surface-container transition-colors"
                       >
-                        <div className="flex items-center gap-4">
-                          <div className="w-9 h-9 border border-hairline flex items-center justify-center font-serif text-foreground">
+                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                          <div className="w-8 h-8 sm:w-9 sm:h-9 border border-hairline flex items-center justify-center font-serif text-foreground shrink-0">
                             S
                           </div>
-                          <div className="flex flex-col">
-                            <span className="font-mono text-xs text-foreground uppercase tracking-[1.5px]">
+                          <div className="flex flex-col min-w-0">
+                            <span className="font-mono text-xs text-foreground uppercase tracking-[1px] truncate">
                               {shortSponsor}
                             </span>
                             <span className="caption-uppercase text-[10px] text-muted mt-0.5">
@@ -323,8 +336,8 @@ export default function ProjectDetailPage() {
                           </div>
                         </div>
 
-                        <div className="flex flex-col items-end gap-1">
-                          <span className="font-mono text-sm text-foreground uppercase tracking-[1.5px]">
+                        <div className="flex sm:flex-col items-center sm:items-end justify-between gap-1 pt-2 sm:pt-0 border-t sm:border-t-0 border-hairline">
+                          <span className="font-mono text-xs sm:text-sm text-foreground uppercase tracking-[1.5px]">
                             {formatXlm(s.amount)} XLM
                           </span>
                           {s.txHash && (
@@ -347,149 +360,179 @@ export default function ProjectDetailPage() {
           </section>
         </div>
 
-        {/* Sponsor panel */}
-        <div className="lg:w-88 shrink-0">
-          <div className="lg:sticky lg:top-24 space-y-6">
-            <div className="bg-surface border border-hairline rounded-none p-8 space-y-8">
-              <h3 className="font-mono text-base text-foreground uppercase tracking-[2px]">
-                Sponsor this project
-              </h3>
-
-              {sponsor.state.status === "idle" && (
-                <>
-                  <div className="space-y-2">
-                    <label className="caption-uppercase text-muted block">AMOUNT (XLM)</label>
-                    <input
-                      className="bugatti-input w-full text-lg"
-                      placeholder="0.00"
-                      type="number"
-                      value={sponsor.amount}
-                      onChange={(e) => sponsor.setAmount(e.target.value)}
-                    />
-                  </div>
-
-                  <Button
-                    onClick={handleSponsorClick}
-                    className="w-full"
-                    size="lg"
-                  >
-                    {wallet.isConnected ? "Sponsor with Wallet" : "Connect Wallet to Sponsor"}
-                  </Button>
-
-                  <p className="caption-uppercase text-[10px] text-muted text-center leading-relaxed">
-                    STELLAR TESTNET FACILITY // NO REAL FUNDS REQUIRED
-                  </p>
-
-                  {ownerKeyError && (
-                    <div className="p-4 bg-surface-container border border-hairline text-xs text-foreground font-mono leading-relaxed">
-                      {ownerKeyError}
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* Review */}
-              {sponsor.state.status === "review" && (
-                <div className="space-y-6">
-                  <div className="p-6 bg-background border border-hairline text-center space-y-2">
-                    <span className="caption-uppercase text-muted block uppercase">
-                      Sponsorship Amount
-                    </span>
-                    <span className="display-md text-3xl font-normal text-foreground tracking-[2px]">
-                      {sponsor.amount} XLM
-                    </span>
-                  </div>
-
-                  <div className="space-y-3 font-mono text-xs text-foreground">
-                    <div className="flex justify-between border-b border-hairline pb-2">
-                      <span className="text-muted">To Project</span>
-                      <span>{project.name}</span>
-                    </div>
-                    <div className="flex justify-between pb-2">
-                      <span className="text-muted">Owner Wallet</span>
-                      <span>{formatPublicKey(project.owner)}</span>
-                    </div>
-                  </div>
-
-                  <Button onClick={handleConfirmSponsor} className="w-full" size="lg">
-                    Sign &amp; Send Payment
-                  </Button>
-                  <button
-                    onClick={sponsor.reset}
-                    className="w-full font-mono text-xs uppercase tracking-[2px] text-muted hover:text-foreground text-center"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
-
-              {/* Pending */}
-              {sponsor.state.status === "pending" && (
-                <div className="py-12 flex flex-col items-center gap-4 text-center">
-                  <span className="animate-spin material-symbols-outlined text-[40px] text-foreground">
-                    progress_activity
-                  </span>
-                  <p className="caption-uppercase text-foreground">
-                    {sponsor.state.txHash
-                      ? "Confirming on-chain..."
-                      : "Please sign in your wallet..."}
-                  </p>
-                  {sponsor.state.txHash && (
-                    <div className="w-full p-3 bg-background border border-hairline font-mono text-[10px] text-muted truncate">
-                      TX: {sponsor.state.txHash}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Success */}
-              {sponsor.state.status === "success" && (
-                <div className="space-y-6 text-center">
-                  <div className="w-12 h-12 border border-foreground rounded-full flex items-center justify-center mx-auto text-foreground">
-                    <span className="material-symbols-outlined text-[24px]">done</span>
-                  </div>
-                  <h4 className="font-mono text-base uppercase tracking-[2px] text-foreground">
-                    Sponsored {sponsor.amount} XLM!
-                  </h4>
-                  <p className="body-serif text-muted text-sm">
-                    Your contribution is live on the Stellar testnet.
-                  </p>
-                  {sponsor.state.txHash && (
-                    <a
-                      href={`https://stellar.expert/explorer/testnet/tx/${sponsor.state.txHash}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="bugatti-link inline-block"
-                    >
-                      VIEW ON EXPLORER &rarr;
-                    </a>
-                  )}
-                  <Button onClick={sponsor.reset} className="w-full">
-                    Done
-                  </Button>
-                </div>
-              )}
-
-              {/* Failed */}
-              {sponsor.state.status === "failed" && (
-                <div className="space-y-6">
-                  <div className="p-4 bg-background border border-hairline text-xs font-mono text-foreground leading-relaxed">
-                    {sponsor.state.errorMessage}
-                  </div>
-                  <div className="flex gap-4">
-                    <Button variant="secondary" onClick={sponsor.reset} className="flex-1">
-                      Cancel
-                    </Button>
-                    <Button onClick={handleConfirmSponsor} className="flex-1">
-                      Try Again
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
+        {/* Sponsor panel on Desktop (≥1024px): Sticky Sidebar */}
+        <div className="hidden lg:block lg:w-88 shrink-0">
+          <div className="lg:sticky lg:top-24">
+            <SponsorCard
+              project={project}
+              wallet={wallet}
+              sponsor={sponsor}
+              ownerKeyError={ownerKeyError}
+              handleSponsorClick={handleSponsorClick}
+              handleConfirmSponsor={handleConfirmSponsor}
+              formatPublicKey={formatPublicKey}
+            />
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function SponsorCard({
+  project,
+  wallet,
+  sponsor,
+  ownerKeyError,
+  handleSponsorClick,
+  handleConfirmSponsor,
+  formatPublicKey,
+}: {
+  project: ProjectData;
+  wallet: ReturnType<typeof useWallet>;
+  sponsor: ReturnType<typeof useSponsorProject>;
+  ownerKeyError: string | null;
+  handleSponsorClick: () => void;
+  handleConfirmSponsor: () => void;
+  formatPublicKey: (k: string) => string;
+}) {
+  return (
+    <div className="bg-surface border border-hairline rounded-none p-6 sm:p-8 space-y-6 sm:space-y-8 w-full">
+      <h3 className="font-mono text-sm sm:text-base text-foreground uppercase tracking-[2px]">
+        Sponsor this project
+      </h3>
+
+      {sponsor.state.status === "idle" && (
+        <>
+          <div className="space-y-2">
+            <label className="caption-uppercase text-muted block text-xs">AMOUNT (XLM)</label>
+            <input
+              className="bugatti-input w-full text-base sm:text-lg min-h-[44px]"
+              placeholder="0.00"
+              type="number"
+              value={sponsor.amount}
+              onChange={(e) => sponsor.setAmount(e.target.value)}
+            />
+          </div>
+
+          <Button
+            onClick={handleSponsorClick}
+            className="w-full min-h-[44px]"
+            size="lg"
+          >
+            {wallet.isConnected ? "Sponsor with Wallet" : "Connect Wallet to Sponsor"}
+          </Button>
+
+          <p className="caption-uppercase text-[10px] text-muted text-center leading-relaxed">
+            STELLAR TESTNET FACILITY // NO REAL FUNDS REQUIRED
+          </p>
+
+          {ownerKeyError && (
+            <div className="p-4 bg-surface-container border border-hairline text-xs text-foreground font-mono leading-relaxed break-words">
+              {ownerKeyError}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Review */}
+      {sponsor.state.status === "review" && (
+        <div className="space-y-6">
+          <div className="p-6 bg-background border border-hairline text-center space-y-2">
+            <span className="caption-uppercase text-muted block uppercase">
+              Sponsorship Amount
+            </span>
+            <span className="display-md text-2xl sm:text-3xl font-normal text-foreground tracking-[2px]">
+              {sponsor.amount} XLM
+            </span>
+          </div>
+
+          <div className="space-y-3 font-mono text-xs text-foreground">
+            <div className="flex justify-between border-b border-hairline pb-2">
+              <span className="text-muted">To Project</span>
+              <span className="truncate max-w-[160px]">{project.name}</span>
+            </div>
+            <div className="flex justify-between pb-2">
+              <span className="text-muted">Owner Wallet</span>
+              <span>{formatPublicKey(project.owner)}</span>
+            </div>
+          </div>
+
+          <Button onClick={handleConfirmSponsor} className="w-full min-h-[44px]" size="lg">
+            Sign &amp; Send Payment
+          </Button>
+          <button
+            onClick={sponsor.reset}
+            className="w-full font-mono text-xs uppercase tracking-[2px] text-muted hover:text-foreground text-center py-2"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+
+      {/* Pending */}
+      {sponsor.state.status === "pending" && (
+        <div className="py-8 sm:py-12 flex flex-col items-center gap-4 text-center">
+          <span className="animate-spin material-symbols-outlined text-[36px] sm:text-[40px] text-foreground">
+            progress_activity
+          </span>
+          <p className="caption-uppercase text-foreground text-xs sm:text-sm">
+            {sponsor.state.txHash
+              ? "Confirming on-chain..."
+              : "Please sign in your wallet..."}
+          </p>
+          {sponsor.state.txHash && (
+            <div className="w-full p-3 bg-background border border-hairline font-mono text-[10px] text-muted truncate">
+              TX: {sponsor.state.txHash}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Success */}
+      {sponsor.state.status === "success" && (
+        <div className="space-y-6 text-center">
+          <div className="w-12 h-12 border border-foreground rounded-full flex items-center justify-center mx-auto text-foreground">
+            <span className="material-symbols-outlined text-[24px]">done</span>
+          </div>
+          <h4 className="font-mono text-sm sm:text-base uppercase tracking-[2px] text-foreground">
+            Sponsored {sponsor.amount} XLM!
+          </h4>
+          <p className="body-serif text-muted text-sm">
+            Your contribution is live on the Stellar testnet.
+          </p>
+          {sponsor.state.txHash && (
+            <a
+              href={`https://stellar.expert/explorer/testnet/tx/${sponsor.state.txHash}`}
+              target="_blank"
+              rel="noreferrer"
+              className="bugatti-link inline-block min-h-[44px] leading-[44px]"
+            >
+              VIEW ON EXPLORER &rarr;
+            </a>
+          )}
+          <Button onClick={sponsor.reset} className="w-full min-h-[44px]">
+            Done
+          </Button>
+        </div>
+      )}
+
+      {/* Failed */}
+      {sponsor.state.status === "failed" && (
+        <div className="space-y-6">
+          <div className="p-4 bg-background border border-hairline text-xs font-mono text-foreground leading-relaxed break-words">
+            {sponsor.state.errorMessage}
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button variant="secondary" onClick={sponsor.reset} className="w-full sm:flex-1 min-h-[44px]">
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmSponsor} className="w-full sm:flex-1 min-h-[44px]">
+              Try Again
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

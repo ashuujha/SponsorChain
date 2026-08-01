@@ -86,17 +86,17 @@ export default function ExplorePage() {
   });
 
   return (
-    <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto overflow-x-hidden pt-12 bg-background min-h-screen text-foreground transition-colors">
-      <header className="mb-12 border-b border-hairline pb-8 flex flex-col items-center text-center">
-        <div className="caption-uppercase text-muted mb-2">CATALOG // REPOSITORIES</div>
-        <h1 className="display-lg text-3xl sm:text-4xl md:text-5xl font-normal text-foreground tracking-[3px] uppercase mb-6">
+    <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto overflow-x-hidden pt-8 sm:pt-12 bg-background min-h-screen text-foreground transition-colors">
+      <header className="mb-8 sm:mb-12 border-b border-hairline pb-6 sm:pb-8 flex flex-col items-center text-center">
+        <div className="caption-uppercase text-muted mb-2 text-[10px] sm:text-xs">CATALOG // REPOSITORIES</div>
+        <h1 className="display-lg text-2xl sm:text-4xl md:text-5xl font-normal text-foreground tracking-[2px] sm:tracking-[3px] uppercase mb-4 sm:mb-6">
           EXPLORE PROJECTS
         </h1>
 
         {/* Underline Text Input */}
-        <div className="relative max-w-2xl w-full">
+        <div className="relative max-w-2xl w-full px-2">
           <input
-            className="bugatti-input w-full text-base text-center"
+            className="bugatti-input w-full text-sm sm:text-base text-center min-h-[44px]"
             placeholder="SEARCH REPOSITORIES BY NAME, REPO, OR DESCRIPTION..."
             type="text"
             value={searchQuery}
@@ -106,12 +106,12 @@ export default function ExplorePage() {
       </header>
 
       {/* Filter Bar */}
-      <section className="flex justify-center gap-3 mb-12 overflow-x-auto hide-scrollbar pb-2">
+      <section className="flex flex-wrap sm:flex-nowrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-12 overflow-x-auto hide-scrollbar pb-2 px-2">
         {["All", "Most funded", "Active", "Recently listed"].map((f) => (
           <button
             key={f}
             onClick={() => setActiveFilter(f)}
-            className={`px-6 py-2 rounded-full font-mono text-xs uppercase tracking-[2px] transition-all ${
+            className={`px-4 sm:px-6 py-2.5 min-h-[44px] rounded-full font-mono text-[11px] sm:text-xs uppercase tracking-[1.5px] sm:tracking-[2px] transition-all whitespace-nowrap ${
               activeFilter === f
                 ? "bg-foreground text-background font-semibold"
                 : "bg-transparent border border-hairline text-muted hover:border-foreground hover:text-foreground"
@@ -132,34 +132,34 @@ export default function ExplorePage() {
           </p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-24 border border-hairline bg-surface p-12">
-          <span className="material-symbols-outlined text-[48px] text-muted mb-4">
+        <div className="text-center py-16 sm:py-24 border border-hairline bg-surface p-8 sm:p-12">
+          <span className="material-symbols-outlined text-[40px] sm:text-[48px] text-muted mb-4">
             search_off
           </span>
-          <h3 className="font-mono text-lg text-foreground uppercase tracking-[2px] mb-2">
+          <h3 className="font-mono text-base sm:text-lg text-foreground uppercase tracking-[2px] mb-2">
             NO PROJECTS FOUND
           </h3>
-          <p className="body-serif text-muted text-sm mb-4">
+          <p className="body-serif text-muted text-sm mb-6">
             Try adjusting your search terms or register a new project.
           </p>
-          <Link href="/list-project" className="bugatti-link">
+          <Link href="/list-project" className="bugatti-link text-xs min-h-[44px] inline-flex items-center">
             LIST A PROJECT &rarr;
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
           {filtered.map((project) => (
-            <Link key={project.id.toString()} href={`/projects/${project.id}`}>
-              <div className="bg-surface border border-hairline rounded-none p-6 h-full flex flex-col hover:border-foreground/60 transition-all cursor-pointer group">
+            <Link key={project.id.toString()} href={`/projects/${project.id}`} className="block group">
+              <div className="bg-surface border border-hairline rounded-none p-6 h-full flex flex-col hover:border-foreground/60 transition-all cursor-pointer">
                 <div className="flex items-start justify-between mb-6">
                   <ProjectAvatar name={project.name} size="md" />
-                  <div className="caption-uppercase text-xs text-foreground border border-hairline px-2.5 py-1">
+                  <div className="caption-uppercase text-[10px] text-foreground border border-hairline px-2 py-0.5">
                     ON-CHAIN
                   </div>
                 </div>
 
-                <div className="mb-4">
-                  <h3 className="font-mono text-base text-foreground uppercase tracking-[1.5px] truncate group-hover:text-muted transition-colors">
+                <div className="mb-3">
+                  <h3 className="font-mono text-sm sm:text-base text-foreground uppercase tracking-[1.5px] truncate group-hover:text-muted transition-colors">
                     {project.name}
                   </h3>
                   <p className="font-mono text-xs text-muted truncate mt-1">
@@ -167,7 +167,7 @@ export default function ExplorePage() {
                   </p>
                 </div>
 
-                <p className="body-serif-sm text-muted mb-8 line-clamp-3 leading-relaxed">
+                <p className="body-serif-sm text-muted text-xs sm:text-sm mb-6 line-clamp-3 leading-relaxed">
                   {project.description}
                 </p>
 

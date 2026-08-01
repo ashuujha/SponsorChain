@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
-function SunIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
+function SunIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <circle cx="12" cy="12" r="4" />
@@ -12,7 +12,7 @@ function SunIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
   );
 }
 
-function MoonIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
+function MoonIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
@@ -20,7 +20,7 @@ function MoonIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
   );
 }
 
-function MonitorIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
+function MonitorIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <rect width="20" height="14" x="2" y="3" rx="1" />
@@ -41,13 +41,13 @@ export function ThemeToggle() {
   const activeTheme = mounted ? theme : "system";
 
   return (
-    <div className="flex items-center bg-surface border border-hairline p-1 rounded-full shadow-xs">
+    <div className="flex items-center bg-surface border border-hairline p-0.5 rounded-full shadow-xs">
       <button
         type="button"
         onClick={() => setTheme("light")}
         title="Light Theme"
         aria-label="Switch to Light Theme"
-        className={`p-1.5 rounded-full transition-all duration-200 ${
+        className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all duration-200 ${
           activeTheme === "light"
             ? "bg-foreground text-background shadow-xs scale-105"
             : "text-muted hover:text-foreground"
@@ -61,7 +61,7 @@ export function ThemeToggle() {
         onClick={() => setTheme("dark")}
         title="Dark Theme"
         aria-label="Switch to Dark Theme"
-        className={`p-1.5 rounded-full transition-all duration-200 ${
+        className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all duration-200 ${
           activeTheme === "dark"
             ? "bg-foreground text-background shadow-xs scale-105"
             : "text-muted hover:text-foreground"
@@ -75,7 +75,7 @@ export function ThemeToggle() {
         onClick={() => setTheme("system")}
         title="System Theme"
         aria-label="Switch to System Theme"
-        className={`p-1.5 rounded-full transition-all duration-200 ${
+        className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all duration-200 ${
           activeTheme === "system"
             ? "bg-foreground text-background shadow-xs scale-105"
             : "text-muted hover:text-foreground"
