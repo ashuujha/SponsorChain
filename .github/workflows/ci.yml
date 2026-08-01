@@ -16,7 +16,8 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          target: wasm32v1-none
+          toolchain: stable
+          targets: wasm32v1-none
 
       - name: Cache Cargo
         uses: actions/cache@v4
@@ -58,7 +59,7 @@ jobs:
         run: npm run typecheck
 
       - name: Test
-        run: npm run test -- --run --exclude 'tests/integration/onboarding-flow|tests/integration/payments-flow|tests/integration/wallet-connect'
+        run: npm run test -- --run
         env:
           NEXTAUTH_SECRET: ci-nexthauth-secret-for-testing-only
           NEXTAUTH_URL: http://localhost:3000
