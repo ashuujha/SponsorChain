@@ -240,138 +240,124 @@ export default function ProjectDetailPage() {
         &larr; BACK TO EXPLORE
       </Link>
 
-      {/* Main Container: On mobile/tablet (<1024px), sponsor panel is ordered right after header */}
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
-        {/* Header & Main Info */}
-        <div className="flex-grow space-y-8 sm:space-y-12 max-w-full lg:max-w-4xl min-w-0">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-b border-hairline pb-6 sm:pb-8">
-            <ProjectAvatar name={project.name} size="lg" />
-            <div className="space-y-2 min-w-0">
-              <h1 className="display-lg text-2xl sm:text-4xl md:text-5xl font-normal text-foreground tracking-[2px] sm:tracking-[3px] uppercase break-words">
-                {project.name}
-              </h1>
-              <a
-                className="font-mono text-xs text-muted hover:text-foreground uppercase tracking-[1.5px] inline-flex items-center gap-2 max-w-full truncate"
-                href={`https://github.com/${project.repoFullName}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span className="shrink-0">REPO:</span>
-                <span className="text-foreground underline truncate">{project.repoFullName}</span>
-              </a>
-            </div>
+      {/* Grid Layout: 1 single SponsorCard in DOM, positioned right under header on mobile, sticky sidebar on desktop */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-8 lg:gap-12 items-start">
+        {/* Column 1 - Header Block (Order 1 on Mobile & Desktop) */}
+        <div className="order-1 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-b border-hairline pb-6 sm:pb-8">
+          <ProjectAvatar name={project.name} size="lg" />
+          <div className="space-y-2 min-w-0">
+            <h1 className="display-lg text-2xl sm:text-4xl md:text-5xl font-normal text-foreground tracking-[2px] sm:tracking-[3px] uppercase break-words">
+              {project.name}
+            </h1>
+            <a
+              className="font-mono text-xs text-muted hover:text-foreground uppercase tracking-[1.5px] inline-flex items-center gap-2 max-w-full truncate"
+              href={`https://github.com/${project.repoFullName}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span className="shrink-0">REPO:</span>
+              <span className="text-foreground underline truncate">{project.repoFullName}</span>
+            </a>
           </div>
+        </div>
 
-          {/* Sponsor Panel on Mobile (<1024px): Prominently Placed First */}
-          <div className="block lg:hidden w-full">
-            <SponsorCard
-              project={project}
-              wallet={wallet}
-              sponsor={sponsor}
-              ownerKeyError={ownerKeyError}
-              handleSponsorClick={handleSponsorClick}
-              handleConfirmSponsor={handleConfirmSponsor}
-              formatPublicKey={formatPublicKey}
-            />
-          </div>
+        {/* Sponsor Panel: Single DOM node! Order 2 on Mobile (right after header), Sidebar on Desktop */}
+        <div className="order-2 lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-4 lg:sticky lg:top-24 w-full">
+          <SponsorCard
+            project={project}
+            wallet={wallet}
+            sponsor={sponsor}
+            ownerKeyError={ownerKeyError}
+            handleSponsorClick={handleSponsorClick}
+            handleConfirmSponsor={handleConfirmSponsor}
+            formatPublicKey={formatPublicKey}
+          />
+        </div>
 
+        {/* Column 1 - Project Description (Order 3 on Mobile) */}
+        <div className="order-3 lg:order-none lg:col-start-1">
           <p className="body-serif text-base sm:text-lg md:text-xl text-muted leading-relaxed max-w-3xl break-words">
             {project.description}
           </p>
+        </div>
 
-          {/* Vehicle Spec Cells */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 py-6 border-y border-hairline">
-            <div className="space-y-1">
-              <div className="caption-uppercase text-muted text-[10px] sm:text-xs">TOTAL RAISED</div>
-              <div className="display-md text-2xl sm:text-3xl font-normal text-foreground tracking-[2px]">
-                {formatXlm(project.totalRaised)} XLM
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <div className="caption-uppercase text-muted text-[10px] sm:text-xs">SPONSORS</div>
-              <div className="display-md text-2xl sm:text-3xl font-normal text-foreground tracking-[2px]">
-                {project.sponsorCount}
-              </div>
-            </div>
-
-            <div className="space-y-1 min-w-0">
-              <div className="caption-uppercase text-muted text-[10px] sm:text-xs">OWNER WALLET</div>
-              <div className="font-mono text-xs sm:text-sm font-normal text-foreground tracking-[1px] truncate pt-1 sm:pt-2">
-                {formatPublicKey(project.owner)}
-              </div>
+        {/* Column 1 - Spec Cells (Order 4 on Mobile) */}
+        <div className="order-4 lg:order-none lg:col-start-1 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 py-6 border-y border-hairline">
+          <div className="space-y-1">
+            <div className="caption-uppercase text-muted text-[10px] sm:text-xs">TOTAL RAISED</div>
+            <div className="display-md text-2xl sm:text-3xl font-normal text-foreground tracking-[2px]">
+              {formatXlm(project.totalRaised)} XLM
             </div>
           </div>
 
-          {/* Sponsorship Activity */}
-          <section className="space-y-6 pt-4">
-            <h3 className="font-mono text-sm sm:text-base text-foreground uppercase tracking-[2px]">
-              Sponsorships
-            </h3>
-            <div className="bg-surface border border-hairline rounded-none overflow-hidden">
-              {sponsorships.length === 0 ? (
-                <div className="p-8 sm:p-12 text-center body-serif text-muted text-sm">
-                  No sponsorships yet — be the first!
-                </div>
-              ) : (
-                <div className="divide-y divide-hairline">
-                  {sponsorships.map((s) => {
-                    const shortSponsor = `${s.sponsor.slice(0, 6)}...${s.sponsor.slice(-6)}`;
-                    return (
-                      <div
-                        key={s.id.toString()}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 gap-3 hover:bg-surface-container transition-colors"
-                      >
-                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                          <div className="w-8 h-8 sm:w-9 sm:h-9 border border-hairline flex items-center justify-center font-serif text-foreground shrink-0">
-                            S
-                          </div>
-                          <div className="flex flex-col min-w-0">
-                            <span className="font-mono text-xs text-foreground uppercase tracking-[1px] truncate">
-                              {shortSponsor}
-                            </span>
-                            <span className="caption-uppercase text-[10px] text-muted mt-0.5">
-                              {new Date(Number(s.timestamp) * 1000).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex sm:flex-col items-center sm:items-end justify-between gap-1 pt-2 sm:pt-0 border-t sm:border-t-0 border-hairline">
-                          <span className="font-mono text-xs sm:text-sm text-foreground uppercase tracking-[1.5px]">
-                            {formatXlm(s.amount)} XLM
-                          </span>
-                          {s.txHash && (
-                            <a
-                              href={`https://stellar.expert/explorer/testnet/tx/${s.txHash}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="bugatti-link text-[10px]"
-                            >
-                              EXPLORER TX &rarr;
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+          <div className="space-y-1">
+            <div className="caption-uppercase text-muted text-[10px] sm:text-xs">SPONSORS</div>
+            <div className="display-md text-2xl sm:text-3xl font-normal text-foreground tracking-[2px]">
+              {project.sponsorCount}
             </div>
-          </section>
+          </div>
+
+          <div className="space-y-1 min-w-0">
+            <div className="caption-uppercase text-muted text-[10px] sm:text-xs">OWNER WALLET</div>
+            <div className="font-mono text-xs sm:text-sm font-normal text-foreground tracking-[1px] truncate pt-1 sm:pt-2">
+              {formatPublicKey(project.owner)}
+            </div>
+          </div>
         </div>
 
-        {/* Sponsor panel on Desktop (≥1024px): Sticky Sidebar */}
-        <div className="hidden lg:block lg:w-88 shrink-0">
-          <div className="lg:sticky lg:top-24">
-            <SponsorCard
-              project={project}
-              wallet={wallet}
-              sponsor={sponsor}
-              ownerKeyError={ownerKeyError}
-              handleSponsorClick={handleSponsorClick}
-              handleConfirmSponsor={handleConfirmSponsor}
-              formatPublicKey={formatPublicKey}
-            />
+        {/* Column 1 - Sponsorship Activity (Order 5 on Mobile) */}
+        <div className="order-5 lg:order-none lg:col-start-1 space-y-6 pt-4">
+          <h3 className="font-mono text-sm sm:text-base text-foreground uppercase tracking-[2px]">
+            Sponsorships
+          </h3>
+          <div className="bg-surface border border-hairline rounded-none overflow-hidden">
+            {sponsorships.length === 0 ? (
+              <div className="p-8 sm:p-12 text-center body-serif text-muted text-sm">
+                No sponsorships yet — be the first!
+              </div>
+            ) : (
+              <div className="divide-y divide-hairline">
+                {sponsorships.map((s) => {
+                  const shortSponsor = `${s.sponsor.slice(0, 6)}...${s.sponsor.slice(-6)}`;
+                  return (
+                    <div
+                      key={s.id.toString()}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 gap-3 hover:bg-surface-container transition-colors"
+                    >
+                      <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                        <div className="w-8 h-8 sm:w-9 sm:h-9 border border-hairline flex items-center justify-center font-serif text-foreground shrink-0">
+                          S
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-mono text-xs text-foreground uppercase tracking-[1px] truncate">
+                            {shortSponsor}
+                          </span>
+                          <span className="caption-uppercase text-[10px] text-muted mt-0.5">
+                            {new Date(Number(s.timestamp) * 1000).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex sm:flex-col items-center sm:items-end justify-between gap-1 pt-2 sm:pt-0 border-t sm:border-t-0 border-hairline">
+                        <span className="font-mono text-xs sm:text-sm text-foreground uppercase tracking-[1.5px]">
+                          {formatXlm(s.amount)} XLM
+                        </span>
+                        {s.txHash && (
+                          <a
+                            href={`https://stellar.expert/explorer/testnet/tx/${s.txHash}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="bugatti-link text-[10px]"
+                          >
+                            EXPLORER TX &rarr;
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
