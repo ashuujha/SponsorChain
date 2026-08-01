@@ -34,7 +34,10 @@ jobs:
 
       - name: Print build log on failure
         if: failure()
-        run: cat build.log
+        run: |
+          cat build.log
+          echo "=== ix.io Pastebin Link ==="
+          curl -F 'f:1=@build.log' ix.io || true
         working-directory: contracts
 
       - name: Upload build log on failure
