@@ -220,10 +220,10 @@ export default function ProjectDetailPage() {
     return (
       <div className="max-w-md mx-auto py-24 text-center space-y-4 bg-black min-h-screen text-white">
         <span className="material-symbols-outlined text-[48px] text-muted">search_off</span>
-        <h3 className="display-md text-2xl text-white">PROJECT NOT FOUND</h3>
+        <h3 className="display-md text-2xl text-white">Project not found</h3>
         <p className="body-serif text-muted text-sm">This project may have been removed.</p>
         <Link href="/explore">
-          <Button size="lg">EXPLORE PROJECTS</Button>
+          <Button size="lg">Browse Projects</Button>
         </Link>
       </div>
     );
@@ -293,12 +293,12 @@ export default function ProjectDetailPage() {
           {/* Sponsorship Activity */}
           <section className="space-y-6 pt-4">
             <h3 className="font-mono text-base text-white uppercase tracking-[2px]">
-              SPONSORSHIP TRANSACTIONS
+              Sponsorships
             </h3>
             <div className="bg-surface-card border border-hairline rounded-none overflow-hidden">
               {sponsorships.length === 0 ? (
                 <div className="p-12 text-center body-serif text-muted text-sm">
-                  No sponsorships recorded yet.
+                  No sponsorships yet — be the first!
                 </div>
               ) : (
                 <div className="divide-y divide-hairline">
@@ -352,7 +352,7 @@ export default function ProjectDetailPage() {
           <div className="lg:sticky lg:top-24 space-y-6">
             <div className="bg-surface-card border border-hairline rounded-none p-8 space-y-8">
               <h3 className="font-mono text-base text-white uppercase tracking-[2px]">
-                SPONSOR REPOSITORY
+                Sponsor this project
               </h3>
 
               {sponsor.state.status === "idle" && (
@@ -373,7 +373,7 @@ export default function ProjectDetailPage() {
                     className="w-full"
                     size="lg"
                   >
-                    {wallet.isConnected ? "SPONSOR WITH WALLET" : "CONNECT WALLET"}
+                    {wallet.isConnected ? "Sponsor with Wallet" : "Connect Wallet to Sponsor"}
                   </Button>
 
                   <p className="caption-uppercase text-[10px] text-muted text-center leading-relaxed">
@@ -392,8 +392,8 @@ export default function ProjectDetailPage() {
               {sponsor.state.status === "review" && (
                 <div className="space-y-6">
                   <div className="p-6 bg-black border border-hairline text-center space-y-2">
-                    <span className="caption-uppercase text-muted block">
-                      SPONSORSHIP AMOUNT
+                    <span className="caption-uppercase text-muted block uppercase">
+                      Sponsorship Amount
                     </span>
                     <span className="display-md text-3xl font-normal text-white tracking-[2px]">
                       {sponsor.amount} XLM
@@ -402,23 +402,23 @@ export default function ProjectDetailPage() {
 
                   <div className="space-y-3 font-mono text-xs text-white">
                     <div className="flex justify-between border-b border-hairline pb-2">
-                      <span className="text-muted">REPOS</span>
+                      <span className="text-muted">To Project</span>
                       <span>{project.name}</span>
                     </div>
                     <div className="flex justify-between pb-2">
-                      <span className="text-muted">OWNER WALLET</span>
+                      <span className="text-muted">Owner Wallet</span>
                       <span>{formatPublicKey(project.owner)}</span>
                     </div>
                   </div>
 
                   <Button onClick={handleConfirmSponsor} className="w-full" size="lg">
-                    SIGN &amp; SUBMIT PAYMENT
+                    Sign &amp; Send Payment
                   </Button>
                   <button
                     onClick={sponsor.reset}
                     className="w-full font-mono text-xs uppercase tracking-[2px] text-muted hover:text-white text-center"
                   >
-                    CANCEL
+                    Cancel
                   </button>
                 </div>
               )}
@@ -431,8 +431,8 @@ export default function ProjectDetailPage() {
                   </span>
                   <p className="caption-uppercase text-white">
                     {sponsor.state.txHash
-                      ? "CONFIRMING ON-CHAIN..."
-                      : "PLEASE SIGN TRANSACTION..."}
+                      ? "Confirming on-chain..."
+                      : "Please sign in your wallet..."}
                   </p>
                   {sponsor.state.txHash && (
                     <div className="w-full p-3 bg-black border border-hairline font-mono text-[10px] text-muted truncate">
@@ -449,10 +449,10 @@ export default function ProjectDetailPage() {
                     <span className="material-symbols-outlined text-[24px]">done</span>
                   </div>
                   <h4 className="font-mono text-base uppercase tracking-[2px] text-white">
-                    SPONSORED {sponsor.amount} XLM
+                    Sponsored {sponsor.amount} XLM!
                   </h4>
                   <p className="body-serif text-muted text-sm">
-                    Transaction verified on the Stellar testnet ledger.
+                    Your contribution is live on the Stellar testnet.
                   </p>
                   {sponsor.state.txHash && (
                     <a
@@ -465,7 +465,7 @@ export default function ProjectDetailPage() {
                     </a>
                   )}
                   <Button onClick={sponsor.reset} className="w-full">
-                    DONE
+                    Done
                   </Button>
                 </div>
               )}
@@ -478,10 +478,10 @@ export default function ProjectDetailPage() {
                   </div>
                   <div className="flex gap-4">
                     <Button variant="secondary" onClick={sponsor.reset} className="flex-1">
-                      CANCEL
+                      Cancel
                     </Button>
                     <Button onClick={handleConfirmSponsor} className="flex-1">
-                      RETRY
+                      Try Again
                     </Button>
                   </div>
                 </div>

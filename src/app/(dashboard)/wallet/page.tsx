@@ -26,8 +26,8 @@ export default function WalletConnectPage() {
             </div>
 
             {/* Headline & Subtext */}
-            <h1 className="display-md text-2xl sm:text-3xl text-white mb-4 tracking-[2px] font-normal">
-              CONNECT STELLAR WALLET
+            <h1 className="display-md text-2xl sm:text-3xl text-white mb-4 tracking-[2px] font-normal uppercase">
+              Connect your Stellar wallet
             </h1>
             <p className="body-serif text-muted text-base mb-8 leading-relaxed">
               Your Stellar wallet IS your identity on SponsorChain. Connect Freighter, Albedo, or any Stellar wallet to sign in and start sponsoring.
@@ -44,7 +44,7 @@ export default function WalletConnectPage() {
             {wallet.hasFunded && (
               <div className="w-full mb-6 p-4 bg-black border border-white text-xs font-mono text-white text-left uppercase tracking-[1.5px] flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">done</span>
-                <span>FUNDED VIA FRIENDBOT: 10,000 TEST XLM</span>
+                <span>Funded via Friendbot: 10,000 XLM</span>
               </div>
             )}
 
@@ -52,16 +52,16 @@ export default function WalletConnectPage() {
             {wallet.isInitializing ? (
               <Button disabled className="w-full">
                 <span className="animate-spin material-symbols-outlined mr-2 text-[18px]">progress_activity</span>
-                VERIFYING SETUP...
+                Verifying setup...
               </Button>
             ) : !wallet.isConnected ? (
               <Button onClick={wallet.connect} size="lg" className="w-full">
-                CONNECT WALLET
+                Connect Wallet
               </Button>
             ) : wallet.isFunding ? (
               <Button disabled className="w-full">
                 <span className="animate-spin material-symbols-outlined mr-2 text-[18px]">progress_activity</span>
-                FUNDING ACCOUNT VIA FRIENDBOT...
+                Funding account via Friendbot...
               </Button>
             ) : (
               <Button
@@ -70,7 +70,7 @@ export default function WalletConnectPage() {
                 size="lg"
                 className="w-full border-rose-500 text-rose-400 hover:bg-rose-950/30"
               >
-                DISCONNECT WALLET
+                Disconnect Wallet
               </Button>
             )}
 
@@ -99,7 +99,7 @@ export default function WalletConnectPage() {
                   <code className="font-mono text-xs text-white uppercase tracking-[1.5px] font-normal truncate">
                     {wallet.isConnected && wallet.publicKey
                       ? `${wallet.publicKey.slice(0, 6)}...${wallet.publicKey.slice(-6)}`
-                      : "NOT CONNECTED"}
+                      : "Not connected"}
                   </code>
                   {wallet.isConnected && wallet.publicKey && (
                     <button
@@ -115,14 +115,14 @@ export default function WalletConnectPage() {
                 {/* Balance Status Chip */}
                 {wallet.isConnected && wallet.balance && (
                   <div className="caption-uppercase text-xs text-white border border-hairline px-3 py-1.5">
-                    BALANCE: {parseFloat(wallet.balance).toLocaleString()} XLM
+                    Balance: {parseFloat(wallet.balance).toLocaleString()} XLM
                   </div>
                 )}
               </div>
 
               {wallet.isConnected && (
                 <div className="caption-uppercase text-[10px] text-muted text-center pt-1">
-                  CONNECTED // READY TO SPONSOR AND LIST REPOSITORIES
+                  Connected — ready to sponsor and list projects
                 </div>
               )}
             </div>
