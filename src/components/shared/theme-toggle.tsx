@@ -3,33 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
-function SunIcon({ className = "w-4 h-4" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-    </svg>
-  );
-}
-
-function MoonIcon({ className = "w-4 h-4" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-    </svg>
-  );
-}
-
-function MonitorIcon({ className = "w-4 h-4" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <rect width="20" height="14" x="2" y="3" rx="2" />
-      <line x1="8" x2="16" y1="21" y2="21" />
-      <line x1="12" x2="12" y1="17" y2="21" />
-    </svg>
-  );
-}
-
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -38,51 +11,40 @@ export function ThemeToggle() {
     setMounted(true);
   }, []);
 
-  const activeTheme = mounted ? theme : "system";
+  if (!mounted) {
+    return (
+      <div className="w-8 h-8 rounded-full bg-surface-container border border-outline-variant opacity-50" />
+    );
+  }
+
+  const cycleTheme = () => {
+    if (theme === "light") setTheme("dark");
+    else if (theme === "dark") setTheme("system");
+    else setTheme("light");
+  };
+
+  const getIcon = () => {
+    if (theme === "light") return "light_mode";
+    if (theme === "dark") return "dark_mode";
+    return "desktop_windows";
+  };
+
+  const getTitle = () => {
+    if (theme === "light") return "Theme: Light (Click for Dark)";
+    if (theme === "dark") return "Theme: Dark (Click for System)";
+    return "Theme: System (Click for Light)";
+  };
 
   return (
-    <div className="flex items-center bg-surface-container border border-outline-variant p-0.5 rounded-full shadow-xs">
-      <button
-        type="button"
-        onClick={() => setTheme("light")}
-        title="Light Theme"
-        aria-label="Switch to Light Theme"
-        className={`p-1.5 rounded-full transition-all duration-200 ${
-          activeTheme === "light"
-            ? "bg-primary text-on-primary shadow-xs scale-105"
-            : "text-secondary hover:text-primary"
-        }`}
-      >
-        <SunIcon className="w-3.5 h-3.5" />
-      </button>
-
-      <button
-        type="button"
-        onClick={() => setTheme("dark")}
-        title="Dark Theme"
-        aria-label="Switch to Dark Theme"
-        className={`p-1.5 rounded-full transition-all duration-200 ${
-          activeTheme === "dark"
-            ? "bg-primary text-on-primary shadow-xs scale-105"
-            : "text-secondary hover:text-primary"
-        }`}
-      >
-        <MoonIcon className="w-3.5 h-3.5" />
-      </button>
-
-      <button
-        type="button"
-        onClick={() => setTheme("system")}
-        title="System Theme"
-        aria-label="Switch to System Theme"
-        className={`p-1.5 rounded-full transition-all duration-200 ${
-          activeTheme === "system"
-            ? "bg-primary text-on-primary shadow-xs scale-105"
-            : "text-secondary hover:text-primary"
-        }`}
-      >
-        <MonitorIcon className="w-3.5 h-3.5" />
-      </button>
-    </div>
+    <button
+      onClick={cycleTheme}
+      title={getTitle()}
+      aria-label={getTitle()}
+      className="p-2 rounded-full border border-outline-variant bg-surface hover:bg-surface-container text-on-surface transition-colors flex items-center justify-center"
+    >
+      <span className="material-symbols-outlined text-[18px]">
+        {getIcon()}
+      </span>
+    </button>
   );
 }

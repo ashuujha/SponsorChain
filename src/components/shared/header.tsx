@@ -10,20 +10,20 @@ export function Header() {
   const toggleDrawer = useUIStore((state) => state.toggleDrawer);
 
   return (
-    <header className="fixed top-0 w-full bg-surface/90 backdrop-blur-md z-40 border-b border-outline-variant transition-colors">
+    <header className="fixed top-0 w-full bg-surface/90 dark:bg-neutral-950/90 backdrop-blur-md z-40 border-b border-outline-variant dark:border-neutral-800 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
         <div className="flex items-center gap-sm">
           <button
-            className="p-xs hover:bg-surface-container rounded-full transition-colors md:hidden text-foreground"
+            className="p-xs hover:bg-surface-container dark:hover:bg-neutral-800 rounded-full transition-colors md:hidden"
             onClick={toggleDrawer}
             aria-label="Toggle Navigation Menu"
           >
-            <span className="material-symbols-outlined text-[20px]">menu</span>
+            <span className="material-symbols-outlined text-primary dark:text-neutral-100">menu</span>
           </button>
 
           <Link href="/" className="flex items-center gap-2 mr-md group">
-            <BrandLogo className="w-7 h-7 text-foreground group-hover:scale-105 transition-transform" />
-            <span className="font-headline-md text-headline-md font-bold text-foreground tracking-tight">
+            <BrandLogo className="w-7 h-7 text-primary dark:text-neutral-100 group-hover:scale-105 transition-transform" />
+            <span className="font-headline-md text-headline-md font-bold text-primary dark:text-neutral-100 tracking-tight">
               SponsorChain
             </span>
           </Link>
@@ -31,19 +31,19 @@ export function Header() {
           <nav className="hidden md:flex items-center gap-lg ml-4">
             <Link
               href="/"
-              className="text-secondary hover:text-foreground font-semibold text-body-sm transition-colors"
+              className="text-secondary dark:text-neutral-400 hover:text-primary dark:hover:text-neutral-100 font-semibold text-body-sm transition-colors"
             >
               Home
             </Link>
             <Link
               href="/explore"
-              className="text-secondary hover:text-foreground font-semibold text-body-sm transition-colors"
+              className="text-secondary dark:text-neutral-400 hover:text-primary dark:hover:text-neutral-100 font-semibold text-body-sm transition-colors"
             >
               Explore
             </Link>
             <Link
               href="/activity"
-              className="text-secondary hover:text-foreground font-semibold text-body-sm transition-colors"
+              className="text-secondary dark:text-neutral-400 hover:text-primary dark:hover:text-neutral-100 font-semibold text-body-sm transition-colors"
             >
               My Activity
             </Link>
@@ -54,12 +54,12 @@ export function Header() {
           <ThemeToggle />
           
           <Link href="/list-project">
-            <button className="hidden sm:inline-flex bg-primary text-on-primary font-label-caps text-label-caps px-md py-2 rounded-full hover:opacity-90 transition-all font-semibold shadow-xs">
+            <button className="hidden sm:inline-flex bg-primary dark:bg-neutral-100 text-on-primary dark:text-neutral-900 font-label-caps text-label-caps px-md py-2 rounded-full hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors font-semibold shadow-xs">
               List a Project
             </button>
           </Link>
           <Link href="/wallet">
-            <button className="border border-outline-variant text-foreground font-label-caps text-label-caps px-md py-2 rounded-full hover:bg-surface-container transition-colors font-semibold">
+            <button className="border border-outline-variant dark:border-neutral-700 text-primary dark:text-neutral-100 font-label-caps text-label-caps px-md py-2 rounded-full hover:bg-surface-container dark:hover:bg-neutral-800 transition-colors font-semibold">
               Wallet
             </button>
           </Link>
