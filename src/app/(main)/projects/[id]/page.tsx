@@ -220,7 +220,7 @@ export default function ProjectDetailPage() {
     return (
       <div className="max-w-md mx-auto py-24 text-center space-y-4 px-4 bg-background min-h-screen text-foreground">
         <span className="material-symbols-outlined text-[48px] text-muted">search_off</span>
-        <h3 className="display-md text-2xl text-foreground">Project not found</h3>
+        <h3 className="display-md text-foreground">Project not found</h3>
         <p className="body-serif text-muted text-sm">This project may have been removed.</p>
         <Link href="/explore">
           <Button size="lg" className="min-h-[44px]">Browse Projects</Button>
@@ -246,7 +246,7 @@ export default function ProjectDetailPage() {
         <div className="order-1 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-b border-hairline pb-6 sm:pb-8">
           <ProjectAvatar name={project.name} size="lg" />
           <div className="space-y-2 min-w-0">
-            <h1 className="display-lg text-2xl sm:text-4xl md:text-5xl font-normal text-foreground tracking-[2px] sm:tracking-[3px] uppercase break-words">
+            <h1 className="display-lg font-normal text-foreground uppercase break-words">
               {project.name}
             </h1>
             <a
@@ -285,14 +285,14 @@ export default function ProjectDetailPage() {
         <div className="order-4 lg:order-none lg:col-start-1 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 py-6 border-y border-hairline">
           <div className="space-y-1">
             <div className="caption-uppercase text-muted text-[10px] sm:text-xs">TOTAL RAISED</div>
-            <div className="display-md text-2xl sm:text-3xl font-normal text-foreground tracking-[2px]">
+            <div className="display-md font-normal text-foreground">
               {formatXlm(project.totalRaised)} XLM
             </div>
           </div>
 
           <div className="space-y-1">
             <div className="caption-uppercase text-muted text-[10px] sm:text-xs">SPONSORS</div>
-            <div className="display-md text-2xl sm:text-3xl font-normal text-foreground tracking-[2px]">
+            <div className="display-md font-normal text-foreground">
               {project.sponsorCount}
             </div>
           </div>
@@ -428,7 +428,7 @@ function SponsorCard({
             <span className="caption-uppercase text-muted block uppercase">
               Sponsorship Amount
             </span>
-            <span className="display-md text-2xl sm:text-3xl font-normal text-foreground tracking-[2px]">
+            <span className="display-md font-normal text-foreground">
               {sponsor.amount} XLM
             </span>
           </div>

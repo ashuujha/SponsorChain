@@ -14,11 +14,11 @@ export default function LandingPage() {
             <span>THE STELLAR OPEN SOURCE FACILITY</span>
           </div>
 
-          <h1 className="display-xl text-[22px] sm:text-4xl md:text-5xl lg:text-6xl font-normal text-foreground mb-6 sm:mb-8 tracking-[1px] sm:tracking-[3px] md:tracking-[4px] uppercase leading-tight max-w-4xl text-center px-2 break-words">
+          <h1 className="display-xl font-normal text-foreground mb-6 sm:mb-8 max-w-3xl text-center px-2">
             FUND OPEN SOURCE DIRECTLY. UNCOMPROMISED.
           </h1>
 
-          <p className="body-serif text-base sm:text-lg md:text-xl text-muted mb-8 sm:mb-12 max-w-2xl leading-relaxed text-center px-2">
+          <p className="body-serif text-muted mb-8 sm:mb-12 max-w-xl leading-relaxed text-center px-4">
             Connect your Stellar wallet to browse and sponsor open-source repositories over Horizon &amp; Soroban.
             Maintainers verify GitHub repository ownership and receive direct, transparent XLM sponsorships.
           </p>
@@ -37,18 +37,18 @@ export default function LandingPage() {
           </div>
 
           {/* Key Engineering Specs Line */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 pt-8 border-t border-hairline w-full text-center">
+          <div className="grid grid-cols-3 gap-4 sm:gap-8 pt-8 border-t border-hairline w-full text-center">
             <div className="flex flex-col items-center gap-1">
-              <span className="caption-uppercase text-muted">SETTLEMENT SPEED</span>
-              <span className="font-mono text-xs sm:text-sm uppercase tracking-[1.5px] text-foreground">~5 SECONDS ON-CHAIN</span>
+              <span className="caption-uppercase text-muted text-[9px] sm:text-[11px]">SETTLEMENT SPEED</span>
+              <span className="font-mono text-[10px] sm:text-sm uppercase tracking-[0.5px] sm:tracking-[1.5px] text-foreground leading-snug">~5 SEC ON-CHAIN</span>
             </div>
             <div className="flex flex-col items-center gap-1">
-              <span className="caption-uppercase text-muted">TRANSACTION COST</span>
-              <span className="font-mono text-xs sm:text-sm uppercase tracking-[1.5px] text-foreground">NEAR-ZERO FEES</span>
+              <span className="caption-uppercase text-muted text-[9px] sm:text-[11px]">TX COST</span>
+              <span className="font-mono text-[10px] sm:text-sm uppercase tracking-[0.5px] sm:tracking-[1.5px] text-foreground leading-snug">NEAR-ZERO</span>
             </div>
             <div className="flex flex-col items-center gap-1">
-              <span className="caption-uppercase text-muted">VERIFICATION</span>
-              <span className="font-mono text-xs sm:text-sm uppercase tracking-[1.5px] text-foreground">100% AUDITABLE</span>
+              <span className="caption-uppercase text-muted text-[9px] sm:text-[11px]">VERIFICATION</span>
+              <span className="font-mono text-[10px] sm:text-sm uppercase tracking-[0.5px] sm:tracking-[1.5px] text-foreground leading-snug">100% AUDITABLE</span>
             </div>
           </div>
         </div>
@@ -63,7 +63,7 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             <div className="bg-surface border border-hairline rounded-none p-6 sm:p-8 flex flex-col justify-between min-h-[160px] sm:min-h-[192px]">
-              <div className="display-lg text-3xl sm:text-4xl md:text-5xl font-normal text-foreground tracking-[2px] sm:tracking-[3px] mb-4">
+              <div className="display-lg font-normal text-foreground mb-4">
                 100%
               </div>
               <div>
@@ -77,7 +77,7 @@ export default function LandingPage() {
             </div>
 
             <div className="bg-surface border border-hairline rounded-none p-6 sm:p-8 flex flex-col justify-between min-h-[160px] sm:min-h-[192px]">
-              <div className="display-lg text-3xl sm:text-4xl md:text-5xl font-normal text-foreground tracking-[2px] sm:tracking-[3px] mb-4">
+              <div className="display-lg font-normal text-foreground mb-4">
                 ~5.0s
               </div>
               <div>
@@ -91,7 +91,7 @@ export default function LandingPage() {
             </div>
 
             <div className="bg-surface border border-hairline rounded-none p-6 sm:p-8 flex flex-col justify-between min-h-[160px] sm:min-h-[192px]">
-              <div className="display-lg text-3xl sm:text-4xl md:text-5xl font-normal text-foreground tracking-[2px] sm:tracking-[3px] mb-4">
+              <div className="display-lg font-normal text-foreground mb-4">
                 GITHUB
               </div>
               <div>
@@ -111,7 +111,7 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-hairline pb-6">
             <div>
               <div className="caption-uppercase text-muted mb-2">SYSTEM ARCHITECTURE</div>
-              <h2 className="display-md text-xl sm:text-2xl md:text-3xl text-foreground tracking-[2px] font-normal">
+              <h2 className="display-md text-foreground font-normal">
                 ENGINEERED FOR OPEN SOURCE
               </h2>
             </div>
@@ -166,10 +166,10 @@ export default function LandingPage() {
         <section className="bg-surface border border-hairline rounded-none p-8 sm:p-12 md:p-16 text-center">
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="caption-uppercase text-muted">STELLAR TESTNET FACILITY</div>
-            <h2 className="display-md text-xl sm:text-2xl md:text-4xl text-foreground tracking-[2px] sm:tracking-[3px] font-normal">
+            <h2 className="display-md text-foreground font-normal">
               DISCOVER SPONSORCHAIN
             </h2>
-            <p className="body-serif text-sm sm:text-base md:text-lg text-muted leading-relaxed">
+            <p className="body-serif text-muted leading-relaxed">
               All transactions run transparently on the Stellar testnet. No real funds required — connect a wallet and test.
             </p>
             <div className="pt-4 flex justify-center">

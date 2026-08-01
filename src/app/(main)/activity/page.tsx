@@ -103,7 +103,7 @@ export default function ActivityPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8 sm:mb-12 border-b border-hairline pb-6 sm:pb-8">
           <div>
             <div className="caption-uppercase text-muted mb-2 text-[10px] sm:text-xs">USER ACCOUNT // ACTIVITY</div>
-            <h1 className="display-lg text-2xl sm:text-4xl md:text-5xl font-normal text-foreground tracking-[2px] sm:tracking-[3px] uppercase">MY ACTIVITY</h1>
+            <h1 className="display-lg font-normal text-foreground uppercase">MY ACTIVITY</h1>
             <p className="caption-uppercase text-muted text-xs mt-3 flex items-center gap-2 max-w-full">
               <span className="shrink-0">CONNECTED:</span>
               <code className="font-mono text-xs text-foreground border border-hairline px-2.5 py-1 bg-surface truncate max-w-[200px] sm:max-w-none">

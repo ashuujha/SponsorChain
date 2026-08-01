@@ -26,7 +26,7 @@ export default function WalletConnectPage() {
             </div>
 
             {/* Headline & Subtext */}
-            <h1 className="display-md text-xl sm:text-2xl md:text-3xl text-foreground mb-4 tracking-[2px] font-normal uppercase">
+            <h1 className="display-md text-foreground mb-4 font-normal uppercase">
               Connect your Stellar wallet
             </h1>
             <p className="body-serif text-muted text-sm sm:text-base mb-8 leading-relaxed">
