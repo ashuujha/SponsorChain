@@ -16,8 +16,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          targets: wasm32v1-none
+          target: wasm32v1-none
 
       - name: Cache Cargo
         uses: actions/cache@v4
@@ -26,12 +25,19 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             contracts/target
-          key: cargo-${{ runner.os }}-${{ hashFiles('contracts/**/Cargo.toml') }}
-          restore-keys: cargo-${{ runner.os }}-
+          key: cargo-v3-${{ runner.os }}-${{ hashFiles('contracts/**/Cargo.toml') }}
+          restore-keys: cargo-v3-${{ runner.os }}-
 
       - name: Build contracts
-        run: cargo build --target wasm32v1-none --release
+        run: cargo build --target wasm32v1-none --release > build.log 2>&1
         working-directory: contracts
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cargo-build-log
+          path: contracts/build.log
 
       - name: Run contract tests
         run: cargo test -- --nocapture
