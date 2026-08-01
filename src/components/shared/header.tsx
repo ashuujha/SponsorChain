@@ -5,63 +5,64 @@ import Link from "next/link";
 import { useUIStore } from "@/lib/ui-store";
 import { BrandLogo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
+import { Button } from "@/components/ui/button";
 
 export function Header() {
   const toggleDrawer = useUIStore((state) => state.toggleDrawer);
 
   return (
-    <header className="fixed top-0 w-full bg-surface/90 dark:bg-neutral-950/90 backdrop-blur-md z-40 border-b border-outline-variant dark:border-neutral-800 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
-        <div className="flex items-center gap-sm">
+    <header className="fixed top-0 w-full bg-surface/90 backdrop-blur-md z-40 border-b border-border-color transition-colors">
+      <div className="max-w-container-max mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-18 py-3">
+        <div className="flex items-center gap-4">
           <button
-            className="p-xs hover:bg-surface-container dark:hover:bg-neutral-800 rounded-full transition-colors md:hidden"
+            className="p-2 hover:bg-canvas-cream dark:hover:bg-surface-container rounded-full transition-colors md:hidden text-foreground"
             onClick={toggleDrawer}
             aria-label="Toggle Navigation Menu"
           >
-            <span className="material-symbols-outlined text-primary dark:text-neutral-100">menu</span>
+            <span className="material-symbols-outlined text-[22px]">menu</span>
           </button>
 
-          <Link href="/" className="flex items-center gap-2 mr-md group">
-            <BrandLogo className="w-7 h-7 text-primary dark:text-neutral-100 group-hover:scale-105 transition-transform" />
-            <span className="font-headline-md text-headline-md font-bold text-primary dark:text-neutral-100 tracking-tight">
+          <Link href="/" className="flex items-center gap-2.5 mr-4 group">
+            <BrandLogo className="w-8 h-8 group-hover:scale-105 transition-transform" />
+            <span className="font-extrabold text-2xl text-aubergine dark:text-foreground tracking-tight">
               SponsorChain
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-lg ml-4">
+          <nav className="hidden md:flex items-center gap-6 ml-4">
             <Link
               href="/"
-              className="text-secondary dark:text-neutral-400 hover:text-primary dark:hover:text-neutral-100 font-semibold text-body-sm transition-colors"
+              className="text-foreground/80 hover:text-link-blue font-semibold text-[15px] transition-colors"
             >
               Home
             </Link>
             <Link
               href="/explore"
-              className="text-secondary dark:text-neutral-400 hover:text-primary dark:hover:text-neutral-100 font-semibold text-body-sm transition-colors"
+              className="text-foreground/80 hover:text-link-blue font-semibold text-[15px] transition-colors"
             >
               Explore
             </Link>
             <Link
               href="/activity"
-              className="text-secondary dark:text-neutral-400 hover:text-primary dark:hover:text-neutral-100 font-semibold text-body-sm transition-colors"
+              className="text-foreground/80 hover:text-link-blue font-semibold text-[15px] transition-colors"
             >
               My Activity
             </Link>
           </nav>
         </div>
 
-        <div className="flex items-center gap-sm">
+        <div className="flex items-center gap-3">
           <ThemeToggle />
           
-          <Link href="/list-project">
-            <button className="hidden sm:inline-flex bg-primary dark:bg-neutral-100 text-on-primary dark:text-neutral-900 font-label-caps text-label-caps px-md py-2 rounded-full hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors font-semibold shadow-xs">
+          <Link href="/list-project" className="hidden sm:inline-block">
+            <Button variant="default" size="sm">
               List a Project
-            </button>
+            </Button>
           </Link>
           <Link href="/wallet">
-            <button className="border border-outline-variant dark:border-neutral-700 text-primary dark:text-neutral-100 font-label-caps text-label-caps px-md py-2 rounded-full hover:bg-surface-container dark:hover:bg-neutral-800 transition-colors font-semibold">
+            <Button variant="secondary" size="sm">
               Wallet
-            </button>
+            </Button>
           </Link>
         </div>
       </div>

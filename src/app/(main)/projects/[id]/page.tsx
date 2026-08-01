@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { useWallet } from "@/features/wallet/use-wallet";
 import { useSponsorProject } from "@/features/projects/use-sponsor-project";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
+import { Button } from "@/components/ui/button";
 import {
   getProject,
   getSponsorshipsForProject,
@@ -204,11 +205,11 @@ export default function ProjectDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-40 gap-md">
-        <span className="animate-spin material-symbols-outlined text-[40px] text-primary dark:text-neutral-200">
+      <div className="flex flex-col items-center justify-center py-40 gap-4">
+        <span className="animate-spin material-symbols-outlined text-[40px] text-aubergine dark:text-aubergine-mute">
           progress_activity
         </span>
-        <p className="font-semibold text-secondary dark:text-neutral-400 text-body-md">
+        <p className="font-semibold text-text-secondary text-base">
           Reading from contract state...
         </p>
       </div>
@@ -217,15 +218,12 @@ export default function ProjectDetailPage() {
 
   if (notFound) {
     return (
-      <div className="max-w-md mx-auto py-20 text-center space-y-md">
-        <span className="material-symbols-outlined text-[48px] text-secondary">search_off</span>
-        <h3 className="font-bold text-headline-md text-foreground">Project not found</h3>
-        <p className="text-secondary dark:text-neutral-400 text-body-sm">This project may have been removed.</p>
-        <Link
-          href="/explore"
-          className="inline-block bg-primary dark:bg-neutral-100 text-on-primary dark:text-neutral-900 px-lg py-md rounded-full font-semibold"
-        >
-          Browse Projects
+      <div className="max-w-md mx-auto py-20 text-center space-y-4">
+        <span className="material-symbols-outlined text-[48px] text-text-secondary">search_off</span>
+        <h3 className="font-bold text-2xl text-foreground">Project not found</h3>
+        <p className="text-text-secondary text-sm">This project may have been removed.</p>
+        <Link href="/explore">
+          <Button size="lg">Browse Projects</Button>
         </Link>
       </div>
     );
@@ -234,10 +232,10 @@ export default function ProjectDetailPage() {
   if (!project) return null;
 
   return (
-    <div className="pb-xl px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pt-8 relative">
+    <div className="pb-16 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto pt-6 relative">
       <Link
         href="/explore"
-        className="inline-flex items-center gap-xs text-secondary dark:text-neutral-400 font-body-sm hover:text-foreground transition-colors mb-lg"
+        className="inline-flex items-center gap-1.5 text-text-secondary hover:text-link-blue font-semibold text-sm transition-colors mb-6"
       >
         <span className="material-symbols-outlined text-[18px]">arrow_back</span>
         Back to Explore
@@ -250,11 +248,11 @@ export default function ProjectDetailPage() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-6">
             <ProjectAvatar name={project.name} size="lg" />
             <div className="space-y-1">
-              <h2 className="font-headline-lg text-headline-lg text-foreground font-bold">
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
                 {project.name}
-              </h2>
+              </h1>
               <a
-                className="flex items-center gap-1.5 text-secondary dark:text-neutral-400 font-mono-code text-body-sm hover:text-foreground transition-colors"
+                className="inline-flex items-center gap-1.5 slacc-link font-mono text-sm"
                 href={`https://github.com/${project.repoFullName}`}
                 target="_blank"
                 rel="noreferrer"
@@ -265,33 +263,35 @@ export default function ProjectDetailPage() {
             </div>
           </div>
 
-          <p className="font-body-lg text-foreground max-w-3xl leading-relaxed">
+          <p className="text-lg text-foreground leading-relaxed max-w-3xl">
             {project.description}
           </p>
 
-          {/* Stats */}
+          {/* Slacc Statistics Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-outline-variant dark:border-neutral-800 flex flex-col justify-between h-32">
-              <span className="text-secondary dark:text-neutral-400 font-label-caps text-label-caps uppercase font-semibold">
+            <div className="bg-surface dark:bg-surface p-6 rounded-2xl border border-border-color flex flex-col justify-between h-36 shadow-xs">
+              <span className="text-text-secondary font-bold text-xs uppercase tracking-widest">
                 Total Raised
               </span>
-              <span className="font-headline-md text-headline-md text-emerald-600 dark:text-emerald-400 font-bold">
+              <span className="display-stat text-4xl font-extrabold">
                 {formatXlm(project.totalRaised)} XLM
               </span>
             </div>
-            <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-outline-variant dark:border-neutral-800 flex flex-col justify-between h-32">
-              <span className="text-secondary dark:text-neutral-400 font-label-caps text-label-caps uppercase font-semibold">
+
+            <div className="bg-surface dark:bg-surface p-6 rounded-2xl border border-border-color flex flex-col justify-between h-36 shadow-xs">
+              <span className="text-text-secondary font-bold text-xs uppercase tracking-widest">
                 Sponsors
               </span>
-              <span className="font-headline-md text-headline-md text-foreground font-bold">
+              <span className="display-stat text-4xl font-extrabold">
                 {project.sponsorCount}
               </span>
             </div>
-            <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-outline-variant dark:border-neutral-800 flex flex-col justify-between h-32">
-              <span className="text-secondary dark:text-neutral-400 font-label-caps text-label-caps uppercase font-semibold">
+
+            <div className="bg-surface dark:bg-surface p-6 rounded-2xl border border-border-color flex flex-col justify-between h-36 shadow-xs">
+              <span className="text-text-secondary font-bold text-xs uppercase tracking-widest">
                 Owner
               </span>
-              <span className="font-mono-code text-body-sm text-foreground font-bold truncate">
+              <span className="font-mono text-sm font-bold text-foreground truncate">
                 {formatPublicKey(project.owner)}
               </span>
             </div>
@@ -299,36 +299,37 @@ export default function ProjectDetailPage() {
 
           {/* Sponsorships */}
           <section className="space-y-4 pt-4">
-            <h3 className="font-headline-md text-foreground font-bold">Sponsorships</h3>
-            <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-outline-variant dark:border-neutral-800 overflow-hidden">
+            <h3 className="text-2xl font-extrabold text-foreground">Sponsorship Activity</h3>
+            <div className="bg-surface dark:bg-surface rounded-2xl border border-border-color overflow-hidden shadow-xs">
               {sponsorships.length === 0 ? (
-                <div className="p-xl text-center text-secondary dark:text-neutral-400 text-body-sm">
-                  No sponsorships yet — be the first!
+                <div className="p-10 text-center text-text-secondary text-sm">
+                  No sponsorships yet — be the first to support this repository!
                 </div>
               ) : (
-                <div className="divide-y divide-outline-variant/30 dark:divide-neutral-800">
+                <div className="divide-y divide-border-color/60">
                   {sponsorships.map((s) => {
                     const shortSponsor = `${s.sponsor.slice(0, 6)}...${s.sponsor.slice(-6)}`;
                     return (
                       <div
                         key={s.id.toString()}
-                        className="flex items-center justify-between p-4 hover:bg-surface-container-low dark:hover:bg-neutral-800/50 transition-colors"
+                        className="flex items-center justify-between p-4 hover:bg-canvas-cream/50 dark:hover:bg-surface-container/50 transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-surface-container dark:bg-neutral-800 flex items-center justify-center border border-outline-variant dark:border-neutral-700">
-                            <span className="material-symbols-outlined text-secondary dark:text-neutral-400 text-[18px]">person</span>
+                          <div className="w-10 h-10 rounded-full bg-canvas-lavender dark:bg-surface-container flex items-center justify-center border border-border-color/40">
+                            <span className="material-symbols-outlined text-aubergine dark:text-aubergine-mute text-[20px]">person</span>
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-medium text-foreground font-mono-code text-body-sm">
+                            <span className="font-bold text-foreground font-mono text-sm">
                               {shortSponsor}
                             </span>
-                            <span className="text-secondary dark:text-neutral-400 text-body-sm">
+                            <span className="text-text-secondary text-xs">
                               {new Date(Number(s.timestamp) * 1000).toLocaleDateString()}
                             </span>
                           </div>
                         </div>
+
                         <div className="flex flex-col items-end gap-1">
-                          <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                          <span className="font-extrabold text-aubergine dark:text-aubergine-mute text-base">
                             {formatXlm(s.amount)} XLM
                           </span>
                           {s.txHash && (
@@ -336,7 +337,7 @@ export default function ProjectDetailPage() {
                               href={`https://stellar.expert/explorer/testnet/tx/${s.txHash}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-[10px] font-mono-code text-secondary dark:text-neutral-400 hover:text-foreground"
+                              className="inline-flex items-center gap-1 text-[11px] font-mono slacc-link"
                             >
                               {s.txHash.slice(0, 8)}…
                               <span className="material-symbols-outlined text-[11px]">open_in_new</span>
@@ -352,11 +353,11 @@ export default function ProjectDetailPage() {
           </section>
         </div>
 
-        {/* Sponsor panel (right column on desktop, stacks below on mobile) */}
-        <div className="lg:w-80 shrink-0">
+        {/* Sponsor panel */}
+        <div className="lg:w-84 shrink-0">
           <div className="lg:sticky lg:top-24 space-y-6">
-            <div className="bg-white dark:bg-neutral-900 p-6 rounded-2xl border border-outline-variant dark:border-neutral-800 space-y-6 shadow-sm">
-              <h3 className="font-headline-md text-foreground font-bold">
+            <div className="bg-surface dark:bg-surface p-6 rounded-2xl border border-border-color space-y-6 shadow-md">
+              <h3 className="text-xl font-extrabold text-foreground">
                 Sponsor this project
               </h3>
 
@@ -364,29 +365,32 @@ export default function ProjectDetailPage() {
                 <>
                   <div className="relative">
                     <input
-                      className="w-full bg-surface-container dark:bg-neutral-800 text-foreground border border-transparent dark:border-neutral-700 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary font-body-lg outline-none"
+                      className="w-full bg-canvas-cream dark:bg-surface-container text-foreground border border-border-color rounded-2xl py-3.5 px-4 focus:ring-2 focus:ring-aubergine text-lg font-bold outline-none"
                       placeholder="0.00"
                       type="number"
                       value={sponsor.amount}
                       onChange={(e) => sponsor.setAmount(e.target.value)}
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 font-mono-code text-secondary dark:text-neutral-400">
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 font-mono font-bold text-text-secondary text-sm">
                       XLM
                     </span>
                   </div>
-                  <button
+
+                  <Button
                     onClick={handleSponsorClick}
-                    className="w-full bg-primary dark:bg-neutral-100 text-on-primary dark:text-neutral-900 py-3.5 rounded-full font-bold text-body-lg hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-sm"
+                    className="w-full shadow-md"
                   >
-                    <span className="material-symbols-outlined">electric_bolt</span>
+                    <span className="material-symbols-outlined mr-1">bolt</span>
                     {wallet.isConnected ? "Sponsor with Wallet" : "Connect Wallet to Sponsor"}
-                  </button>
-                  <p className="text-secondary dark:text-neutral-400 text-[11px] text-center">
+                  </Button>
+
+                  <p className="text-text-secondary text-xs text-center leading-relaxed">
                     SponsorChain runs on Stellar Testnet. No real funds required.
                   </p>
+
                   {ownerKeyError && (
-                    <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-xl text-[11px] text-amber-800 dark:text-amber-300 leading-snug flex gap-2">
-                      <span className="material-symbols-outlined text-[16px] shrink-0 mt-0.5">warning</span>
+                    <div className="p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-xl text-xs text-amber-900 dark:text-amber-300 leading-snug flex gap-2">
+                      <span className="material-symbols-outlined text-[18px] shrink-0">warning</span>
                       <span>{ownerKeyError}</span>
                     </div>
                   )}
@@ -396,35 +400,34 @@ export default function ProjectDetailPage() {
               {/* Review */}
               {sponsor.state.status === "review" && (
                 <div className="space-y-6">
-                  <div className="p-4 bg-surface-container dark:bg-neutral-800 rounded-xl text-center space-y-1">
-                    <span className="text-secondary dark:text-neutral-400 text-body-sm font-semibold uppercase block">
+                  <div className="p-4 bg-canvas-cream dark:bg-surface-container rounded-2xl text-center space-y-1 border border-border-color">
+                    <span className="text-text-secondary text-xs font-bold uppercase tracking-widest block">
                       Sponsorship Amount
                     </span>
-                    <span className="font-headline-lg text-emerald-600 dark:text-emerald-400 font-bold">
+                    <span className="display-stat text-3xl font-extrabold">
                       {sponsor.amount} XLM
                     </span>
                   </div>
-                  <div className="space-y-3 text-body-sm font-semibold">
-                    <div className="flex justify-between border-b border-outline-variant/30 dark:border-neutral-800 pb-2">
-                      <span className="text-secondary dark:text-neutral-400">To Project</span>
+
+                  <div className="space-y-3 text-sm font-semibold">
+                    <div className="flex justify-between border-b border-border-color/60 pb-2">
+                      <span className="text-text-secondary">To Project</span>
                       <span className="text-foreground">{project.name}</span>
                     </div>
                     <div className="flex justify-between pb-2">
-                      <span className="text-secondary dark:text-neutral-400">Owner Wallet</span>
-                      <span className="font-mono-code text-foreground">
+                      <span className="text-text-secondary">Owner Wallet</span>
+                      <span className="font-mono text-foreground">
                         {formatPublicKey(project.owner)}
                       </span>
                     </div>
                   </div>
-                  <button
-                    onClick={handleConfirmSponsor}
-                    className="w-full bg-primary dark:bg-neutral-100 text-on-primary dark:text-neutral-900 py-3.5 rounded-full font-bold hover:opacity-90 active:scale-95 transition-all"
-                  >
+
+                  <Button onClick={handleConfirmSponsor} className="w-full shadow-md">
                     Sign &amp; Send Payment
-                  </button>
+                  </Button>
                   <button
                     onClick={sponsor.reset}
-                    className="w-full text-secondary dark:text-neutral-400 text-body-sm font-medium hover:text-foreground"
+                    className="w-full text-text-secondary text-sm font-medium hover:text-foreground text-center"
                   >
                     Cancel
                   </button>
@@ -434,16 +437,16 @@ export default function ProjectDetailPage() {
               {/* Pending */}
               {sponsor.state.status === "pending" && (
                 <div className="py-10 flex flex-col items-center gap-4 text-center">
-                  <span className="animate-spin material-symbols-outlined text-[48px] text-primary dark:text-neutral-100">
+                  <span className="animate-spin material-symbols-outlined text-[48px] text-aubergine dark:text-aubergine-mute">
                     progress_activity
                   </span>
-                  <p className="font-semibold text-body-md text-foreground">
+                  <p className="font-bold text-base text-foreground">
                     {sponsor.state.txHash
                       ? "Confirming on-chain..."
                       : "Please sign in your wallet..."}
                   </p>
                   {sponsor.state.txHash && (
-                    <div className="w-full p-2 bg-surface-container dark:bg-neutral-800 text-foreground rounded-lg font-mono-code text-[11px] truncate">
+                    <div className="w-full p-2.5 bg-canvas-cream dark:bg-surface-container text-foreground rounded-xl font-mono text-xs truncate">
                       TX: {sponsor.state.txHash}
                     </div>
                   )}
@@ -453,13 +456,13 @@ export default function ProjectDetailPage() {
               {/* Success */}
               {sponsor.state.status === "success" && (
                 <div className="space-y-6 text-center">
-                  <div className="w-16 h-16 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto text-emerald-600 dark:text-emerald-400">
+                  <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto text-emerald-600">
                     <span className="material-symbols-outlined text-[36px]">verified</span>
                   </div>
-                  <h4 className="font-bold text-body-lg text-foreground">
+                  <h4 className="font-extrabold text-xl text-foreground">
                     Sponsored {sponsor.amount} XLM!
                   </h4>
-                  <p className="text-secondary dark:text-neutral-400 text-body-sm">
+                  <p className="text-text-secondary text-sm">
                     Your contribution is live on the Stellar testnet.
                   </p>
                   {sponsor.state.txHash && (
@@ -467,34 +470,31 @@ export default function ProjectDetailPage() {
                       href={`https://stellar.expert/explorer/testnet/tx/${sponsor.state.txHash}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 bg-surface-container dark:bg-neutral-800 px-4 py-2 rounded-full font-mono-code text-body-sm text-foreground hover:bg-surface-container-high dark:hover:bg-neutral-700"
+                      className="inline-flex items-center gap-1.5 bg-canvas-cream dark:bg-surface-container px-4 py-2 rounded-full font-mono text-xs text-foreground hover:bg-canvas-lavender"
                     >
                       View on Explorer
                       <span className="material-symbols-outlined text-[14px]">open_in_new</span>
                     </a>
                   )}
-                  <button
-                    onClick={sponsor.reset}
-                    className="w-full bg-primary dark:bg-neutral-100 text-on-primary dark:text-neutral-900 py-3.5 rounded-full font-bold"
-                  >
+                  <Button onClick={sponsor.reset} className="w-full">
                     Done
-                  </button>
+                  </Button>
                 </div>
               )}
 
               {/* Failed */}
               {sponsor.state.status === "failed" && (
                 <div className="space-y-6">
-                  <div className="p-4 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 text-body-sm rounded-xl border border-rose-200 dark:border-rose-900 font-medium leading-relaxed">
+                  <div className="p-4 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-300 text-sm rounded-2xl border border-rose-200 dark:border-rose-900 font-medium leading-relaxed">
                     {sponsor.state.errorMessage}
                   </div>
                   <div className="flex gap-3">
-                    <button onClick={sponsor.reset} className="flex-1 bg-surface-container dark:bg-neutral-800 text-foreground py-3 rounded-full font-semibold">
+                    <Button variant="secondary" onClick={sponsor.reset} className="flex-1">
                       Cancel
-                    </button>
-                    <button onClick={handleConfirmSponsor} className="flex-1 bg-primary dark:bg-neutral-100 text-on-primary dark:text-neutral-900 py-3 rounded-full font-semibold">
+                    </Button>
+                    <Button onClick={handleConfirmSponsor} className="flex-1">
                       Try Again
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}

@@ -6,6 +6,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { useWallet } from "@/features/wallet/use-wallet";
 import { RequireWallet } from "@/features/wallet-session";
 import { RepoPicker } from "@/features/projects/repo-picker";
+import { Button } from "@/components/ui/button";
 import {
   useCreateProject,
   PROJECT_REGISTRY_CONTRACT_ID,
@@ -42,21 +43,17 @@ export default function ListProjectPage() {
   if (state.status === "success" && state.projectId) {
     return (
       <RequireWallet>
-        <div className="flex-grow flex flex-col items-center justify-center p-xl text-center min-h-[60vh]">
-          <div className="w-16 h-16 bg-[#E8F5E9] rounded-full flex items-center justify-center mx-auto text-[#2E7D32] mb-md">
+        <div className="flex-grow flex flex-col items-center justify-center p-8 text-center min-h-[60vh]">
+          <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto text-emerald-600 mb-4">
             <span className="material-symbols-outlined text-[36px]">verified</span>
           </div>
-          <h2 className="font-headline-md text-primary font-bold mb-xs">Project Listed!</h2>
-          <p className="text-secondary max-w-sm mb-md">
-            Your project has been registered on-chain. You can now view it and
-            start receiving sponsorships.
+          <h2 className="text-3xl font-extrabold text-foreground mb-2">Project Listed!</h2>
+          <p className="text-text-secondary max-w-sm mb-6 text-base leading-relaxed">
+            Your project has been registered on-chain. You can now view it and start receiving sponsorships.
           </p>
-          <button
-            onClick={() => router.push(`/projects/${state.projectId}`)}
-            className="bg-primary text-on-primary py-md px-xl rounded-full font-bold hover:opacity-90 active:scale-95 transition-all"
-          >
+          <Button onClick={() => router.push(`/projects/${state.projectId}`)} size="lg">
             View Project Page
-          </button>
+          </Button>
         </div>
       </RequireWallet>
     );
@@ -64,8 +61,8 @@ export default function ListProjectPage() {
 
   return (
     <RequireWallet>
-      <div className="flex-grow flex flex-col items-center pt-xl px-gutter pb-xl overflow-y-auto w-full">
-        <div className="w-full max-w-[640px] space-y-lg">
+      <div className="flex-grow flex flex-col items-center pt-6 px-4 sm:px-6 pb-16 overflow-y-auto w-full">
+        <div className="w-full max-w-[640px] space-y-6">
           {/* Step indicator */}
           <StepBar current={cur} total={4} stepLabel={currentStep.step} progressPct={progressPct} />
 
@@ -233,15 +230,15 @@ function StepBar({
   };
   return (
     <>
-      <div className="flex justify-between items-end mb-sm">
-        <h2 className="font-headline-md text-on-surface font-bold">{labels[stepLabel] ?? ""}</h2>
-        <span className="text-body-sm text-secondary font-medium">{progressPct}% Complete</span>
+      <div className="flex justify-between items-end mb-2">
+        <h2 className="text-xl font-extrabold text-foreground">{labels[stepLabel] ?? ""}</h2>
+        <span className="text-sm font-bold text-aubergine dark:text-aubergine-mute">{progressPct}% Complete</span>
       </div>
-      <div className="h-1 w-full bg-surface-container-high rounded-full overflow-hidden flex gap-xs">
+      <div className="h-2 w-full bg-border-color/60 rounded-full overflow-hidden flex gap-1">
         {Array.from({ length: total }).map((_, i) => (
           <div
             key={i}
-            className={`h-full flex-1 rounded-full ${i < current ? "bg-primary" : "bg-surface-container-high"}`}
+            className={`h-full flex-1 rounded-full transition-all ${i < current ? "bg-aubergine" : "bg-border-color/60"}`}
           />
         ))}
       </div>
@@ -259,62 +256,54 @@ function GithubConnectStep({
   onContinue: () => void;
 }) {
   return (
-    <div className="bg-white border border-outline-variant rounded-xl p-xl shadow-sm space-y-lg">
-      <div className="flex flex-col items-center text-center space-y-md">
-        <div className="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center border border-outline-variant">
-          <svg className="w-8 h-8 fill-on-surface" viewBox="0 0 24 24">
+    <div className="bg-surface dark:bg-surface border border-border-color rounded-2xl p-8 shadow-xs space-y-6">
+      <div className="flex flex-col items-center text-center space-y-4">
+        <div className="w-16 h-16 rounded-full bg-canvas-cream dark:bg-surface-container flex items-center justify-center border border-border-color">
+          <svg className="w-8 h-8 fill-foreground" viewBox="0 0 24 24">
             <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.042-1.416-4.042-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
           </svg>
         </div>
-        <h2 className="font-headline-md text-primary font-bold">Link GitHub to Continue</h2>
-        <p className="text-secondary text-body-sm max-w-[360px]">
-          We need to verify that you own the repository you want to list. This is
-          a one-time action for this listing — your GitHub account is not
-          permanently linked.
-        </p>
-        <p className="text-secondary text-body-sm max-w-[360px]">
-          Your wallet is your real identity. All future sponsorships will be sent
-          to your connected wallet address.
+        <h2 className="text-2xl font-extrabold text-foreground">Link GitHub to Continue</h2>
+        <p className="text-text-secondary text-sm max-w-[380px] leading-relaxed">
+          We verify repository ownership via GitHub OAuth. Your connected wallet address remains your primary receiving identity.
         </p>
       </div>
 
       {ghStatus === "loading" ? (
-        <div className="flex items-center gap-sm py-md justify-center">
-          <div className="w-5 h-5 border-2 border-outline-variant border-t-primary rounded-full animate-spin" />
-          <span className="text-secondary text-body-sm">Checking GitHub session...</span>
+        <div className="flex items-center gap-2 py-4 justify-center">
+          <div className="w-5 h-5 border-2 border-border-color border-t-aubergine rounded-full animate-spin" />
+          <span className="text-text-secondary text-sm">Checking GitHub session...</span>
         </div>
       ) : ghStatus === "authenticated" && session ? (
-        <div className="space-y-sm">
-          <div className="flex items-center justify-between p-md bg-surface-container-low rounded-lg border border-outline-variant">
-            <div className="flex items-center gap-sm">
-              <div className="w-8 h-8 rounded-full bg-[#24292f] flex items-center justify-center">
-                <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 bg-canvas-cream dark:bg-surface-container rounded-2xl border border-border-color">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-[#24292f] flex items-center justify-center">
+                <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24">
                   <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.042-1.416-4.042-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                 </svg>
               </div>
               <div>
-                <p className="font-semibold text-body-sm text-primary">@{session.githubUsername}</p>
-                <p className="text-secondary text-[11px]">Linked for this session</p>
+                <p className="font-bold text-sm text-foreground">@{session.githubUsername}</p>
+                <p className="text-text-secondary text-xs">Linked for this session</p>
               </div>
             </div>
             <button
               onClick={() => signOut()}
-              className="text-secondary text-[11px] font-medium hover:text-primary underline"
+              className="text-text-secondary text-xs font-semibold hover:text-foreground underline"
             >
               Disconnect
             </button>
           </div>
-          <button
-            onClick={onContinue}
-            className="w-full bg-primary text-on-primary py-md rounded-full font-semibold hover:opacity-90 active:scale-95 transition-all"
-          >
+
+          <Button onClick={onContinue} className="w-full">
             Continue to Repo Picker
-          </button>
+          </Button>
         </div>
       ) : (
         <button
           onClick={() => signIn("github", { callbackUrl: "/list-project" })}
-          className="w-full bg-[#24292f] text-white flex items-center justify-center gap-sm py-md rounded-full font-semibold hover:bg-[#1b1f23] transition-all active:scale-[0.98]"
+          className="w-full bg-[#24292f] text-white flex items-center justify-center gap-2 py-3.5 rounded-full font-bold text-base hover:bg-[#1b1f23] transition-all shadow-sm"
         >
           <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
             <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.042-1.416-4.042-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
@@ -334,16 +323,16 @@ function RepoPickerStep({
   onBack: () => void;
 }) {
   return (
-    <section className="bg-white border border-outline-variant rounded-xl p-lg shadow-sm">
-      <h3 className="font-body-lg font-bold text-primary mb-sm">Your Repositories</h3>
-      <p className="text-secondary text-body-sm mb-md">
-        Select a public repository you own. Forks are not shown.
+    <section className="bg-surface dark:bg-surface border border-border-color rounded-2xl p-6 shadow-xs space-y-4">
+      <h3 className="text-xl font-extrabold text-foreground">Your Repositories</h3>
+      <p className="text-text-secondary text-sm">
+        Select a public repository you own. Forks are excluded automatically.
       </p>
       <RepoPicker onSelect={onSelect} />
-      <div className="mt-md pt-md border-t border-outline-variant/30">
+      <div className="pt-4 border-t border-border-color/60">
         <button
           onClick={onBack}
-          className="text-secondary text-body-sm font-medium hover:text-primary underline"
+          className="text-text-secondary text-sm font-semibold slacc-link"
         >
           Back to GitHub setup
         </button>
@@ -370,37 +359,37 @@ function DetailsStep({
   onReview: () => void;
 }) {
   return (
-    <section className="bg-white border border-outline-variant rounded-xl p-lg shadow-sm space-y-lg">
+    <section className="bg-surface dark:bg-surface border border-border-color rounded-2xl p-8 shadow-xs space-y-6">
       <div>
-        <label className="font-label-caps text-on-surface-variant uppercase tracking-wider font-semibold block mb-xs">
+        <label className="font-bold text-xs uppercase tracking-widest text-text-secondary block mb-2">
           Repository
         </label>
-        <div className="flex items-center gap-sm p-md bg-surface-container-low rounded-lg border border-outline-variant">
-          <span className="material-symbols-outlined text-secondary text-[18px]">code</span>
-          <span className="font-mono-code text-body-sm text-primary">{repo.fullName}</span>
+        <div className="flex items-center gap-3 p-4 bg-canvas-cream dark:bg-surface-container rounded-2xl border border-border-color">
+          <span className="material-symbols-outlined text-aubergine text-[20px]">code</span>
+          <span className="font-mono text-sm font-bold text-foreground">{repo.fullName}</span>
         </div>
       </div>
 
-      <div className="flex flex-col gap-sm">
-        <label className="font-label-caps text-on-surface-variant uppercase tracking-wider font-semibold">
+      <div className="flex flex-col gap-2">
+        <label className="font-bold text-xs uppercase tracking-widest text-text-secondary">
           Project Name
         </label>
         <input
-          className="w-full px-md py-md bg-[#F1F0ED] border-none rounded-lg focus:ring-1 focus:ring-primary focus:bg-white outline-none font-body-lg"
+          className="w-full px-4 py-3 bg-canvas-cream dark:bg-surface-container border border-border-color rounded-2xl focus:ring-2 focus:ring-aubergine outline-none text-base font-bold text-foreground"
           placeholder="e.g. Stellar SDK Core"
           value={name}
           maxLength={100}
           onChange={(e) => onNameChange(e.target.value)}
         />
-        <span className="text-[11px] text-secondary text-right font-mono-code">{name.length}/100</span>
+        <span className="text-xs text-text-secondary text-right font-mono">{name.length}/100</span>
       </div>
 
-      <div className="flex flex-col gap-sm">
-        <label className="font-label-caps text-on-surface-variant uppercase tracking-wider font-semibold">
+      <div className="flex flex-col gap-2">
+        <label className="font-bold text-xs uppercase tracking-widest text-text-secondary">
           Short Description
         </label>
         <textarea
-          className="w-full px-md py-md bg-[#F1F0ED] border-none rounded-lg focus:ring-1 focus:ring-primary focus:bg-white outline-none font-body-lg resize-none"
+          className="w-full px-4 py-3 bg-canvas-cream dark:bg-surface-container border border-border-color rounded-2xl focus:ring-2 focus:ring-aubergine outline-none text-base text-foreground resize-none"
           placeholder="Briefly describe your project..."
           rows={4}
           maxLength={280}
@@ -408,31 +397,26 @@ function DetailsStep({
           onChange={(e) => onDescChange(e.target.value)}
         />
         <span
-          className={`text-[11px] text-right font-mono-code ${description.length >= 280 ? "text-error" : "text-secondary"}`}
+          className={`text-xs text-right font-mono ${description.length >= 280 ? "text-rose-500 font-bold" : "text-text-secondary"}`}
         >
           {description.length}/280
         </span>
       </div>
 
-      <div className="flex items-center justify-between pt-md border-t border-outline-variant/30">
+      <div className="flex items-center justify-between pt-4 border-t border-border-color/60">
         <button
           onClick={onBack}
-          className="flex items-center gap-xs text-secondary hover:text-primary font-semibold text-body-sm"
+          className="flex items-center gap-1 text-text-secondary hover:text-foreground font-semibold text-sm"
         >
           <span className="material-symbols-outlined text-[18px]">arrow_back</span>
           Back
         </button>
-        <button
+        <Button
           onClick={onReview}
           disabled={!name.trim() || description.length < 10}
-          className={`px-xl py-md rounded-full font-semibold transition-all ${
-            name.trim() && description.length >= 10
-              ? "bg-primary text-on-primary hover:opacity-90 active:scale-95"
-              : "bg-primary/20 text-primary/40 cursor-not-allowed"
-          }`}
         >
           Review &amp; Submit
-        </button>
+        </Button>
       </div>
     </section>
   );
@@ -462,20 +446,19 @@ function ReviewStep({
   onRetry: () => void;
 }) {
   return (
-    <div className="space-y-lg">
-      <section className="bg-white border border-outline-variant rounded-xl p-lg shadow-sm space-y-md">
-        <h3 className="font-headline-md text-primary font-bold">Review Your Project Listing</h3>
-        <p className="text-secondary text-body-sm">
-          This is exactly what will be written on-chain. All future sponsorships
-          will be sent to the wallet address shown below.
+    <div className="space-y-6">
+      <section className="bg-surface dark:bg-surface border border-border-color rounded-2xl p-8 shadow-xs space-y-4">
+        <h3 className="text-2xl font-extrabold text-foreground">Review Your Project Listing</h3>
+        <p className="text-text-secondary text-sm">
+          All future sponsorships will be sent to the owner wallet address shown below.
         </p>
 
-        <div className="bg-surface-container-low rounded-lg p-md space-y-sm font-semibold">
+        <div className="bg-canvas-cream dark:bg-surface-container rounded-2xl p-4 space-y-3 font-semibold border border-border-color">
           <FieldRow label="Repository" value={repo.fullName} mono />
           <FieldRow label="Project Name" value={name} />
           <FieldRow label="Description" value={description} right />
           <FieldRow
-            label="Owner / Receiving Wallet"
+            label="Owner Wallet"
             value={
               walletPublicKey
                 ? `${walletPublicKey.slice(0, 6)}...${walletPublicKey.slice(-6)}`
@@ -487,11 +470,11 @@ function ReviewStep({
         </div>
 
         {unsignedCall && (
-          <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-md">
-            <h4 className="font-label-caps text-label-caps text-secondary uppercase mb-xs font-bold">
-              Contract Call
+          <div className="bg-surface border border-border-color/60 rounded-xl p-4">
+            <h4 className="font-bold text-xs text-text-secondary uppercase tracking-widest mb-1">
+              Contract Call Args
             </h4>
-            <pre className="font-mono-code text-[10px] text-on-surface-variant whitespace-pre-wrap overflow-x-auto leading-relaxed">
+            <pre className="font-mono text-xs text-foreground whitespace-pre-wrap overflow-x-auto leading-relaxed">
               {JSON.stringify(unsignedCall.args, null, 2)}
             </pre>
           </div>
@@ -502,28 +485,25 @@ function ReviewStep({
         <div className="flex items-center justify-between">
           <button
             onClick={onBack}
-            className="flex items-center gap-xs text-secondary hover:text-primary font-semibold text-body-sm"
+            className="flex items-center gap-1 text-text-secondary hover:text-foreground font-semibold text-sm"
           >
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             Edit Details
           </button>
-          <button
-            onClick={onSubmit}
-            className="bg-primary text-on-primary py-md px-xl rounded-full font-bold hover:opacity-90 active:scale-95 transition-all"
-          >
+          <Button onClick={onSubmit} size="lg">
             Sign &amp; Submit to Network
-          </button>
+          </Button>
         </div>
       )}
 
       {state.status === "pending" && (
-        <div className="bg-white border border-outline-variant rounded-xl p-xl shadow-sm flex flex-col items-center gap-md text-center">
-          <span className="animate-spin material-symbols-outlined text-[48px] text-primary">progress_activity</span>
-          <p className="font-semibold text-body-md">
+        <div className="bg-surface border border-border-color rounded-2xl p-10 shadow-xs flex flex-col items-center gap-4 text-center">
+          <span className="animate-spin material-symbols-outlined text-[48px] text-aubergine dark:text-aubergine-mute">progress_activity</span>
+          <p className="font-bold text-base text-foreground">
             {state.txHash ? "Confirming on-chain..." : "Please sign the transaction in your wallet..."}
           </p>
           {state.txHash && (
-            <div className="w-full p-sm bg-surface-container rounded-lg font-mono-code text-[11px] truncate">
+            <div className="w-full p-2.5 bg-canvas-cream dark:bg-surface-container rounded-xl font-mono text-xs truncate">
               Tx Hash: {state.txHash}
             </div>
           )}
@@ -531,8 +511,8 @@ function ReviewStep({
       )}
 
       {state.status === "failed" && (
-        <div className="bg-white border border-outline-variant rounded-xl p-lg shadow-sm space-y-md">
-          <div className="p-md bg-error-container text-on-error-container text-body-sm rounded-xl border border-error/15 text-left font-medium">
+        <div className="bg-surface border border-border-color rounded-2xl p-6 shadow-xs space-y-4">
+          <div className="p-4 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-300 text-sm rounded-xl border border-rose-200 dark:border-rose-900 font-medium leading-relaxed">
             {state.errorType === "insufficient_funds" && (
               <span><strong>Insufficient funds:</strong> Your wallet does not have enough XLM for the transaction fee.</span>
             )}
@@ -546,19 +526,13 @@ function ReviewStep({
               <span><strong>Transaction failed:</strong> {state.errorMessage || "Unexpected error."}</span>
             )}
           </div>
-          <div className="flex gap-md">
-            <button
-              onClick={onReset}
-              className="flex-1 bg-surface-container hover:bg-surface-container-high text-on-surface-variant py-md rounded-full font-semibold"
-            >
+          <div className="flex gap-4">
+            <Button variant="secondary" onClick={onReset} className="flex-1">
               Cancel
-            </button>
-            <button
-              onClick={onRetry}
-              className="flex-1 bg-primary text-on-primary py-md rounded-full font-semibold hover:opacity-90 active:scale-95 transition-all"
-            >
+            </Button>
+            <Button onClick={onRetry} className="flex-1">
               Try Again
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -580,10 +554,10 @@ function FieldRow({
   small?: boolean;
 }) {
   return (
-    <div className="flex justify-between border-b border-outline-variant/30 pb-xs">
-      <span className="text-secondary text-body-sm">{label}</span>
+    <div className="flex justify-between border-b border-border-color/40 pb-2">
+      <span className="text-text-secondary text-sm">{label}</span>
       <span
-        className={`${mono ? "font-mono-code" : ""} ${small ? "text-[10px]" : "text-body-sm"} text-primary ${right ? "max-w-[280px] text-right leading-snug" : ""}`}
+        className={`${mono ? "font-mono" : ""} ${small ? "text-xs" : "text-sm"} font-bold text-foreground ${right ? "max-w-[280px] text-right leading-snug" : ""}`}
       >
         {value}
       </span>

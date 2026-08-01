@@ -3,29 +3,28 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-full font-semibold transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 active:scale-95",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-full font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
   {
     variants: {
       variant: {
-        // Use [color:] arbitrary values — these are always generated and beat cascade from body
         default:
-          "bg-primary [color:#ffffff] shadow-sm hover:opacity-90",
+          "bg-aubergine dark:bg-aubergine-press text-white shadow-sm hover:bg-aubergine-press dark:hover:bg-aubergine-tint",
         destructive:
-          "bg-error [color:#ffffff] shadow-sm hover:opacity-90",
+          "bg-[#cc4117] text-white shadow-sm hover:opacity-90",
         outline:
-          "border border-outline-variant bg-surface [color:#000000] hover:bg-surface-container-low transition-colors",
+          "border-2 border-aubergine dark:border-aubergine-mute bg-transparent text-aubergine dark:text-aubergine-mute hover:bg-aubergine/5 dark:hover:bg-aubergine/20",
         secondary:
-          "bg-secondary [color:#ffffff] shadow-sm hover:opacity-90",
+          "bg-canvas-lavender dark:bg-surface-container text-ink dark:text-foreground hover:bg-canvas-cream dark:hover:bg-surface-hover",
         ghost:
-          "hover:bg-surface-container-low [color:#000000]",
+          "hover:bg-canvas-cream dark:hover:bg-surface-container text-ink dark:text-foreground",
         link:
-          "[color:#000000] underline-offset-4 hover:underline",
+          "text-link-blue hover:text-link-blue-hover underline-offset-4 hover:underline p-0 h-auto",
       },
       size: {
-        default: "py-md px-xl text-body-lg",
-        sm: "px-lg py-sm text-body-sm",
-        lg: "py-lg px-xl text-body-lg",
-        icon: "h-9 w-9",
+        default: "px-7 py-3 text-[16px] leading-tight",
+        sm: "px-5 py-2 text-[14px] leading-tight",
+        lg: "px-8 py-4 text-[18px] leading-tight",
+        icon: "h-10 w-10 p-0 rounded-full",
       },
     },
     defaultVariants: {

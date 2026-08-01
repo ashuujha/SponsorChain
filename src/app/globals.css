@@ -1,18 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Geist:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #FAFAF8;
-  --foreground: #1c1b1b;
-  --font-inter: 'Inter', sans-serif;
+  --background: #ffffff;
+  --foreground: #1d1d1d;
+  --surface: #ffffff;
+  --surface-container: #f4ede4;
+  --surface-hover: #f9f0ff;
+  --border-color: #e6e6e6;
+  --text-primary: #1d1d1d;
+  --text-secondary: #696969;
+  --accent-green: #007a5a;
+  --primary-bg: #4a154b;
+  --primary-text: #ffffff;
+  --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .dark {
-  --background: #0E0F12;
-  --foreground: #F4F4F6;
+  --background: #120914;
+  --foreground: #fcf8fd;
+  --surface: #1d1022;
+  --surface-container: #28142e;
+  --surface-hover: #34193c;
+  --border-color: #3d1a45;
+  --text-primary: #fcf8fd;
+  --text-secondary: #d9bdde;
+  --accent-green: #2ecc71;
+  --primary-bg: #a83bb0;
+  --primary-text: #ffffff;
 }
 
 @layer base {
@@ -26,6 +44,47 @@
 }
 
 @layer utilities {
+  /* Slacc Pastel-Mesh Atmospheric Gradient Wash */
+  .pastel-mesh-bg {
+    background-color: #ffffff;
+    background-image: 
+      radial-gradient(at 10% 15%, rgba(255, 240, 230, 0.8) 0px, transparent 55%),
+      radial-gradient(at 90% 10%, rgba(249, 240, 255, 0.85) 0px, transparent 50%),
+      radial-gradient(at 50% 85%, rgba(235, 247, 240, 0.7) 0px, transparent 60%);
+  }
+
+  .dark .pastel-mesh-bg {
+    background-color: #120914;
+    background-image: 
+      radial-gradient(at 10% 15%, rgba(74, 21, 75, 0.4) 0px, transparent 55%),
+      radial-gradient(at 90% 10%, rgba(97, 31, 105, 0.35) 0px, transparent 50%),
+      radial-gradient(at 50% 85%, rgba(30, 15, 35, 0.6) 0px, transparent 60%);
+  }
+
+  /* Slacc Typography Helpers */
+  .display-hero {
+    font-size: 64px;
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.768px;
+  }
+
+  .display-section {
+    font-size: 48px;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+  }
+
+  .display-stat {
+    font-size: 50px;
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+    color: var(--primary-bg);
+  }
+
+  /* Material Symbols */
   .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     display: inline-block;
@@ -37,10 +96,6 @@
     direction: ltr;
   }
 
-  .receipt-dotted-line {
-    border-top: 1px dashed #E7E5E1;
-  }
-
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -49,51 +104,57 @@
     scrollbar-width: none;
   }
 
-  .dot-grid {
-    background-image: radial-gradient(#e5e2e1 1px, transparent 1px);
-    background-size: 24px 24px;
+  /* Slacc Inline Link Color */
+  .slacc-link {
+    color: #1264a3;
+    font-weight: 500;
+    transition: color 0.15s ease;
+  }
+  .slacc-link:hover {
+    color: #3860be;
+    text-decoration: underline;
+  }
+  .dark .slacc-link {
+    color: #58a6ff;
+  }
+  .dark .slacc-link:hover {
+    color: #79c0ff;
   }
 
-  /* Custom Typography Utility Mappings to match Stitch HTML Mockups */
+  /* Custom Typography Utility Mappings */
   .font-body-sm, .text-body-sm {
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.55;
     font-weight: 400;
   }
   .font-body-lg, .text-body-lg {
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: 18px;
+    line-height: 1.55;
     font-weight: 400;
+    letter-spacing: -0.0216px;
   }
   .font-label-caps, .text-label-caps {
     font-size: 12px;
     line-height: 1;
-    letter-spacing: 0.05em;
-    font-weight: 600;
+    letter-spacing: 0.96px;
+    font-weight: 700;
     text-transform: uppercase;
   }
   .font-headline-md, .text-headline-md {
-    font-size: 20px;
+    font-size: 22px;
     line-height: 1.4;
-    letter-spacing: -0.01em;
-    font-weight: 600;
+    font-weight: 700;
   }
   .font-headline-lg, .text-headline-lg {
     font-size: 32px;
-    line-height: 1.2;
-    letter-spacing: -0.03em;
+    line-height: 1.25;
+    letter-spacing: -0.256px;
     font-weight: 700;
   }
   .font-headline-lg-mobile, .text-headline-lg-mobile {
-    font-size: 24px;
+    font-size: 28px;
     line-height: 1.2;
-    letter-spacing: -0.02em;
-    font-weight: 700;
-  }
-  .font-display, .text-display {
-    font-size: 48px;
-    line-height: 1.1;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.3px;
     font-weight: 700;
   }
   .font-mono-code, .text-mono-code {
@@ -101,42 +162,4 @@
     line-height: 1.4;
     font-weight: 500;
   }
-}
-
-/* Core Material Design 3 Text Color Fallbacks for Solid Background Contrast - Global Scope */
-.text-on-primary, .text-on-secondary, .text-on-tertiary, .text-on-error {
-  color: #ffffff !important;
-}
-.text-on-surface, .text-on-background {
-  color: #1c1b1b !important;
-}
-.text-on-surface-variant {
-  color: #444748 !important;
-}
-.text-on-primary-container {
-  color: #ffffff !important;
-}
-.text-on-secondary-container {
-  color: #64625e !important;
-}
-.text-on-tertiary-container {
-  color: #868381 !important;
-}
-.text-on-error-container {
-  color: #93000a !important;
-}
-
-/* ============================================================
-   Button Backstop — prevent black-on-black cascade
-   bg-primary = #000000, bg-secondary = #605e5a → must always
-   render white text regardless of inherited body color.
-   ============================================================ */
-.bg-primary {
-  color: #ffffff;
-}
-.bg-secondary {
-  color: #ffffff;
-}
-.bg-error {
-  color: #ffffff;
 }

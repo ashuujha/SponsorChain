@@ -1,57 +1,45 @@
-"use client";
-
 import React from "react";
 
-function getInitials(name: string): string {
-  if (!name) return "PR";
-  const parts = name.trim().split(/[\s-_]+/);
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
-  return name.slice(0, 2).toUpperCase();
-}
-
-const COLOR_PALETTES = [
-  { bg: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 border-emerald-500/20" },
-  { bg: "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 border-indigo-500/20" },
-  { bg: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400 border-amber-500/20" },
-  { bg: "bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400 border-rose-500/20" },
-  { bg: "bg-sky-500/10 text-sky-600 dark:bg-sky-500/20 dark:text-sky-400 border-sky-500/20" },
-  { bg: "bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400 border-purple-500/20" },
-  { bg: "bg-teal-500/10 text-teal-600 dark:bg-teal-500/20 dark:text-teal-400 border-teal-500/20" },
+const SLACC_PALETTES = [
+  { bg: "bg-[#4a154b]", text: "text-white" },       // Slacc Aubergine
+  { bg: "bg-[#f9f0ff] dark:bg-[#34193c]", text: "text-[#4a154b] dark:text-[#fcf8fd]" }, // Lavender
+  { bg: "bg-[#f4ede4] dark:bg-[#28142e]", text: "text-[#1d1d1d] dark:text-[#fcf8fd]" }, // Cream
+  { bg: "bg-[#007a5a]", text: "text-white" },       // Emerald
+  { bg: "bg-[#1264a3]", text: "text-white" },       // Slacc Link Blue
+  { bg: "bg-[#481a54]", text: "text-white" },       // Deep Aubergine
 ];
 
-function hashString(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
-interface ProjectAvatarProps {
+export function ProjectAvatar({
+  name,
+  size = "md",
+  className = "",
+}: {
   name: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   className?: string;
-}
-
-export function ProjectAvatar({ name, size = "md", className = "" }: ProjectAvatarProps) {
-  const initials = getInitials(name);
-  const paletteIndex = hashString(name) % COLOR_PALETTES.length;
-  const palette = COLOR_PALETTES[paletteIndex];
+}) {
+  const initial = name ? name.charAt(0).toUpperCase() : "P";
+  
+  // Pick deterministic palette from name string
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const paletteIndex = Math.abs(hash) % SLACC_PALETTES.length;
+  const palette = SLACC_PALETTES[paletteIndex];
 
   const sizeClasses = {
-    sm: "w-8 h-8 text-[12px]",
-    md: "w-10 h-10 text-[14px]",
-    lg: "w-14 h-14 text-[18px]",
+    sm: "w-8 h-8 text-xs font-bold rounded-lg",
+    md: "w-10 h-10 text-sm font-bold rounded-xl",
+    lg: "w-14 h-14 text-lg font-bold rounded-2xl",
+    xl: "w-20 h-20 text-2xl font-extrabold rounded-2xl",
   }[size];
 
   return (
     <div
-      className={`rounded-xl border flex items-center justify-center font-bold tracking-wider shrink-0 transition-colors ${palette.bg} ${sizeClasses} ${className}`}
+      className={`inline-flex items-center justify-center shrink-0 shadow-xs border border-border-color/40 ${palette.bg} ${palette.text} ${sizeClasses} ${className}`}
     >
-      {initials}
+      {initial}
     </div>
   );
 }

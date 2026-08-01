@@ -2,82 +2,90 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useUIStore } from "@/lib/ui-store";
 import { BrandLogo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
+import { Button } from "@/components/ui/button";
 
-export function NavigationDrawer() {
+export function Drawer() {
   const isDrawerOpen = useUIStore((state) => state.isDrawerOpen);
-  const toggleDrawer = useUIStore((state) => state.toggleDrawer);
-  const pathname = usePathname();
+  const setDrawerOpen = useUIStore((state) => state.setDrawerOpen);
 
-  const menuItems = [
-    { label: "Home", href: "/", icon: "home" },
-    { label: "Explore", href: "/explore", icon: "travel_explore" },
-    { label: "My Activity", href: "/activity", icon: "monitoring" },
-    { label: "List a Project", href: "/list-project", icon: "add_circle" },
-    { label: "Wallet", href: "/wallet", icon: "account_balance_wallet" },
-  ];
+  if (!isDrawerOpen) return null;
+
+  const closeDrawer = () => setDrawerOpen(false);
 
   return (
-    <>
-      {/* Overlay */}
-      {isDrawerOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 dark:bg-black/60 z-50 transition-opacity duration-300 backdrop-blur-xs"
-          onClick={toggleDrawer}
-        />
-      )}
+    <div className="fixed inset-0 z-50 md:hidden">
+      <div
+        className="fixed inset-0 bg-aubergine/40 backdrop-blur-xs transition-opacity"
+        onClick={closeDrawer}
+      />
 
-      {/* Drawer */}
-      <aside
-        className={`fixed inset-y-0 left-0 w-72 z-50 bg-surface dark:bg-neutral-900 border-r border-outline-variant dark:border-neutral-800 transition-transform duration-300 ease-in-out flex flex-col p-md gap-sm ${
-          isDrawerOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="flex items-center justify-between mb-lg pt-sm">
-          <div className="flex items-center gap-2">
-            <BrandLogo className="w-6 h-6 text-primary dark:text-neutral-100" />
-            <span className="font-headline-md text-headline-md font-bold text-primary dark:text-neutral-100">
-              SponsorChain
-            </span>
+      <div className="fixed inset-y-0 left-0 w-4/5 max-w-xs bg-surface border-r border-border-color shadow-2xl p-6 flex flex-col justify-between">
+        <div>
+          <div className="flex items-center justify-between pb-6 border-b border-border-color">
+            <Link href="/" onClick={closeDrawer} className="flex items-center gap-2">
+              <BrandLogo className="w-7 h-7" />
+              <span className="font-extrabold text-xl text-aubergine dark:text-foreground">
+                SponsorChain
+              </span>
+            </Link>
+            <button
+              onClick={closeDrawer}
+              className="p-1 hover:bg-canvas-cream dark:hover:bg-surface-container rounded-full text-foreground"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
           </div>
-          <button
-            className="p-xs hover:bg-surface-container dark:hover:bg-neutral-800 rounded-full text-secondary dark:text-neutral-300"
-            onClick={toggleDrawer}
-            aria-label="Close menu"
-          >
-            <span className="material-symbols-outlined">close</span>
-          </button>
+
+          <nav className="flex flex-col gap-4 py-6">
+            <Link
+              href="/"
+              onClick={closeDrawer}
+              className="font-bold text-lg text-foreground hover:text-link-blue py-2 px-3 rounded-lg hover:bg-canvas-cream dark:hover:bg-surface-container transition-colors"
+            >
+              Home
+            </Link>
+            <Link
+              href="/explore"
+              onClick={closeDrawer}
+              className="font-bold text-lg text-foreground hover:text-link-blue py-2 px-3 rounded-lg hover:bg-canvas-cream dark:hover:bg-surface-container transition-colors"
+            >
+              Explore Projects
+            </Link>
+            <Link
+              href="/activity"
+              onClick={closeDrawer}
+              className="font-bold text-lg text-foreground hover:text-link-blue py-2 px-3 rounded-lg hover:bg-canvas-cream dark:hover:bg-surface-container transition-colors"
+            >
+              My Activity
+            </Link>
+            <Link
+              href="/wallet"
+              onClick={closeDrawer}
+              className="font-bold text-lg text-foreground hover:text-link-blue py-2 px-3 rounded-lg hover:bg-canvas-cream dark:hover:bg-surface-container transition-colors"
+            >
+              Wallet Dashboard
+            </Link>
+          </nav>
         </div>
 
-        <nav className="flex flex-col gap-xs flex-grow">
-          {menuItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={toggleDrawer}
-                className={`flex items-center gap-md px-md py-3 rounded-xl font-semibold text-body-sm transition-colors ${
-                  isActive
-                    ? "bg-primary dark:bg-neutral-100 text-on-primary dark:text-neutral-900 shadow-xs"
-                    : "text-secondary dark:text-neutral-400 hover:bg-surface-container dark:hover:bg-neutral-800 hover:text-primary dark:hover:text-neutral-100"
-                }`}
-              >
-                <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+        <div className="flex flex-col gap-4 pt-6 border-t border-border-color">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold text-text-secondary">Theme</span>
+            <ThemeToggle />
+          </div>
 
-        <div className="mt-auto pt-md border-t border-outline-variant dark:border-neutral-800 flex items-center justify-between text-secondary dark:text-neutral-400 text-body-sm">
-          <span>Appearance</span>
-          <ThemeToggle />
+          <Link href="/list-project" onClick={closeDrawer} className="w-full">
+            <Button variant="default" className="w-full">
+              List a Project
+            </Button>
+          </Link>
         </div>
-      </aside>
-    </>
+      </div>
+    </div>
   );
 }
+
+export const NavigationDrawer = Drawer;
