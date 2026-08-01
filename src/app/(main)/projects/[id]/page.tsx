@@ -209,11 +209,11 @@ export default function ProjectDetailPage() {
   const handleConfirmSponsor = async () => {
     if (!wallet.publicKey || !project) return;
     // submit() triggers: build XDR → wallet signing popup → submit to Horizon.
-    // On success, onSuccessRef.current() handles mockSponsor + loadProject.
     await sponsor.submit(
       wallet.publicKey,
       project.owner,
-      sponsor.amount
+      sponsor.amount,
+      wallet.balance || "0"
     );
   };
 
@@ -502,22 +502,8 @@ export default function ProjectDetailPage() {
               {/* Failed */}
               {sponsor.state.status === "failed" && (
                 <div className="space-y-lg">
-                  <div className="p-md bg-error-container text-on-error-container text-body-sm rounded-xl border border-error/15 font-medium">
-                    {sponsor.state.errorType === "invalid_destination" && (
-                      <span><strong>Invalid recipient:</strong> The recipient maintainer account is invalid or unfunded on Stellar Testnet.</span>
-                    )}
-                    {sponsor.state.errorType === "insufficient_funds" && (
-                      <span><strong>Insufficient funds:</strong> Your wallet does not hold enough XLM to complete this transaction.</span>
-                    )}
-                    {sponsor.state.errorType === "user_rejected" && (
-                      <span><strong>Signature rejected:</strong> You declined the signature request.</span>
-                    )}
-                    {sponsor.state.errorType === "network_error" && (
-                      <span><strong>Network error:</strong> Failed to reach the Stellar network.</span>
-                    )}
-                    {sponsor.state.errorType === "unknown" && (
-                      <span><strong>Transaction failed:</strong> {sponsor.state.errorMessage || "Unexpected error."}</span>
-                    )}
+                  <div className="p-md bg-error-container text-on-error-container text-body-sm rounded-xl border border-error/15 font-medium leading-relaxed">
+                    {sponsor.state.errorMessage}
                   </div>
                   <div className="flex gap-md">
                     <button onClick={sponsor.reset} className="flex-1 bg-surface-container py-md rounded-full font-semibold">

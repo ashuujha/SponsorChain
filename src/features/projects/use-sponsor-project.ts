@@ -1,8 +1,6 @@
 "use client";
 
-import { useReducer, useCallback, useState, useRef, useEffect } from "react";
-
-/* ── Reuse the same lifecycle reducer pattern from create-project ── */
+import { useReducer, useState, useCallback, useRef, useEffect } from "react";
 
 export interface SponsorState {
   status: "idle" | "review" | "pending" | "success" | "failed";
@@ -10,8 +8,12 @@ export interface SponsorState {
   errorType:
     | "insufficient_funds"
     | "user_rejected"
+    | "not_connected"
+    | "unfunded_destination"
     | "invalid_destination"
     | "network_error"
+    | "expired_tx"
+    | "invalid_amount"
     | "unknown"
     | null;
   errorMessage: string | null;
@@ -22,26 +24,34 @@ type SponsorAction =
   | { type: "SUBMIT" }
   | { type: "RECEIVE_HASH"; txHash: string }
   | { type: "SUCCESS" }
-  | { type: "FAIL"; error: unknown }
+  | { type: "FAIL"; error: unknown; amountXlm?: string; walletBalance?: string }
   | { type: "RESET" };
 
 /**
  * Extracts a clean, human-readable error message and classified errorType
- * from any Horizon API error, Stellar SDK error, or wallet rejection object.
+ * from any Horizon API error, Stellar SDK error, wallet rejection, or balance check.
  */
-function extractErrorMessage(err: unknown): {
+export function extractErrorMessage(
+  err: unknown,
+  amountXlm?: string,
+  walletBalance?: string
+): {
   message: string;
-  errorType: SponsorState["errorType"];
+  errorType: NonNullable<SponsorState["errorType"]>;
 } {
   // Always log raw error object to console for full developer visibility
   console.error("[SponsorPayment] Raw transaction failure object:", err);
 
   if (!err) {
-    return { message: "An unknown transaction error occurred.", errorType: "unknown" };
+    return {
+      message: "Something went wrong submitting your transaction. Please try again, or check the browser console for details.",
+      errorType: "unknown",
+    };
   }
 
   let rawMessage = "";
-  let resultCodesStr = "";
+  let txResultCode = "";
+  let opResultCodes: string[] = [];
 
   // 1. Inspect Horizon API error structure (Stellar SDK nests Horizon responses under err.response.data)
   type HorizonData = {
@@ -60,22 +70,18 @@ function extractErrorMessage(err: unknown): {
     response?: { data?: HorizonData };
     error?: unknown;
     details?: unknown;
+    code?: unknown;
   };
 
   const horizonData = errObj?.response?.data;
 
   if (horizonData?.extras?.result_codes) {
     const codes = horizonData.extras.result_codes;
-    const parts = [
-      codes.transaction,
-      ...(codes.operations ?? []),
-    ].filter(Boolean);
-    if (parts.length > 0) {
-      resultCodesStr = parts.join(", ");
-    }
+    txResultCode = codes.transaction || "";
+    opResultCodes = codes.operations || [];
   }
 
-  // 2. Derive rawMessage string
+  // 2. Derive rawMessage string safely
   if (typeof errObj.message === "string" && errObj.message && errObj.message !== "[object Object]") {
     rawMessage = errObj.message;
   } else if (typeof horizonData?.detail === "string" && horizonData.detail) {
@@ -89,77 +95,143 @@ function extractErrorMessage(err: unknown): {
   } else if (typeof err === "string" && err) {
     rawMessage = err;
   } else {
-    try {
-      const str = JSON.stringify(err);
-      rawMessage = str !== "{}" ? str : "Transaction failed on Stellar network";
-    } catch {
-      rawMessage = "Transaction failed on Stellar network";
-    }
+    rawMessage = "Something went wrong submitting your transaction. Please try again, or check the browser console for details.";
   }
 
-  // Append result_codes if available and not already present
-  let fullText = rawMessage;
-  if (resultCodesStr && !fullText.includes(resultCodesStr)) {
-    fullText = `${fullText} (${resultCodesStr})`;
-  }
+  const allCodes = [txResultCode, ...opResultCodes].join(" ").toLowerCase();
+  const lowerText = `${rawMessage} ${allCodes}`.toLowerCase();
 
-  // Safety check: ensure string never contains raw "[object Object]"
-  if (fullText.includes("[object Object]")) {
-    fullText = resultCodesStr
-      ? `Stellar error: ${resultCodesStr}`
-      : "Transaction failed on Stellar network.";
-  }
-
-  // 3. Classify into specific error types
-  const lower = fullText.toLowerCase();
-
-  let errorType: SponsorState["errorType"] = "unknown";
-
+  // ── Case 1: Insufficient Balance ──────────────────────────────────────────
   if (
-    lower.includes("op_underfunded") ||
-    lower.includes("tx_insufficient_balance") ||
-    lower.includes("insufficient_balance") ||
-    lower.includes("insufficient funds") ||
-    lower.includes("underfunded") ||
-    lower.includes("op_low_reserve") ||
-    lower.includes("unfunded")
+    opResultCodes.includes("op_underfunded") ||
+    opResultCodes.includes("op_low_reserve") ||
+    txResultCode === "tx_insufficient_balance" ||
+    lowerText.includes("insufficient") ||
+    lowerText.includes("underfunded") ||
+    lowerText.includes("low_reserve") ||
+    lowerText.includes("not hold enough xlm")
   ) {
-    errorType = "insufficient_funds";
-    fullText = "Your wallet does not have enough XLM balance (or reserve) to complete this transaction.";
-  } else if (
-    lower.includes("user rejected") ||
-    lower.includes("user declined") ||
-    lower.includes("user cancelled") ||
-    lower.includes("declined by user") ||
-    lower.includes("rejected by user") ||
-    lower.includes("signature rejected") ||
-    lower.includes("user denied")
-  ) {
-    errorType = "user_rejected";
-    fullText = "You declined the signature request in your wallet.";
-  } else if (
-    lower.includes("op_no_destination") ||
-    lower.includes("invalid destination") ||
-    lower.includes("destination public key") ||
-    lower.includes("no destination") ||
-    lower.includes("not found or unfunded")
-  ) {
-    errorType = "invalid_destination";
-    fullText = "The recipient maintainer account is invalid or unfunded on Testnet.";
-  } else if (
-    lower.includes("network") ||
-    lower.includes("timeout") ||
-    lower.includes("failed to fetch") ||
-    lower.includes("rpc") ||
-    lower.includes("horizon") ||
-    lower.includes("504") ||
-    lower.includes("502")
-  ) {
-    errorType = "network_error";
-    fullText = "Network error connecting to Horizon testnet. Please try again.";
+    const attempted = parseFloat(amountXlm || "0");
+    const fee = 0.00001; // Base fee (100 stroops = 0.00001 XLM)
+    const requiredXlm = attempted > 0 ? (attempted + fee).toFixed(7) : "0.0000000";
+    const availableXlm = walletBalance ? parseFloat(walletBalance).toFixed(7) : "0.0000000";
+
+    return {
+      message: `Insufficient balance. You need at least ${requiredXlm} XLM (including network fee) but your wallet has ${availableXlm} XLM.`,
+      errorType: "insufficient_funds",
+    };
   }
 
-  return { message: fullText, errorType };
+  // ── Case 2: User Rejected / Cancelled Signing ────────────────────────────
+  if (
+    lowerText.includes("user rejected") ||
+    lowerText.includes("user declined") ||
+    lowerText.includes("user cancelled") ||
+    lowerText.includes("declined by user") ||
+    lowerText.includes("rejected by user") ||
+    lowerText.includes("signature rejected") ||
+    lowerText.includes("user denied") ||
+    lowerText.includes("popup closed") ||
+    lowerText.includes("closed by user")
+  ) {
+    return {
+      message: "Transaction cancelled. You declined the signing request in your wallet.",
+      errorType: "user_rejected",
+    };
+  }
+
+  // ── Case 3: Wallet Not Connected ─────────────────────────────────────────
+  if (
+    lowerText.includes("connect a stellar wallet") ||
+    lowerText.includes("wallet not connected") ||
+    lowerText.includes("no wallet connected")
+  ) {
+    return {
+      message: "Connect a Stellar wallet first to sponsor this project.",
+      errorType: "not_connected",
+    };
+  }
+
+  // ── Case 4: Destination Account Doesn't Exist / Unfunded (`op_no_destination`) ──
+  if (
+    opResultCodes.includes("op_no_destination") ||
+    lowerText.includes("op_no_destination") ||
+    lowerText.includes("not found or unfunded") ||
+    lowerText.includes("destination account does not exist")
+  ) {
+    return {
+      message: "This project's wallet hasn't been activated on Stellar yet. Contact the maintainer.",
+      errorType: "unfunded_destination",
+    };
+  }
+
+  // ── Case 5: Invalid / Malformed Destination Public Key ────────────────────
+  if (
+    lowerText.includes("invalid destination") ||
+    lowerText.includes("destination public key") ||
+    lowerText.includes("malformed destination")
+  ) {
+    return {
+      message: "This project's maintainer hasn't connected a valid Stellar wallet.",
+      errorType: "invalid_destination",
+    };
+  }
+
+  // ── Case 6: Sequence Number / Transaction Expired (`tx_bad_seq`, `tx_too_late`, `tx_too_early`) ──
+  if (
+    txResultCode === "tx_bad_seq" ||
+    txResultCode === "tx_too_late" ||
+    txResultCode === "tx_too_early" ||
+    lowerText.includes("tx_bad_seq") ||
+    lowerText.includes("tx_too_late") ||
+    lowerText.includes("transaction expired") ||
+    lowerText.includes("sequence number")
+  ) {
+    return {
+      message: "This transaction expired before it was submitted. Please try again.",
+      errorType: "expired_tx",
+    };
+  }
+
+  // ── Case 7: Amount is Zero or Negative ───────────────────────────────────
+  if (
+    lowerText.includes("greater than 0") ||
+    lowerText.includes("greater than zero") ||
+    lowerText.includes("invalid amount")
+  ) {
+    return {
+      message: "Enter a valid amount greater than 0.",
+      errorType: "invalid_amount",
+    };
+  }
+
+  // ── Case 8: Network / Horizon Unreachable ────────────────────────────────
+  if (
+    lowerText.includes("network") ||
+    lowerText.includes("timeout") ||
+    lowerText.includes("failed to fetch") ||
+    lowerText.includes("rpc") ||
+    lowerText.includes("horizon") ||
+    lowerText.includes("504") ||
+    lowerText.includes("502")
+  ) {
+    return {
+      message: "Network error — couldn't reach Stellar Testnet. Check your connection and try again.",
+      errorType: "network_error",
+    };
+  }
+
+  // ── Case 9: Unrecognized / Fallback Error ────────────────────────────────
+  let fallbackMessage = rawMessage || "Something went wrong submitting your transaction. Please try again, or check the browser console for details.";
+
+  if (fallbackMessage.includes("[object Object]")) {
+    fallbackMessage = "Something went wrong submitting your transaction. Please try again, or check the browser console for details.";
+  }
+
+  return {
+    message: fallbackMessage,
+    errorType: "unknown",
+  };
 }
 
 function sponsorReducer(s: SponsorState, a: SponsorAction): SponsorState {
@@ -173,7 +245,7 @@ function sponsorReducer(s: SponsorState, a: SponsorAction): SponsorState {
     case "SUCCESS":
       return { ...s, status: "success" };
     case "FAIL": {
-      const { message, errorType } = extractErrorMessage(a.error);
+      const { message, errorType } = extractErrorMessage(a.error, a.amountXlm, a.walletBalance);
       return { status: "failed", txHash: s.txHash, errorType, errorMessage: message };
     }
     case "RESET":
@@ -192,7 +264,6 @@ export function useSponsorProject(onSuccess?: (txHash: string) => void) {
   const [state, dispatch] = useReducer(sponsorReducer, initSponsor);
   const [amount, setAmount] = useState("");
 
-  // Keep onSuccess in a ref so submit's identity never changes across renders.
   const onSuccessRef = useRef(onSuccess);
   useEffect(() => {
     onSuccessRef.current = onSuccess;
@@ -201,7 +272,39 @@ export function useSponsorProject(onSuccess?: (txHash: string) => void) {
   const startReview = useCallback(() => dispatch({ type: "START_REVIEW" }), []);
 
   const submit = useCallback(
-    async (sponsorAddress: string, recipientAddress: string, amountXlm: string) => {
+    async (
+      sponsorAddress: string,
+      recipientAddress: string,
+      amountXlm: string,
+      walletBalance?: string
+    ) => {
+      // 0. Pre-flight Amount Validation
+      const parsedAmount = parseFloat(amountXlm);
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        dispatch({
+          type: "FAIL",
+          error: new Error("Enter a valid amount greater than 0."),
+          amountXlm,
+          walletBalance,
+        });
+        return;
+      }
+
+      // 0. Pre-flight Balance Check (if wallet balance is provided)
+      if (walletBalance) {
+        const available = parseFloat(walletBalance);
+        const required = parsedAmount + 0.00001; // Base fee
+        if (available < required) {
+          dispatch({
+            type: "FAIL",
+            error: new Error("op_underfunded"),
+            amountXlm,
+            walletBalance,
+          });
+          return;
+        }
+      }
+
       dispatch({ type: "SUBMIT" });
       try {
         // ── 1. Build unsigned XDR ─────────────────────────────────────────────
@@ -214,7 +317,7 @@ export function useSponsorProject(onSuccess?: (txHash: string) => void) {
           amountXLM: amountXlm,
         });
 
-        // ── 2. Sign via StellarWalletsKit (fires the wallet popup) ────────────
+        // ── 2. Sign via StellarWalletsKit ─────────────────────────────────────
         const { getKit } = await import("@/features/wallet/use-wallet");
         const kit = await getKit();
 
@@ -239,7 +342,7 @@ export function useSponsorProject(onSuccess?: (txHash: string) => void) {
         dispatch({ type: "SUCCESS" });
         onSuccessRef.current?.(txHash);
       } catch (err: unknown) {
-        dispatch({ type: "FAIL", error: err });
+        dispatch({ type: "FAIL", error: err, amountXlm, walletBalance });
       }
     },
     []
