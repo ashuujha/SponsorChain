@@ -7,7 +7,13 @@ import { useReducer, useCallback, useState, useRef, useEffect } from "react";
 export interface SponsorState {
   status: "idle" | "review" | "pending" | "success" | "failed";
   txHash: string | null;
-  errorType: "insufficient_funds" | "user_rejected" | "network_error" | "unknown" | null;
+  errorType:
+    | "insufficient_funds"
+    | "user_rejected"
+    | "invalid_destination"
+    | "network_error"
+    | "unknown"
+    | null;
   errorMessage: string | null;
 }
 
@@ -16,8 +22,145 @@ type SponsorAction =
   | { type: "SUBMIT" }
   | { type: "RECEIVE_HASH"; txHash: string }
   | { type: "SUCCESS" }
-  | { type: "FAIL"; error: Error }
+  | { type: "FAIL"; error: unknown }
   | { type: "RESET" };
+
+/**
+ * Extracts a clean, human-readable error message and classified errorType
+ * from any Horizon API error, Stellar SDK error, or wallet rejection object.
+ */
+function extractErrorMessage(err: unknown): {
+  message: string;
+  errorType: SponsorState["errorType"];
+} {
+  // Always log raw error object to console for full developer visibility
+  console.error("[SponsorPayment] Raw transaction failure object:", err);
+
+  if (!err) {
+    return { message: "An unknown transaction error occurred.", errorType: "unknown" };
+  }
+
+  let rawMessage = "";
+  let resultCodesStr = "";
+
+  // 1. Inspect Horizon API error structure (Stellar SDK nests Horizon responses under err.response.data)
+  type HorizonData = {
+    title?: string;
+    detail?: string;
+    extras?: {
+      result_codes?: {
+        transaction?: string;
+        operations?: string[];
+      };
+    };
+  };
+
+  const errObj = err as {
+    message?: unknown;
+    response?: { data?: HorizonData };
+    error?: unknown;
+    details?: unknown;
+  };
+
+  const horizonData = errObj?.response?.data;
+
+  if (horizonData?.extras?.result_codes) {
+    const codes = horizonData.extras.result_codes;
+    const parts = [
+      codes.transaction,
+      ...(codes.operations ?? []),
+    ].filter(Boolean);
+    if (parts.length > 0) {
+      resultCodesStr = parts.join(", ");
+    }
+  }
+
+  // 2. Derive rawMessage string
+  if (typeof errObj.message === "string" && errObj.message && errObj.message !== "[object Object]") {
+    rawMessage = errObj.message;
+  } else if (typeof horizonData?.detail === "string" && horizonData.detail) {
+    rawMessage = horizonData.detail;
+  } else if (typeof horizonData?.title === "string" && horizonData.title) {
+    rawMessage = horizonData.title;
+  } else if (typeof errObj.error === "string" && errObj.error) {
+    rawMessage = errObj.error;
+  } else if (typeof errObj.details === "string" && errObj.details) {
+    rawMessage = errObj.details;
+  } else if (typeof err === "string" && err) {
+    rawMessage = err;
+  } else {
+    try {
+      const str = JSON.stringify(err);
+      rawMessage = str !== "{}" ? str : "Transaction failed on Stellar network";
+    } catch {
+      rawMessage = "Transaction failed on Stellar network";
+    }
+  }
+
+  // Append result_codes if available and not already present
+  let fullText = rawMessage;
+  if (resultCodesStr && !fullText.includes(resultCodesStr)) {
+    fullText = `${fullText} (${resultCodesStr})`;
+  }
+
+  // Safety check: ensure string never contains raw "[object Object]"
+  if (fullText.includes("[object Object]")) {
+    fullText = resultCodesStr
+      ? `Stellar error: ${resultCodesStr}`
+      : "Transaction failed on Stellar network.";
+  }
+
+  // 3. Classify into specific error types
+  const lower = fullText.toLowerCase();
+
+  let errorType: SponsorState["errorType"] = "unknown";
+
+  if (
+    lower.includes("op_underfunded") ||
+    lower.includes("tx_insufficient_balance") ||
+    lower.includes("insufficient_balance") ||
+    lower.includes("insufficient funds") ||
+    lower.includes("underfunded") ||
+    lower.includes("op_low_reserve") ||
+    lower.includes("unfunded")
+  ) {
+    errorType = "insufficient_funds";
+    fullText = "Your wallet does not have enough XLM balance (or reserve) to complete this transaction.";
+  } else if (
+    lower.includes("user rejected") ||
+    lower.includes("user declined") ||
+    lower.includes("user cancelled") ||
+    lower.includes("declined by user") ||
+    lower.includes("rejected by user") ||
+    lower.includes("signature rejected") ||
+    lower.includes("user denied")
+  ) {
+    errorType = "user_rejected";
+    fullText = "You declined the signature request in your wallet.";
+  } else if (
+    lower.includes("op_no_destination") ||
+    lower.includes("invalid destination") ||
+    lower.includes("destination public key") ||
+    lower.includes("no destination") ||
+    lower.includes("not found or unfunded")
+  ) {
+    errorType = "invalid_destination";
+    fullText = "The recipient maintainer account is invalid or unfunded on Testnet.";
+  } else if (
+    lower.includes("network") ||
+    lower.includes("timeout") ||
+    lower.includes("failed to fetch") ||
+    lower.includes("rpc") ||
+    lower.includes("horizon") ||
+    lower.includes("504") ||
+    lower.includes("502")
+  ) {
+    errorType = "network_error";
+    fullText = "Network error connecting to Horizon testnet. Please try again.";
+  }
+
+  return { message: fullText, errorType };
+}
 
 function sponsorReducer(s: SponsorState, a: SponsorAction): SponsorState {
   switch (a.type) {
@@ -30,35 +173,8 @@ function sponsorReducer(s: SponsorState, a: SponsorAction): SponsorState {
     case "SUCCESS":
       return { ...s, status: "success" };
     case "FAIL": {
-      const msg = a.error.message || "";
-      let errorType: SponsorState["errorType"] = "unknown";
-      // Distinguish by Horizon result codes + wallet rejection messages
-      if (
-        msg.includes("insufficient") ||
-        msg.includes("underfunded") ||
-        msg.includes("op_underfunded") ||
-        msg.includes("tx_insufficient_balance")
-      ) {
-        errorType = "insufficient_funds";
-      } else if (
-        msg.includes("rejected") ||
-        msg.includes("declined") ||
-        msg.includes("User cancelled") ||
-        msg.includes("User declined") ||
-        msg.includes("user rejected")
-      ) {
-        errorType = "user_rejected";
-      } else if (
-        msg.includes("network") ||
-        msg.includes("timeout") ||
-        msg.includes("RPC") ||
-        msg.includes("fetch") ||
-        msg.includes("Failed to fetch") ||
-        msg.includes("NetworkError")
-      ) {
-        errorType = "network_error";
-      }
-      return { status: "failed", txHash: s.txHash, errorType, errorMessage: msg };
+      const { message, errorType } = extractErrorMessage(a.error);
+      return { status: "failed", txHash: s.txHash, errorType, errorMessage: message };
     }
     case "RESET":
       return { status: "idle", txHash: null, errorType: null, errorMessage: null };
@@ -89,9 +205,6 @@ export function useSponsorProject(onSuccess?: (txHash: string) => void) {
       dispatch({ type: "SUBMIT" });
       try {
         // ── 1. Build unsigned XDR ─────────────────────────────────────────────
-        // preparePaymentTransaction fetches the sponsor's current sequence number
-        // from Horizon testnet, then builds a TransactionBuilder with a native
-        // XLM Payment operation and a 10-minute timeout.
         const { preparePaymentTransaction } = await import(
           "@/features/payments/payment-service"
         );
@@ -102,10 +215,6 @@ export function useSponsorProject(onSuccess?: (txHash: string) => void) {
         });
 
         // ── 2. Sign via StellarWalletsKit (fires the wallet popup) ────────────
-        // getKit() returns the already-configured StellarWalletsKit instance
-        // (created in use-wallet.ts) with the user's chosen wallet module set.
-        // kit.signTransaction() delegates to Freighter / xBull / Albedo / etc.
-        // and returns the signed XDR envelope without submitting it.
         const { getKit } = await import("@/features/wallet/use-wallet");
         const kit = await getKit();
 
@@ -116,9 +225,6 @@ export function useSponsorProject(onSuccess?: (txHash: string) => void) {
         });
 
         // ── 3. Reconstruct Transaction from signed XDR ────────────────────────
-        // TransactionBuilder.fromXDR parses the signed envelope. We call
-        // .hash() to derive the canonical txHash before submission so the UI
-        // can display it during the "Confirming on-chain..." phase.
         const { TransactionBuilder } = await import("stellar-sdk");
         const signedTx = TransactionBuilder.fromXDR(signedTxXdr, Networks.TESTNET);
         const txHash = (signedTx.hash() as Buffer).toString("hex");
@@ -133,31 +239,7 @@ export function useSponsorProject(onSuccess?: (txHash: string) => void) {
         dispatch({ type: "SUCCESS" });
         onSuccessRef.current?.(txHash);
       } catch (err: unknown) {
-        // Horizon wraps result_codes inside err.response.data.extras.
-        // Flatten them into a plain Error message so the reducer's pattern
-        // matching (insufficient_funds / user_rejected / network_error) works.
-        let error = err instanceof Error ? err : new Error(String(err));
-
-        type HorizonErr = {
-          response?: {
-            data?: {
-              extras?: {
-                result_codes?: { transaction?: string; operations?: string[] };
-              };
-            };
-          };
-        };
-        const horizonErr = err as HorizonErr;
-        const codes = horizonErr?.response?.data?.extras?.result_codes;
-        if (codes) {
-          const parts = [
-            codes.transaction,
-            ...(codes.operations ?? []),
-          ].filter(Boolean);
-          if (parts.length) error = new Error(parts.join(", "));
-        }
-
-        dispatch({ type: "FAIL", error });
+        dispatch({ type: "FAIL", error: err });
       }
     },
     []

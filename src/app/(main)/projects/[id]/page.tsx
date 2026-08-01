@@ -503,6 +503,9 @@ export default function ProjectDetailPage() {
               {sponsor.state.status === "failed" && (
                 <div className="space-y-lg">
                   <div className="p-md bg-error-container text-on-error-container text-body-sm rounded-xl border border-error/15 font-medium">
+                    {sponsor.state.errorType === "invalid_destination" && (
+                      <span><strong>Invalid recipient:</strong> The recipient maintainer account is invalid or unfunded on Stellar Testnet.</span>
+                    )}
                     {sponsor.state.errorType === "insufficient_funds" && (
                       <span><strong>Insufficient funds:</strong> Your wallet does not hold enough XLM to complete this transaction.</span>
                     )}
