@@ -67,17 +67,18 @@ SponsorChain is a direct peer-to-peer developer sponsorship platform built on th
 ## How It Works
 
 **For Maintainers:**
-1. Connect your Stellar wallet (Freighter) on the dashboard.
-2. Link your GitHub account to verify ownership of your repositories.
-3. Select an eligible public, non-fork repository you own.
-4. Input details, review, sign the transaction via Freighter, and publish on-chain.
-5. Track received sponsorships in the Received tab of your dashboard.
+1. Connect your Stellar wallet (Freighter, Albedo, etc.) via the **Wallet** page or the button in the header.
+2. Navigate to **List a Project** and link your GitHub account via NextAuth OAuth to verify repository ownership.
+3. Select an eligible, public, non-fork repository you own from your GitHub repository list.
+4. Input project details, review, sign the Soroban transaction, and register your project on the Stellar blockchain.
+5. Track your listed projects, total funds raised, and sponsors in the *Projects I've Listed* section of the **My Activity** page.
 
 **For Sponsors:**
 1. Connect your Stellar wallet.
-2. Browse listed projects on the Explore page.
-3. Click on a project, input the amount of XLM to sponsor, and sign via Freighter.
-4. XLM is transferred directly to the maintainer's wallet address in under 5 seconds.
+2. Browse verified developer projects on the **Explore** page.
+3. Select a project, enter the XLM amount you want to sponsor, and sign the transaction with your wallet.
+4. The smart contract transfers XLM directly to the maintainer's destination wallet in under 5 seconds.
+5. Track all your sponsorships and contributions in the *Projects I've Sponsored* section of the **My Activity** page.
 
 ---
 
@@ -87,7 +88,7 @@ SponsorChain is a direct peer-to-peer developer sponsorship platform built on th
 - **On-chain source of truth**: All project details and sponsorship totals are stored directly on-chain inside Soroban contract state.
 - **GitHub Verification**: NextAuth.js OAuth flows verify repository ownership at listing time to prevent impersonation.
 - **Freighter Wallet Integration**: Secure client-side signing of transactions directly in the browser.
-- **Live Horizon Streaming**: Listens to payments on Horizon via Server-Sent Events (SSE) to update dashboards in real-time.
+- **Live Horizon Streaming**: Listens to payments on Horizon via Server-Sent Events (SSE) to update user activity in real-time.
 - **Mobile Responsive Layout**: Premium look and feel adapting seamlessly from desktop to mobile screens.
 - **Fully Tested Suite**: Robust quality gate with 68 passing tests.
 
