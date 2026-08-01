@@ -87,16 +87,16 @@ export default function ExplorePage() {
 
   return (
     <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto overflow-x-hidden pt-12 bg-black min-h-screen text-white">
-      <header className="mb-12 border-b border-hairline pb-8">
+      <header className="mb-12 border-b border-hairline pb-8 flex flex-col items-center text-center">
         <div className="caption-uppercase text-muted mb-2">CATALOG // REPOSITORIES</div>
         <h1 className="display-lg text-3xl sm:text-4xl md:text-5xl font-normal text-white tracking-[3px] uppercase mb-6">
           EXPLORE PROJECTS
         </h1>
 
         {/* Bugatti Underline Text Input */}
-        <div className="relative max-w-2xl">
+        <div className="relative max-w-2xl w-full">
           <input
-            className="bugatti-input w-full text-base"
+            className="bugatti-input w-full text-base text-center"
             placeholder="SEARCH REPOSITORIES BY NAME, REPO, OR DESCRIPTION..."
             type="text"
             value={searchQuery}
@@ -106,7 +106,7 @@ export default function ExplorePage() {
       </header>
 
       {/* Bugatti Monospace Filter Bar */}
-      <section className="flex gap-3 mb-12 overflow-x-auto hide-scrollbar pb-2">
+      <section className="flex justify-center gap-3 mb-12 overflow-x-auto hide-scrollbar pb-2">
         {["All", "Most funded", "Active", "Recently listed"].map((f) => (
           <button
             key={f}

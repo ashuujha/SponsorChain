@@ -7,9 +7,9 @@ export default function LandingPage() {
     <div className="pb-24 overflow-x-hidden bg-black min-h-screen text-white">
       {/* Hero Band: Austere Pure Black Canvas with Wide-Tracked Display Headline */}
       <section className="relative py-24 md:py-36 px-4 sm:px-6 lg:px-8 border-b border-hairline mb-20">
-        <div className="max-w-container-max mx-auto flex flex-col items-start">
+        <div className="max-w-container-max mx-auto flex flex-col items-center text-center">
           {/* Eyebrow Caption */}
-          <div className="caption-uppercase text-muted mb-6 flex items-center gap-3">
+          <div className="caption-uppercase text-muted mb-6 flex items-center justify-center gap-3">
             <span className="w-1.5 h-1.5 bg-white" />
             <span>THE STELLAR OPEN SOURCE FACILITY</span>
           </div>
@@ -23,7 +23,7 @@ export default function LandingPage() {
             Maintainers verify GitHub repository ownership and receive direct, transparent XLM sponsorships.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-6 mb-16 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-6 mb-16 w-full sm:w-auto justify-center">
             <Link href="/explore">
               <Button size="lg" className="w-full sm:w-auto">
                 EXPLORE REPOSITORIES
@@ -37,16 +37,16 @@ export default function LandingPage() {
           </div>
 
           {/* Key Engineering Specs Line */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-8 border-t border-hairline w-full">
-            <div className="flex flex-col gap-1">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-8 border-t border-hairline w-full text-center">
+            <div className="flex flex-col items-center gap-1">
               <span className="caption-uppercase text-muted">SETTLEMENT SPEED</span>
               <span className="font-mono text-sm uppercase tracking-[1.5px] text-white">~5 SECONDS ON-CHAIN</span>
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col items-center gap-1">
               <span className="caption-uppercase text-muted">TRANSACTION COST</span>
               <span className="font-mono text-sm uppercase tracking-[1.5px] text-white">NEAR-ZERO FEES</span>
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col items-center gap-1">
               <span className="caption-uppercase text-muted">VERIFICATION</span>
               <span className="font-mono text-sm uppercase tracking-[1.5px] text-white">100% AUDITABLE</span>
             </div>
