@@ -10,7 +10,7 @@ import type { StellarWalletsKit, ISupportedWallet } from "@creit.tech/stellar-wa
 
 let kitInstance: StellarWalletsKit | null = null;
 
-async function getKit() {
+export async function getKit() {
   if (kitInstance) return kitInstance;
   
   const {

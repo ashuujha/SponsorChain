@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useWallet } from "@/features/wallet/use-wallet";
@@ -19,7 +19,6 @@ export default function ProjectDetailPage() {
   const projectId = BigInt(idStr);
 
   const wallet = useWallet();
-  const sponsor = useSponsorProject();
 
   const [project, setProject] = useState<ProjectData | null>(null);
   const [sponsorships, setSponsorships] = useState<SponsorshipData[]>([]);
@@ -42,6 +41,24 @@ export default function ProjectDetailPage() {
       setIsLoading(false);
     }, 300);
   };
+
+  // onSuccess ref — always points to the latest project/publicKey/loadProject
+  // without causing useSponsorProject to re-mount on every render.
+  const onSuccessRef = useRef<(txHash: string) => void>(() => {});
+  useEffect(() => {
+    onSuccessRef.current = (txHash: string) => {
+      if (!wallet.publicKey) return;
+      // Record sponsorship in the in-memory registry with the real txHash.
+      const amountStroops = BigInt(
+        Math.floor(parseFloat(sponsor.amount) * 10_000_0000)
+      );
+      mockSponsor(wallet.publicKey, projectId, amountStroops, txHash);
+      loadProject();
+    };
+  });
+
+  // useSponsorProject receives a stable wrapper that always calls the latest ref.
+  const sponsor = useSponsorProject((txHash) => onSuccessRef.current(txHash));
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(loadProject, [idStr]);
@@ -66,15 +83,13 @@ export default function ProjectDetailPage() {
 
   const handleConfirmSponsor = async () => {
     if (!wallet.publicKey || !project) return;
-    const amountStroops = BigInt(Math.floor(parseFloat(sponsor.amount) * 10_000_0000));
+    // submit() triggers: build XDR → wallet signing popup → submit to Horizon.
+    // On success, onSuccessRef.current() handles mockSponsor + loadProject.
     await sponsor.submit(
       wallet.publicKey,
       project.owner,
       sponsor.amount
     );
-    // After success, write to mock registry and reload
-    mockSponsor(wallet.publicKey, projectId, amountStroops);
-    loadProject();
   };
 
   if (isLoading) {
@@ -204,10 +219,21 @@ export default function ProjectDetailPage() {
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-lg">
+                        <div className="flex flex-col items-end gap-xs">
                           <span className="font-bold text-[#2E7D32]">
                             {formatXlm(s.amount)} XLM
                           </span>
+                          {s.txHash && (
+                            <a
+                              href={`https://stellar.expert/explorer/testnet/tx/${s.txHash}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-xs text-[10px] font-mono-code text-primary hover:underline"
+                            >
+                              {s.txHash.slice(0, 8)}…
+                              <span className="material-symbols-outlined text-[11px]">open_in_new</span>
+                            </a>
+                          )}
                         </div>
                       </div>
                     );

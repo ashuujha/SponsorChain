@@ -25,6 +25,7 @@ export interface SponsorshipData {
   projectId: bigint;
   amount: string; // i128 as decimal string
   timestamp: bigint;
+  txHash: string | null; // real Horizon tx hash, null for legacy/mock entries
 }
 
 /* ── Mock registry (checkpoint — replace with RPC calls) ──────── */
@@ -72,7 +73,8 @@ export function createMockProject(
 export function mockSponsor(
   sponsor: string,
   projectId: bigint,
-  amount: bigint
+  amount: bigint,
+  txHash: string | null = null
 ): bigint {
   const key = _projectKey(projectId);
   const project = _projects.get(key);
@@ -92,6 +94,7 @@ export function mockSponsor(
     projectId,
     amount: amount.toString(),
     timestamp: BigInt(Math.floor(Date.now() / 1000)),
+    txHash,
   });
   _sponsorships.set(key, list);
   return id;
