@@ -14,7 +14,7 @@ export default function LandingPage() {
             <span>THE STELLAR OPEN SOURCE FACILITY</span>
           </div>
 
-          <h1 className="display-xl text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-foreground mb-6 sm:mb-8 tracking-[2px] sm:tracking-[4px] uppercase leading-tight max-w-4xl text-center px-2">
+          <h1 className="display-xl text-[22px] sm:text-4xl md:text-5xl lg:text-6xl font-normal text-foreground mb-6 sm:mb-8 tracking-[1px] sm:tracking-[3px] md:tracking-[4px] uppercase leading-tight max-w-4xl text-center px-2 break-words">
             FUND OPEN SOURCE DIRECTLY. UNCOMPROMISED.
           </h1>
 

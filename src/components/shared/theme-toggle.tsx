@@ -47,13 +47,13 @@ export function ThemeToggle() {
         onClick={() => setTheme("light")}
         title="Light Theme"
         aria-label="Switch to Light Theme"
-        className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all duration-200 ${
+        className={`w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-all duration-200 ${
           activeTheme === "light"
             ? "bg-foreground text-background shadow-xs scale-105"
             : "text-muted hover:text-foreground"
         }`}
       >
-        <SunIcon />
+        <SunIcon className="w-3 h-3 sm:w-4 sm:h-4" />
       </button>
 
       <button
@@ -61,13 +61,13 @@ export function ThemeToggle() {
         onClick={() => setTheme("dark")}
         title="Dark Theme"
         aria-label="Switch to Dark Theme"
-        className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all duration-200 ${
+        className={`w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-all duration-200 ${
           activeTheme === "dark"
             ? "bg-foreground text-background shadow-xs scale-105"
             : "text-muted hover:text-foreground"
         }`}
       >
-        <MoonIcon />
+        <MoonIcon className="w-3 h-3 sm:w-4 sm:h-4" />
       </button>
 
       <button
@@ -75,13 +75,13 @@ export function ThemeToggle() {
         onClick={() => setTheme("system")}
         title="System Theme"
         aria-label="Switch to System Theme"
-        className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all duration-200 ${
+        className={`w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-all duration-200 ${
           activeTheme === "system"
             ? "bg-foreground text-background shadow-xs scale-105"
             : "text-muted hover:text-foreground"
         }`}
       >
-        <MonitorIcon />
+        <MonitorIcon className="w-3 h-3 sm:w-4 sm:h-4" />
       </button>
     </div>
   );
