@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useWallet } from "@/features/wallet/use-wallet";
@@ -13,10 +13,17 @@ import {
   SponsorshipData,
 } from "@/features/projects/contract-data";
 
+interface ApiSponsorship {
+  sponsorWalletKey?: string;
+  sponsor?: { walletPublicKey?: string };
+  amountXLM?: string;
+  createdAt: string;
+  txHash: string;
+}
+
 export default function ProjectDetailPage() {
   const params = useParams();
   const idStr = (params.id as string) || "0";
-  const projectId = BigInt(idStr);
 
   const wallet = useWallet();
 
@@ -28,7 +35,7 @@ export default function ProjectDetailPage() {
   // the user even enters the review step so they get a clear error message.
   const [ownerKeyError, setOwnerKeyError] = useState<string | null>(null);
 
-  const loadProject = async () => {
+  const loadProject = useCallback(async () => {
     setIsLoading(true);
     setNotFound(false);
 
@@ -74,7 +81,7 @@ export default function ProjectDetailPage() {
           };
 
           const mappedSponsorships: SponsorshipData[] = (p.sponsorships || []).map(
-            (s: any, idx: number) => ({
+            (s: ApiSponsorship, idx: number) => ({
               id: BigInt(idx),
               sponsor: s.sponsorWalletKey || s.sponsor?.walletPublicKey || "Anonymous",
               projectId: BigInt(0),
@@ -98,19 +105,20 @@ export default function ProjectDetailPage() {
 
     // Fallback to mock registry if DB query failed
     try {
-      const p = getProject(BigInt(idStr));
+      const numericId = BigInt(isNaN(Number(idStr)) ? 0 : idStr);
+      const p = getProject(numericId);
       if (!p) {
         setNotFound(true);
         setIsLoading(false);
         return;
       }
       setProject(p);
-      setSponsorships(getSponsorshipsForProject(BigInt(idStr)));
+      setSponsorships(getSponsorshipsForProject(numericId));
     } catch {
       setNotFound(true);
     }
     setIsLoading(false);
-  };
+  }, [idStr]);
 
   // onSuccess ref — always points to the latest project/publicKey/loadProject
   const onSuccessRef = useRef<(txHash: string) => void>(() => {});
@@ -124,7 +132,8 @@ export default function ProjectDetailPage() {
 
       // 1. Write to in-memory fallback
       try {
-        mockSponsor(wallet.publicKey, BigInt(idStr), amountStroops, txHash);
+        const numericId = BigInt(isNaN(Number(idStr)) ? 0 : idStr);
+        mockSponsor(wallet.publicKey, numericId, amountStroops, txHash);
       } catch (e) {
         console.warn("Mock sponsor update notice:", e);
       }
@@ -152,10 +161,9 @@ export default function ProjectDetailPage() {
   // useSponsorProject receives a stable wrapper that always calls the latest ref.
   const sponsor = useSponsorProject((txHash) => onSuccessRef.current(txHash));
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     loadProject();
-  }, [idStr]);
+  }, [loadProject]);
 
   const formatXlm = (stroops: string): string => {
     const n = BigInt(stroops);

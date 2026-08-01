@@ -160,7 +160,6 @@ export function useSponsorProject(onSuccess?: (txHash: string) => void) {
         dispatch({ type: "FAIL", error });
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

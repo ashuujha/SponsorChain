@@ -90,8 +90,8 @@ export async function submitCreateProject(
  * of `get_project`.
  */
 export async function fetchProjectFromChain(
-  _contractId: string,
-  _projectId: bigint
+  contractId: string,
+  projectId: bigint
 ): Promise<{
   owner: string;
   repoFullName: string;
@@ -101,7 +101,7 @@ export async function fetchProjectFromChain(
   sponsorCount: number;
 }> {
   // In production, simulates get_project(projectId) on the Soroban RPC.
-  throw new Error("Chain fetch not implemented in checkpoint");
+  throw new Error(`Chain fetch for project ${projectId} on contract ${contractId} not implemented`);
 }
 
 export { REGISTRY_CONTRACT_ID, MANAGER_CONTRACT_ID, XLM_SAC_ADDRESS } from "./contract-data";

@@ -44,8 +44,9 @@ export function RepoPicker({ onSelect }: Props) {
       });
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(fetchRepos, []);
+  useEffect(() => {
+    fetchRepos();
+  }, []);
 
   if (state.stage === "loading") {
     return (

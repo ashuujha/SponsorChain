@@ -73,7 +73,6 @@ export default function ListProjectPage() {
             <GithubConnectStep
               ghStatus={ghStatus}
               session={session}
-              wallet={wallet}
               onContinue={() => setListStep({ step: "repo-picker" })}
             />
           )}
@@ -251,12 +250,10 @@ function StepBar({
 function GithubConnectStep({
   ghStatus,
   session,
-  wallet,
   onContinue,
 }: {
   ghStatus: string;
   session: { githubUsername?: string } | null;
-  wallet: { publicKey: string | null };
   onContinue: () => void;
 }) {
   return (

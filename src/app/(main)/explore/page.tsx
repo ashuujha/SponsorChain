@@ -7,6 +7,17 @@ import {
   ProjectData,
 } from "@/features/projects/contract-data";
 
+interface ApiProject {
+  id: string;
+  ownerWalletKey?: string;
+  owner?: { walletPublicKey?: string };
+  repoUrl: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  sponsorships?: Array<{ id: string }>;
+}
+
 export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
@@ -22,7 +33,7 @@ export default function ExplorePage() {
         if (res.ok) {
           const data = await res.json();
           if (isMounted && data.projects && data.projects.length > 0) {
-            const mapped: ProjectData[] = data.projects.map((p: any) => ({
+            const mapped: ProjectData[] = data.projects.map((p: ApiProject) => ({
               id: p.id,
               owner: p.ownerWalletKey || p.owner?.walletPublicKey || "",
               repoFullName: p.repoUrl,

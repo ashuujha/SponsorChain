@@ -21,6 +21,17 @@ function formatXlm(stroops: string): string {
   return trimmed ? `${whole}.${trimmed}` : `${whole}.0`;
 }
 
+interface ApiProject {
+  id: string;
+  ownerWalletKey?: string;
+  owner?: { walletPublicKey?: string };
+  repoUrl: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  sponsorships?: Array<{ id: string }>;
+}
+
 export default function ActivityPage() {
   const wallet = useWallet();
   const [listedProjects, setListedProjects] = useState<ProjectData[]>([]);
@@ -39,11 +50,11 @@ export default function ActivityPage() {
           const data = await res.json();
           if (isMounted && data.projects) {
             const myProjects = data.projects.filter(
-              (p: any) =>
+              (p: ApiProject) =>
                 (p.ownerWalletKey || p.owner?.walletPublicKey)?.toLowerCase() ===
                 wallet.publicKey!.toLowerCase()
             );
-            const mapped: ProjectData[] = myProjects.map((p: any) => ({
+            const mapped: ProjectData[] = myProjects.map((p: ApiProject) => ({
               id: p.id,
               owner: p.ownerWalletKey || p.owner?.walletPublicKey || "",
               repoFullName: p.repoUrl,
