@@ -341,7 +341,17 @@ The production application is continuously deployed to **Vercel** via `.github/w
 |:---:|
 | <img src="screenshorts/desktop_transaction.png" alt="Desktop Project Details Page" width="500"/> |
 
-### 9.2 Automated Pipeline & Verification
+### 9.2 Mobile Layout
+
+| Home & Wallet Connection | Explore Catalog |
+|:---:|:---:|
+| <img src="screenshorts/mbl_01.jpeg" alt="Mobile Home" width="220"/> | <img src="screenshorts/mbl_02.jpeg" alt="Mobile Explore" width="220"/> |
+
+| Project Details | Maintainer Account |
+|:---:|:---:|
+| <img src="screenshorts/mbl_03.jpeg" alt="Mobile Project Details" width="220"/> | <img src="screenshorts/mbl_04.jpeg" alt="Mobile Account Dashboard" width="220"/> |
+
+### 9.3 Automated Pipeline & Verification
 
 | CI/CD Pipeline Checks | Passing Vitest Suite |
 |:---:|:---:|
