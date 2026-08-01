@@ -78,7 +78,7 @@ Real user wallet interactions on Stellar Testnet — verified on Stellar Explore
 
 | User | Wallet Address | Transaction / Explorer Link |
 |------|---------------|----------------------------|
-| Smoke Test User | GD6X4ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF | [View Project Setup](https://stellar.expert/explorer/testnet/tx/6c8bfc0cc528b9df7cf2c613358082c4996690d980e6dfec18786414ad029e03) <br> [View Sponsorship](https://stellar.expert/explorer/testnet/tx/3da6052630aa1810eef5664dbfa80e31697e20f4481b57d7283f13bf07e2f4f7) |
+| Smoke Test User | GD6X4ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF | [View Project Setup](https://stellar.expert/explorer/testnet/tx/71ed6909426eed68a2db2b02fbe38bbd67e28756b15afc04ff5ad2108aeeda8e) <br> [View Sponsorship](https://stellar.expert/explorer/testnet/tx/ef6a5b6b0c850d001a50c56517d90637456e80d5250c5e26299d748aa3d3c183) |
 | Tester 1 | GDXIKW2PGV6VNSSPEZNXK3WSQEE7LX76U6MCS35OVI7F5FSE22J32PDB | [View Account](https://stellar.expert/explorer/testnet/account/GDXIKW2PGV6VNSSPEZNXK3WSQEE7LX76U6MCS35OVI7F5FSE22J32PDB) |
 | Tester 2 | GDUSXB52YV4WXT6JUXM25... | [View on Explorer](https://stellar.expert/explorer/testnet) |
 | Tester 3 | GDSA637FJDNSK6K4... | [View on Explorer](https://stellar.expert/explorer/testnet) |
@@ -123,15 +123,15 @@ Real user wallet interactions on Stellar Testnet — verified on Stellar Explore
 | Field | Value |
 |-------|-------|
 | Network | Stellar Testnet |
-| ProjectRegistry Contract | `CDTINQP4HOUWLLCUCGOVTLPYHVHVP3KIYVVCKWHPIWQEIOGO775FIDN6` |
-| SponsorshipManager Contract | `CAV2XETV4LWJ5XG7N2MNHRSZZHNJQS3LMWLWK3J5FW5O5U45KPUSROLR` |
+| ProjectRegistry Contract | `CBNWNLUIZWJA3E2AXYAVSAIKMW4MLKIKP6YO74UJX7DW5VGETCFMX6EB` |
+| SponsorshipManager Contract | `CBRRVROJJDW22CMFBHOV5IS4UFC3V3KTDSC6SBU43NWXR33VLBK5J32U` |
 | Native XLM SAC | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
-| ProjectRegistry Init Tx | `6f992a9d1d5be751aae533fa9e25e80efa6e3b9f0c300b5d8e92a2c7c91ef217` |
-| Linking Registry to Manager Tx | `fa18e26116ad4433e53eec0c688180147ba46bd62b64c03409f4d39e8d3867af` |
-| SponsorshipManager Init Tx | `9580dcae070b6005b1e3d2706c627fb33567a32e9c60b5da81ab613986c13e4e` |
+| ProjectRegistry Init Tx | `e164f9e2730d27cbf4150cf61fd76dd3bcb634baa88a125013e461be4728075d` |
+| Linking Registry to Manager Tx | `2ba8e86d9e627c0622e7eea49be5403f5cf502b04546cb86fda6df6f27572be8` |
+| SponsorshipManager Init Tx | `d77e3f60faf0a6eeed264dc0fd3d9527a6029c5484dc155f57a8f3ec2133b689` |
 
-- [Verify ProjectRegistry on Explorer](https://stellar.expert/explorer/testnet/contract/CDTINQP4HOUWLLCUCGOVTLPYHVHVP3KIYVVCKWHPIWQEIOGO775FIDN6)
-- [Verify SponsorshipManager on Explorer](https://stellar.expert/explorer/testnet/contract/CAV2XETV4LWJ5XG7N2MNHRSZZHNJQS3LMWLWK3J5FW5O5U45KPUSROLR)
+- [Verify ProjectRegistry on Explorer](https://stellar.expert/explorer/testnet/contract/CBNWNLUIZWJA3E2AXYAVSAIKMW4MLKIKP6YO74UJX7DW5VGETCFMX6EB)
+- [Verify SponsorshipManager on Explorer](https://stellar.expert/explorer/testnet/contract/CBRRVROJJDW22CMFBHOV5IS4UFC3V3KTDSC6SBU43NWXR33VLBK5J32U)
 
 ---
 
