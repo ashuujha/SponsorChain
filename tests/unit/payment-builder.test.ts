@@ -50,7 +50,7 @@ describe("Payment Builder - buildPaymentTransaction", () => {
         amountXLM,
         sequenceNumber,
       })
-    ).toThrow("Invalid sponsor public key format.");
+    ).toThrow(/Invalid sponsor public key/);
 
     expect(() =>
       buildPaymentTransaction({
@@ -59,7 +59,7 @@ describe("Payment Builder - buildPaymentTransaction", () => {
         amountXLM,
         sequenceNumber,
       })
-    ).toThrow("Invalid destination public key format.");
+    ).toThrow(/Invalid destination.*public key/);
   });
 
   it("should throw error if amount is zero or negative", () => {

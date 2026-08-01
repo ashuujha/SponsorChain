@@ -96,8 +96,10 @@ describe("Project Detail & Payments Flow Integration", () => {
     const sponsorButton = screen.getByRole("button", { name: /Sponsor with Wallet/i });
     fireEvent.click(sponsorButton);
 
-    // Should display review section
-    expect(screen.getByText("Sponsorship Amount")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Sign & Send Payment/i })).toBeInTheDocument();
+    // Should display review section (after async StrKey check resolves)
+    await waitFor(() => {
+      expect(screen.getByText("Sponsorship Amount")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Sign & Send Payment/i })).toBeInTheDocument();
+    });
   });
 });

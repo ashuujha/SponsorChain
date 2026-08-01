@@ -167,7 +167,7 @@ describe("List Project Flow — state transitions", () => {
     expect(screen.getByText("stellar/js-stellar-sdk")).toBeInTheDocument();
     expect(screen.getByText("My Custom SDK")).toBeInTheDocument();
     expect(
-      screen.getByText(/GDWRIC\.\.\.Q3SE/)
+      screen.getByText(/GDWRIC\.\.\.EPQ3SE/)
     ).toBeInTheDocument();
 
     // Click "Sign & Submit to Network"

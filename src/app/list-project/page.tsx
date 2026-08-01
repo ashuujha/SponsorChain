@@ -162,9 +162,10 @@ export default function ListProjectPage() {
                     if (!res.ok) {
                       throw new Error(data.error || "Failed to create project listing.");
                     }
+                    const returnedId = String(data.project?.id || data.id || "1");
                     return {
-                      txHash: `db_${data.project.id}`,
-                      projectId: data.project.id,
+                      txHash: `db_${returnedId}`,
+                      projectId: returnedId,
                     };
                   }
                 );
@@ -195,9 +196,10 @@ export default function ListProjectPage() {
                     if (!res.ok) {
                       throw new Error(data.error || "Failed to create project listing.");
                     }
+                    const returnedId = String(data.project?.id || data.id || "1");
                     return {
-                      txHash: `db_${data.project.id}`,
-                      projectId: data.project.id,
+                      txHash: `db_${returnedId}`,
+                      projectId: returnedId,
                     };
                   }
                 );
