@@ -6,14 +6,8 @@ import { authOptions } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Session check
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json(
-        { error: "Authentication required to record a sponsorship." },
-        { status: 401 }
-      );
-    }
+    // 1. Optional session check (wallet-only sponsors are allowed)
+    const session = await getServerSession(authOptions).catch(() => null);
 
     const body = await req.json();
     const { projectId, sponsorWalletKey, amountXLM, txHash } = body;
@@ -38,8 +32,8 @@ export async function POST(req: NextRequest) {
       where: {
         OR: [
           { walletPublicKey: sponsorWalletKey },
-          session.githubUsername ? { githubUsername: session.githubUsername } : {},
-        ].filter(Boolean) as Array<{ walletPublicKey?: string; githubUsername?: string }>,
+          session?.githubUsername ? { githubUsername: session.githubUsername } : {},
+        ].filter((item) => Object.keys(item).length > 0) as Array<{ walletPublicKey?: string; githubUsername?: string }>,
       },
     });
 
@@ -47,7 +41,7 @@ export async function POST(req: NextRequest) {
       sponsorUser = await prisma.user.create({
         data: {
           walletPublicKey: sponsorWalletKey,
-          githubUsername: session.githubUsername || null,
+          githubUsername: session?.githubUsername || null,
           role: "SPONSOR",
         },
       });

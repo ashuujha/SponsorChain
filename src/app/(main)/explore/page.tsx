@@ -65,8 +65,8 @@ export default function ExplorePage() {
 
   const formatXlm = (stroops: string): string => {
     const n = BigInt(stroops);
-    const whole = n / BigInt(10_000_0000);
-    const frac = n % BigInt(10_000_0000);
+    const whole = n / BigInt(10_000_000);
+    const frac = n % BigInt(10_000_000);
     const fracStr = frac.toString().padStart(7, "0");
     const trimmed = fracStr.replace(/0+$/, "");
     return trimmed ? `${whole}.${trimmed}` : `${whole}.0`;

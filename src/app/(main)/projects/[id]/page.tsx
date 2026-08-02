@@ -45,52 +45,62 @@ export default function ProjectDetailPage() {
         const data = await res.json();
         const p = data.project;
         if (p) {
+          const ownerKey = p.ownerWalletKey || p.owner?.walletPublicKey || "";
           let liveTotalStroops = BigInt(0);
-          try {
-            const hRes = await fetch(
-              `https://horizon-testnet.stellar.org/accounts/${p.ownerWalletKey}/payments?limit=200`
-            );
-            if (hRes.ok) {
-              const hData = await hRes.json();
-              const payments = hData._embedded?.records || [];
-              for (const pay of payments) {
-                if (
-                  pay.type === "payment" &&
-                  pay.asset_type === "native" &&
-                  pay.to === p.ownerWalletKey
-                ) {
-                  const amountXlm = parseFloat(pay.amount || "0");
-                  liveTotalStroops += BigInt(Math.floor(amountXlm * 10_000_0000));
+
+          if (ownerKey) {
+            try {
+              const hRes = await fetch(
+                `https://horizon-testnet.stellar.org/accounts/${ownerKey}/payments?limit=200`
+              );
+              if (hRes.ok) {
+                const hData = await hRes.json();
+                const payments = hData._embedded?.records || [];
+                for (const pay of payments) {
+                  if (
+                    pay.type === "payment" &&
+                    pay.asset_type === "native" &&
+                    pay.to === ownerKey
+                  ) {
+                    const amountXlm = parseFloat(pay.amount || "0");
+                    liveTotalStroops += BigInt(Math.floor(amountXlm * 10_000_000));
+                  }
                 }
               }
+            } catch (hErr) {
+              console.warn("Horizon live balance fetch warning:", hErr);
             }
-          } catch (hErr) {
-            console.warn("Horizon live balance fetch warning:", hErr);
           }
+
+          let dbTotalStroops = BigInt(0);
+          const mappedSponsorships: SponsorshipData[] = (p.sponsorships || []).map(
+            (s: ApiSponsorship, idx: number) => {
+              const amtNum = parseFloat(s.amountXLM || "0");
+              const amtStroops = BigInt(Math.floor(amtNum * 10_000_000));
+              dbTotalStroops += amtStroops;
+              return {
+                id: BigInt(idx),
+                sponsor: s.sponsorWalletKey || s.sponsor?.walletPublicKey || "Anonymous",
+                projectId: BigInt(0),
+                amount: amtStroops.toString(),
+                timestamp: BigInt(Math.floor(new Date(s.createdAt).getTime() / 1000)),
+                txHash: s.txHash,
+              };
+            }
+          );
+
+          const finalTotalStroops = liveTotalStroops > dbTotalStroops ? liveTotalStroops : dbTotalStroops;
 
           const projectData: ProjectData = {
             id: p.id,
-            owner: p.ownerWalletKey || p.owner?.walletPublicKey || "",
+            owner: ownerKey,
             repoFullName: p.repoUrl,
             name: p.name,
             description: p.description,
-            totalRaised: liveTotalStroops.toString(),
-            sponsorCount: p.sponsorships?.length || 0,
+            totalRaised: finalTotalStroops.toString(),
+            sponsorCount: Math.max(p.sponsorships?.length || 0, mappedSponsorships.length),
             createdAt: BigInt(Math.floor(new Date(p.createdAt).getTime() / 1000)),
           };
-
-          const mappedSponsorships: SponsorshipData[] = (p.sponsorships || []).map(
-            (s: ApiSponsorship, idx: number) => ({
-              id: BigInt(idx),
-              sponsor: s.sponsorWalletKey || s.sponsor?.walletPublicKey || "Anonymous",
-              projectId: BigInt(0),
-              amount: (
-                BigInt(Math.floor(parseFloat(s.amountXLM || "0") * 10_000_0000))
-              ).toString(),
-              timestamp: BigInt(Math.floor(new Date(s.createdAt).getTime() / 1000)),
-              txHash: s.txHash,
-            })
-          );
 
           setProject(projectData);
           setSponsorships(mappedSponsorships);
@@ -124,7 +134,7 @@ export default function ProjectDetailPage() {
       if (!wallet.publicKey || !project) return;
       const amountXLM = sponsor.amount;
       const amountStroops = BigInt(
-        Math.floor(parseFloat(amountXLM) * 10_000_0000)
+        Math.floor(parseFloat(amountXLM) * 10_000_000)
       );
 
       try {
@@ -161,8 +171,8 @@ export default function ProjectDetailPage() {
 
   const formatXlm = (stroops: string): string => {
     const n = BigInt(stroops);
-    const whole = n / BigInt(10_000_0000);
-    const frac = n % BigInt(10_000_0000);
+    const whole = n / BigInt(10_000_000);
+    const frac = n % BigInt(10_000_000);
     const fracStr = frac.toString().padStart(7, "0");
     const trimmed = fracStr.replace(/0+$/, "");
     return trimmed ? `${whole}.${trimmed}` : `${whole}.0`;
