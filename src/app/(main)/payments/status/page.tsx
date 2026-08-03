@@ -1,45 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useWallet } from "@/features/wallet/use-wallet";
 import { RequireWallet } from "@/features/wallet-session";
 import { Button } from "@/components/ui/button";
-import {
-  fetchHorizonAccountTransactions,
-  HorizonTransactionRecord,
-} from "@/features/payments/payment-service";
+import { useOnChainTransactions } from "@/hooks/use-onchain-data";
 import { REGISTRY_CONTRACT_ID } from "@/features/projects/contract-data";
 
 export default function TransactionsPage() {
   const wallet = useWallet();
   const [scope, setScope] = useState<"wallet" | "contract">("wallet");
-  const [transactions, setTransactions] = useState<HorizonTransactionRecord[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
 
   const targetAddress =
-    scope === "wallet" ? wallet.publicKey : REGISTRY_CONTRACT_ID;
+    (scope === "wallet" ? wallet.publicKey : REGISTRY_CONTRACT_ID) || undefined;
 
-  const loadTransactions = async () => {
-    if (!targetAddress) return;
-    setIsLoading(true);
-    setHasError(false);
-    try {
-      const txs = await fetchHorizonAccountTransactions(targetAddress, 25);
-      setTransactions(txs);
-    } catch (err) {
-      console.error("Error fetching transactions:", err);
-      setHasError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadTransactions();
-    const interval = setInterval(loadTransactions, 15000);
-    return () => clearInterval(interval);
-  }, [targetAddress, scope]);
+  const { data: transactions, isLoading, error, refetch } = useOnChainTransactions(targetAddress);
 
   return (
     <RequireWallet>
@@ -67,7 +42,7 @@ export default function TransactionsPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={loadTransactions}
+              onClick={() => refetch()}
               className="min-h-[44px] inline-flex items-center gap-2"
             >
               <span className="material-symbols-outlined text-[18px]">refresh</span>
@@ -101,7 +76,7 @@ export default function TransactionsPage() {
         </div>
 
         {/* Content */}
-        {hasError ? (
+        {error ? (
           <div className="text-center py-16 sm:py-24 border border-hairline bg-surface p-8 sm:p-12 space-y-4">
             <span className="material-symbols-outlined text-[40px] text-destructive mb-2">
               cloud_off
@@ -112,7 +87,7 @@ export default function TransactionsPage() {
             <p className="body-serif text-muted text-sm max-w-md mx-auto">
               Failed to fetch live transaction history from Horizon API. Please check network status and retry.
             </p>
-            <Button onClick={loadTransactions} variant="secondary" size="sm" className="min-h-[44px]">
+            <Button onClick={() => refetch()} variant="secondary" size="sm" className="min-h-[44px]">
               RETRY FETCH
             </Button>
           </div>
@@ -166,16 +141,16 @@ export default function TransactionsPage() {
                     </span>
                   </div>
 
-                  <p className="font-mono text-xs text-foreground truncate max-w-full">
-                    HASH: <code className="text-foreground">{tx.hash}</code>
+                  <p className="font-mono text-xs text-foreground truncate max-w-md">
+                    HASH: {tx.hash}
                   </p>
 
-                  <p className="caption-uppercase text-[10px] text-muted">
-                    DATE: {new Date(tx.createdAt).toLocaleString()} &bull; FEE: {tx.feeCharged} STROOPS
+                  <p className="font-mono text-[11px] text-muted">
+                    FEE: {(Number(tx.feeCharged) / 10_000_000).toFixed(7)} XLM • TIME: {new Date(tx.createdAt).toLocaleString()}
                   </p>
                 </div>
 
-                <div className="shrink-0 pt-2 md:pt-0 w-full md:w-auto text-left md:text-right">
+                <div className="flex items-center gap-3 self-end md:self-center">
                   <a
                     href={tx.stellarExpertUrl}
                     target="_blank"

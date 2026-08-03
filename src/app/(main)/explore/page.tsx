@@ -1,42 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { ProjectData } from "@/features/projects/contract-data";
-import { fetchOnChainProjects } from "@/lib/soroban-client";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
-
+import { useOnChainProjects } from "@/hooks/use-onchain-data";
 
 export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
 
-  const [projects, setProjects] = useState<ProjectData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-
-  const loadProjects = async () => {
-    setIsLoading(true);
-    setHasError(false);
-    try {
-      const data = await fetchOnChainProjects();
-      setProjects(data);
-    } catch (err) {
-      console.error("Explore page load error:", err);
-      setHasError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadProjects();
-    const interval = setInterval(loadProjects, 15000);
-    return () => clearInterval(interval);
-  }, []);
+  const { data: projects, isLoading, error, refetch } = useOnChainProjects();
 
   const formatXlm = (stroops: string): string => {
-    const n = BigInt(stroops);
+    const n = BigInt(stroops || "0");
     const whole = n / BigInt(10_000_000);
     const frac = n % BigInt(10_000_000);
     const fracStr = frac.toString().padStart(7, "0");
@@ -94,7 +70,7 @@ export default function ExplorePage() {
         ))}
       </section>
 
-      {hasError ? (
+      {error ? (
         <div className="text-center py-16 sm:py-24 border border-hairline bg-surface p-8 sm:p-12 space-y-4">
           <span className="material-symbols-outlined text-[40px] text-destructive mb-2">
             cloud_off
@@ -106,7 +82,7 @@ export default function ExplorePage() {
             Failed to query live contract state from the Stellar Soroban RPC endpoint. Please check your network connection and try again.
           </p>
           <button
-            onClick={loadProjects}
+            onClick={() => refetch()}
             className="bugatti-link text-xs min-h-[44px] inline-flex items-center gap-2"
           >
             RETRY NETWORK QUERY &rarr;
@@ -162,18 +138,18 @@ export default function ExplorePage() {
                   </p>
                 </div>
 
-                <p className="body-serif-sm text-muted text-xs sm:text-sm mb-6 line-clamp-3 leading-relaxed">
+                <p className="body-serif text-xs text-muted/80 line-clamp-3 mb-6 flex-grow">
                   {project.description}
                 </p>
 
-                <div className="mt-auto pt-4 border-t border-hairline space-y-2">
-                  <div className="flex justify-between items-end">
-                    <span className="font-mono text-xs text-foreground uppercase tracking-[1.5px]">
-                      {formatXlm(project.totalRaised)} XLM RAISED
-                    </span>
+                <div className="pt-4 border-t border-hairline flex items-center justify-between font-mono text-xs">
+                  <div>
+                    <span className="text-muted block text-[10px]">RAISED</span>
+                    <span className="text-foreground font-medium">{formatXlm(project.totalRaised)} XLM</span>
                   </div>
-                  <div className="caption-uppercase text-[10px] text-muted">
-                    {project.sponsorCount} SPONSOR{project.sponsorCount !== 1 ? "S" : ""}
+                  <div className="text-right">
+                    <span className="text-muted block text-[10px]">SPONSORS</span>
+                    <span className="text-foreground font-medium">{project.sponsorCount}</span>
                   </div>
                 </div>
               </div>
