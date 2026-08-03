@@ -7,8 +7,11 @@ import { GithubLogo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
 
+import { useWallet } from "@/features/wallet/use-wallet";
+
 export function Header() {
   const toggleDrawer = useUIStore((state) => state.toggleDrawer);
+  const wallet = useWallet();
 
   return (
     <header className="fixed top-0 w-full bg-background/90 backdrop-blur-md z-40 border-b border-hairline transition-colors h-[56px] flex items-center overflow-hidden">
@@ -57,8 +60,12 @@ export function Header() {
             <Button variant="default" size="sm">List Project</Button>
           </Link>
           <Link href="/wallet">
-            <Button variant="secondary" size="sm" className="px-3 sm:px-4">
-              <span className="hidden xs:inline">Wallet</span>
+            <Button variant="secondary" size="sm" className="px-3 sm:px-4 font-mono text-xs">
+              <span className="hidden xs:inline">
+                {wallet.isConnected && wallet.publicKey
+                  ? `${wallet.publicKey.slice(0, 4)}...${wallet.publicKey.slice(-4)}`
+                  : "Wallet"}
+              </span>
               <span className="xs:hidden material-symbols-outlined text-[16px]">account_balance_wallet</span>
             </Button>
           </Link>

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useWalletStore } from "../wallet/wallet-store";
 
 export interface WalletSessionState {
   publicKey: string | null;
@@ -21,18 +22,25 @@ export const useWalletSessionStore = create<WalletSessionState>()(
       connectionError: null,
       isRestoring: false,
 
-      setSession: (publicKey, network) =>
-        set({ publicKey, network, connectionError: null, isRestoring: false }),
+      setSession: (publicKey, network) => {
+        useWalletStore.getState().setConnection(publicKey, network);
+        set({ publicKey, network, connectionError: null, isRestoring: false });
+      },
 
-      clearSession: () =>
+      clearSession: () => {
+        useWalletStore.getState().disconnect();
         set({
           publicKey: null,
           network: null,
           connectionError: null,
           isRestoring: false,
-        }),
+        });
+      },
 
-      setConnectionError: (connectionError) => set({ connectionError, isRestoring: false }),
+      setConnectionError: (connectionError) => {
+        useWalletStore.getState().setConnectionError(connectionError);
+        set({ connectionError, isRestoring: false });
+      },
 
       setRestoring: (isRestoring) => set({ isRestoring }),
     }),

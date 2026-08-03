@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useWalletStore } from "./wallet-store";
 import {
   fetchAccountFromHorizon,
@@ -39,7 +39,6 @@ export async function getKit() {
 
 export function useWallet() {
   const store = useWalletStore();
-  const [isInitializing, setIsInitializing] = useState(true);
 
   const refreshBalance = async (address: string) => {
     try {
@@ -70,14 +69,51 @@ export function useWallet() {
   };
 
   useEffect(() => {
-    const savedAddress = localStorage.getItem("sponsorchain_wallet_pk");
-    const savedNetwork = localStorage.getItem("sponsorchain_wallet_net");
-    
-    if (savedAddress && savedNetwork) {
-      store.setConnection(savedAddress, savedNetwork);
-      refreshBalance(savedAddress);
+    const savedAddress = localStorage.getItem("sponsorchain_wallet_pk") || store.publicKey;
+    const savedNetwork = localStorage.getItem("sponsorchain_wallet_net") || store.network || "TESTNET";
+    const savedType = localStorage.getItem("sponsorchain_wallet_type") || store.walletType;
+
+    if (savedAddress) {
+      store.setConnection(savedAddress, savedNetwork, savedType);
+      
+      // Attempt silent reconnection via StellarWalletsKit
+      getKit()
+        .then(async (kit) => {
+          if (savedType) {
+            try {
+              kit.setWallet(savedType);
+            } catch {
+              // ignore module set error
+            }
+          }
+          try {
+            const res = await kit.getAddress();
+            const resObj = res as { address?: string; publicKey?: string };
+            const currentAddress = resObj?.address || resObj?.publicKey || savedAddress;
+            store.setConnection(currentAddress, savedNetwork, savedType);
+            refreshBalance(currentAddress);
+          } catch (err) {
+            console.warn("Silent wallet reconnection failed or access revoked:", err);
+            // If wallet is truly unavailable/revoked, clear connection state
+            if (!store.publicKey) {
+              store.disconnect();
+              localStorage.removeItem("sponsorchain_wallet_pk");
+              localStorage.removeItem("sponsorchain_wallet_net");
+              localStorage.removeItem("sponsorchain_wallet_type");
+            } else {
+              refreshBalance(savedAddress);
+            }
+          } finally {
+            store.setIsInitializing(false);
+          }
+        })
+        .catch(() => {
+          refreshBalance(savedAddress);
+          store.setIsInitializing(false);
+        });
+    } else {
+      store.setIsInitializing(false);
     }
-    setIsInitializing(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -111,9 +147,10 @@ export function useWallet() {
               }
             }
 
-            store.setConnection(address, "TESTNET");
+            store.setConnection(address, "TESTNET", option.id);
             localStorage.setItem("sponsorchain_wallet_pk", address);
             localStorage.setItem("sponsorchain_wallet_net", "TESTNET");
+            localStorage.setItem("sponsorchain_wallet_type", option.id);
             
             await refreshBalance(address);
           } catch (err: unknown) {
@@ -143,18 +180,20 @@ export function useWallet() {
     store.disconnect();
     localStorage.removeItem("sponsorchain_wallet_pk");
     localStorage.removeItem("sponsorchain_wallet_net");
+    localStorage.removeItem("sponsorchain_wallet_type");
   };
 
   return {
     publicKey: store.publicKey,
     isConnected: store.isConnected,
     network: store.network,
+    walletType: store.walletType,
     balance: store.balance,
     isFunding: store.isFunding,
     fundingError: store.fundingError,
     connectionError: store.connectionError,
     hasFunded: store.hasFunded,
-    isInitializing,
+    isInitializing: store.isInitializing,
     
     connect,
     disconnect,
