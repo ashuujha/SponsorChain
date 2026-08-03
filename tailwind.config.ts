@@ -66,7 +66,7 @@ const config: Config = {
         "bugatti-caption": "2px",
       },
       maxWidth: {
-        "container-max": "1280px",
+        "container-max": "1536px",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "Saira Condensed", "system-ui", "-apple-system", "sans-serif"],

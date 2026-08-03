@@ -242,7 +242,7 @@ export default function ProjectDetailPage() {
   if (!project) return null;
 
   return (
-    <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto pt-8 sm:pt-12 relative bg-background min-h-screen text-foreground transition-colors overflow-x-hidden">
+    <div className="w-full pb-24 px-4 sm:px-8 lg:px-12 xl:px-16 max-w-container-max mx-auto pt-8 sm:pt-12 relative bg-background min-h-screen text-foreground transition-colors overflow-x-hidden">
       <Link
         href="/explore"
         className="bugatti-link inline-flex items-center gap-2 mb-6 sm:mb-8 text-xs min-h-[44px]"
@@ -251,7 +251,7 @@ export default function ProjectDetailPage() {
       </Link>
 
       {/* Grid Layout: 1 single SponsorCard in DOM, positioned right under header on mobile, sticky sidebar on desktop */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-8 lg:gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px] gap-8 lg:gap-12 xl:gap-16 items-start">
         {/* Column 1 - Header Block (Order 1 on Mobile & Desktop) */}
         <div className="order-1 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-b border-hairline pb-6 sm:pb-8">
           <ProjectAvatar name={project.name} size="lg" />

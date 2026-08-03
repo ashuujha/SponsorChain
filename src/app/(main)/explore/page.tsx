@@ -86,7 +86,7 @@ export default function ExplorePage() {
   });
 
   return (
-    <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto overflow-x-hidden pt-8 sm:pt-12 bg-background min-h-screen text-foreground transition-colors">
+    <div className="w-full pb-24 px-4 sm:px-8 lg:px-12 xl:px-16 max-w-container-max mx-auto overflow-x-hidden pt-8 sm:pt-12 bg-background min-h-screen text-foreground transition-colors">
       <header className="mb-8 sm:mb-12 border-b border-hairline pb-6 sm:pb-8 flex flex-col items-center text-center">
         <div className="caption-uppercase text-muted mb-2 text-[10px] sm:text-xs">CATALOG // REPOSITORIES</div>
         <h1 className="display-lg font-normal text-foreground uppercase mb-4 sm:mb-6">

@@ -12,7 +12,7 @@ export function Header() {
 
   return (
     <header className="fixed top-0 w-full bg-background/90 backdrop-blur-md z-40 border-b border-hairline transition-colors h-[56px] flex items-center overflow-hidden">
-      <div className="max-w-container-max mx-auto px-3 sm:px-6 lg:px-8 w-full flex items-center justify-between gap-2">
+      <div className="max-w-container-max mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 w-full flex items-center justify-between gap-2">
 
         {/* Left: Hamburger (mobile) or Nav links (desktop) */}
         <div className="flex items-center gap-3 lg:gap-6 shrink-0">

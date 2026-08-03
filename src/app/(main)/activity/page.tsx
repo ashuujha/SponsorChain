@@ -99,7 +99,7 @@ export default function ActivityPage() {
 
   return (
     <RequireWallet>
-      <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-container-max mx-auto pt-8 sm:pt-12 bg-background min-h-screen text-foreground transition-colors overflow-x-hidden">
+      <div className="w-full pb-24 px-4 sm:px-8 lg:px-12 xl:px-16 max-w-container-max mx-auto pt-8 sm:pt-12 bg-background min-h-screen text-foreground transition-colors overflow-x-hidden">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8 sm:mb-12 border-b border-hairline pb-6 sm:pb-8">
           <div>
             <div className="caption-uppercase text-muted mb-2 text-[10px] sm:text-xs">USER ACCOUNT // ACTIVITY</div>

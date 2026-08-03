@@ -6,7 +6,7 @@ export default function LandingPage() {
   return (
     <div className="pb-16 sm:pb-24 overflow-x-hidden bg-background min-h-screen text-foreground transition-colors">
       {/* Hero Band: Austere Canvas with Centered Wide-Tracked Display Headline */}
-      <section className="relative py-16 sm:py-24 md:py-36 px-4 sm:px-6 lg:px-8 border-b border-hairline mb-12 sm:mb-20">
+      <section className="relative py-16 sm:py-24 md:py-36 px-4 sm:px-8 lg:px-12 xl:px-16 border-b border-hairline mb-12 sm:mb-20">
         <div className="max-w-container-max mx-auto flex flex-col items-center text-center">
           {/* Eyebrow Caption */}
           <div className="caption-uppercase text-muted mb-4 sm:mb-6 flex items-center justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs">
@@ -54,7 +54,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <div className="max-w-container-max mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-container-max mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
         {/* Technical Callout Grid */}
         <section className="mb-16 sm:mb-24">
           <div className="caption-uppercase text-muted mb-6 sm:mb-8 tracking-[2px] text-center">

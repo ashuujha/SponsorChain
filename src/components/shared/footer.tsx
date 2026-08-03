@@ -5,7 +5,7 @@ import { GithubLogo } from "./logo";
 export function Footer() {
   return (
     <footer className="bg-background text-muted w-full py-16 mt-auto border-t border-hairline">
-      <div className="max-w-container-max mx-auto px-6">
+      <div className="max-w-container-max mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 pb-12 border-b border-hairline">
           <div className="md:col-span-1 space-y-4">
             <a
