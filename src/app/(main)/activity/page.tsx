@@ -42,11 +42,8 @@ export default function ActivityPage() {
 
     async function loadActivity() {
       setIsLoading(true);
-      let listed = await fetchOnChainProjectsByOwner(wallet.publicKey!);
-      if (listed.length === 0) listed = getProjectsByOwner(wallet.publicKey!);
-
-      let sps = await fetchOnChainSponsorshipsBySponsor(wallet.publicKey!);
-      if (sps.length === 0) sps = getSponsorshipsBySponsor(wallet.publicKey!);
+      const listed = await fetchOnChainProjectsByOwner(wallet.publicKey!);
+      const sps = await fetchOnChainSponsorshipsBySponsor(wallet.publicKey!);
 
       const enriched = sps.map((s) => {
         const p = getProject(s.projectId);

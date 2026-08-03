@@ -51,7 +51,7 @@ describe("Project Detail & Payments Flow Integration", () => {
     let project = projects.find(p => p.repoFullName === "stellar/stellar-core");
     if (!project) {
       const id = createMockProject(
-        "GA774A3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z",
+        "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE",
         "stellar/stellar-core",
         "Stellar Core",
         "Stellar Core backbone."

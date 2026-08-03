@@ -10,7 +10,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "check:no-demo-data": "grep -rn 'SEED_MAINTAINER' src/ && exit 1 || echo 'Clean: No demo seed data in src/'"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^1.1.2",

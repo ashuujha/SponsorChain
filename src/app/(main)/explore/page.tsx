@@ -107,7 +107,7 @@ export default function ExplorePage() {
             NO PROJECTS FOUND
           </h3>
           <p className="body-serif text-muted text-sm mb-6">
-            Try adjusting your search terms or register a new project.
+            No projects registered on Stellar Testnet yet. Be the first maintainer to list your repository!
           </p>
           <Link href="/list-project" className="bugatti-link text-xs min-h-[44px] inline-flex items-center">
             LIST A PROJECT &rarr;

@@ -144,41 +144,8 @@ export function getAllProjects(): ProjectData[] {
   return Array.from(_projects.values());
 }
 
-/* ── Seed some demo projects for the checkpoint ────────────────── */
-
-// These are real, cryptographically-valid Stellar testnet keypairs generated
-// via Keypair.random() from stellar-sdk. They pass StrKey.isValidEd25519PublicKey()
-// and can be funded via Friendbot. Replace with real maintainer wallets in production.
-//
-// Maintainer A: GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE
-// Maintainer B: GCA2ACE5I25ICOOI3DPTH6U7SA26HY3IHNRFAYU5K76YBI6WCFATIYAK
-const SEED_MAINTAINER_A = "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE";
-const SEED_MAINTAINER_B = "GCA2ACE5I25ICOOI3DPTH6U7SA26HY3IHNRFAYU5K76YBI6WCFATIYAK";
-
-// Seed runs once at import time in non-prod
-if (typeof window !== "undefined" && _projects.size === 0) {
-  createMockProject(
-    SEED_MAINTAINER_A,
-    "stellar/js-stellar-sdk",
-    "js-stellar-sdk",
-    "JavaScript client library for communicating with a Horizon server."
-  );
-  createMockProject(
-    SEED_MAINTAINER_A,
-    "stellar/soroban-examples",
-    "soroban-examples",
-    "Essential example contracts for Soroban smart contract development on Stellar."
-  );
-  createMockProject(
-    SEED_MAINTAINER_B,
-    "stellar/stellar-core",
-    "stellar-core",
-    "Stellar Core — the reference implementation of the Stellar Consensus Protocol."
-  );
-  createMockProject(
-    SEED_MAINTAINER_B,
-    "stellar-freighter/freighter",
-    "freighter",
-    "Freighter is a Stellar wallet browser extension for Chrome, Firefox, and Brave."
-  );
-}
+/* ── Production On-Chain Registry Guard ───────────────────────── */
+// NO MOCK/DEMO SEED DATA: All projects on SponsorChain must originate
+// exclusively from on-chain ProjectRegistry contract states or explicit
+// user transaction submissions. Hardcoded or fallback project objects
+// are strictly forbidden in production code paths.
