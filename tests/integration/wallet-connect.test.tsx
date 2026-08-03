@@ -12,26 +12,36 @@ vi.mock("@/features/wallet/use-wallet", () => ({
   useWallet: vi.fn(),
 }));
 
+function createMockWallet(overrides: Record<string, unknown> = {}) {
+  return {
+    publicKey: null,
+    isConnected: false,
+    network: "TESTNET",
+    walletType: null as string | null,
+    balance: "0.0000000",
+    isFunding: false,
+    fundingError: null,
+    connectionError: null,
+    hasFunded: false,
+    isInitializing: false,
+    connect: mockConnect,
+    disconnect: mockDisconnect,
+    refreshBalance: vi.fn(),
+    ...overrides,
+  };
+}
+
 describe("Wallet Connect Page - Integration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("renders the connect page when wallet is not connected", () => {
-    vi.mocked(useWallet).mockReturnValue({
+    vi.mocked(useWallet).mockReturnValue(createMockWallet({
       publicKey: null,
       isConnected: false,
-      network: "TESTNET",
-      balance: "0.0000000",
-      isFunding: false,
-      fundingError: null,
-      connectionError: null,
-      hasFunded: false,
-      isInitializing: false,
-      connect: mockConnect,
-      disconnect: mockDisconnect,
-      refreshBalance: vi.fn(),
-    });
+      walletType: null,
+    }) as any);
 
     render(<WalletConnectPage />);
 
@@ -41,20 +51,13 @@ describe("Wallet Connect Page - Integration", () => {
   });
 
   it("renders the connected state with public key and balance when wallet is connected", () => {
-    vi.mocked(useWallet).mockReturnValue({
+    vi.mocked(useWallet).mockReturnValue(createMockWallet({
       publicKey: "GD6X4A3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z",
       isConnected: true,
-      network: "TESTNET",
+      walletType: "freighter",
       balance: "3998.3140000",
-      isFunding: false,
-      fundingError: null,
-      connectionError: null,
       hasFunded: true,
-      isInitializing: false,
-      connect: mockConnect,
-      disconnect: mockDisconnect,
-      refreshBalance: vi.fn(),
-    });
+    }) as any);
 
     render(<WalletConnectPage />);
 
@@ -64,20 +67,11 @@ describe("Wallet Connect Page - Integration", () => {
   });
 
   it("calls wallet.connect when the Connect button is clicked", () => {
-    vi.mocked(useWallet).mockReturnValue({
+    vi.mocked(useWallet).mockReturnValue(createMockWallet({
       publicKey: null,
       isConnected: false,
-      network: "TESTNET",
-      balance: "0.0000000",
-      isFunding: false,
-      fundingError: null,
-      connectionError: null,
-      hasFunded: false,
-      isInitializing: false,
-      connect: mockConnect,
-      disconnect: mockDisconnect,
-      refreshBalance: vi.fn(),
-    });
+      walletType: null,
+    }) as any);
 
     render(<WalletConnectPage />);
 
@@ -88,20 +82,12 @@ describe("Wallet Connect Page - Integration", () => {
   });
 
   it("calls wallet.disconnect when the Disconnect button is clicked", () => {
-    vi.mocked(useWallet).mockReturnValue({
+    vi.mocked(useWallet).mockReturnValue(createMockWallet({
       publicKey: "GD6X4A3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z",
       isConnected: true,
-      network: "TESTNET",
+      walletType: "freighter",
       balance: "3998.3140000",
-      isFunding: false,
-      fundingError: null,
-      connectionError: null,
-      hasFunded: false,
-      isInitializing: false,
-      connect: mockConnect,
-      disconnect: mockDisconnect,
-      refreshBalance: vi.fn(),
-    });
+    }) as any);
 
     render(<WalletConnectPage />);
 
