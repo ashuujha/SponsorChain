@@ -146,10 +146,56 @@ export default function ListProjectPage() {
                     description: currentStep.description,
                   },
                   async () => {
-                    const projectId = encodeURIComponent(currentStep.repo.fullName);
+                    const { getKit } = await import("@/features/wallet/use-wallet");
+                    const kit = await getKit();
+                    const { Networks, TransactionBuilder, Account, BASE_FEE, Operation, Memo, Asset, Horizon } = await import("stellar-sdk");
+                    const { fetchAccountFromHorizon } = await import("@/features/wallet/wallet-service");
+                    const { createMockProject } = await import("@/features/projects/contract-data");
+
+                    const accountRes = await fetchAccountFromHorizon(wallet.publicKey!);
+                    if (!accountRes) {
+                      throw new Error("Your wallet account is not funded on Stellar Testnet yet.");
+                    }
+
+                    const seqNum = (accountRes as { sequence?: string }).sequence || "0";
+                    const sourceAccount = new Account(wallet.publicKey!, seqNum);
+
+                    const tx = new TransactionBuilder(sourceAccount, {
+                      fee: BASE_FEE,
+                      networkPassphrase: Networks.TESTNET,
+                      timebounds: { minTime: 0, maxTime: Math.floor(Date.now() / 1000) + 600 },
+                    })
+                      .addOperation(
+                        Operation.payment({
+                          destination: wallet.publicKey!,
+                          asset: Asset.native(),
+                          amount: "0.00001",
+                        })
+                      )
+                      .addMemo(Memo.text(`REG:${currentStep.repo.fullName.slice(0, 24)}`))
+                      .build();
+
+                    const { signedTxXdr } = await kit.signTransaction(tx.toXDR(), {
+                      networkPassphrase: Networks.TESTNET,
+                      address: wallet.publicKey!,
+                    });
+
+                    const signedTx = TransactionBuilder.fromXDR(signedTxXdr, Networks.TESTNET);
+                    const txHash = (signedTx.hash() as Buffer).toString("hex");
+
+                    const server = new Horizon.Server("https://horizon-testnet.stellar.org");
+                    await server.submitTransaction(signedTx);
+
+                    const newId = createMockProject(
+                      wallet.publicKey!,
+                      currentStep.repo.fullName,
+                      currentStep.name,
+                      currentStep.description
+                    );
+
                     return {
-                      txHash: `0x_soroban_${Date.now()}`,
-                      projectId,
+                      txHash,
+                      projectId: newId.toString(),
                     };
                   }
                 );
@@ -166,10 +212,56 @@ export default function ListProjectPage() {
                     description: currentStep.description,
                   },
                   async () => {
-                    const projectId = encodeURIComponent(currentStep.repo.fullName);
+                    const { getKit } = await import("@/features/wallet/use-wallet");
+                    const kit = await getKit();
+                    const { Networks, TransactionBuilder, Account, BASE_FEE, Operation, Memo, Asset, Horizon } = await import("stellar-sdk");
+                    const { fetchAccountFromHorizon } = await import("@/features/wallet/wallet-service");
+                    const { createMockProject } = await import("@/features/projects/contract-data");
+
+                    const accountRes = await fetchAccountFromHorizon(wallet.publicKey!);
+                    if (!accountRes) {
+                      throw new Error("Your wallet account is not funded on Stellar Testnet yet.");
+                    }
+
+                    const seqNum = (accountRes as { sequence?: string }).sequence || "0";
+                    const sourceAccount = new Account(wallet.publicKey!, seqNum);
+
+                    const tx = new TransactionBuilder(sourceAccount, {
+                      fee: BASE_FEE,
+                      networkPassphrase: Networks.TESTNET,
+                      timebounds: { minTime: 0, maxTime: Math.floor(Date.now() / 1000) + 600 },
+                    })
+                      .addOperation(
+                        Operation.payment({
+                          destination: wallet.publicKey!,
+                          asset: Asset.native(),
+                          amount: "0.00001",
+                        })
+                      )
+                      .addMemo(Memo.text(`REG:${currentStep.repo.fullName.slice(0, 24)}`))
+                      .build();
+
+                    const { signedTxXdr } = await kit.signTransaction(tx.toXDR(), {
+                      networkPassphrase: Networks.TESTNET,
+                      address: wallet.publicKey!,
+                    });
+
+                    const signedTx = TransactionBuilder.fromXDR(signedTxXdr, Networks.TESTNET);
+                    const txHash = (signedTx.hash() as Buffer).toString("hex");
+
+                    const server = new Horizon.Server("https://horizon-testnet.stellar.org");
+                    await server.submitTransaction(signedTx);
+
+                    const newId = createMockProject(
+                      wallet.publicKey!,
+                      currentStep.repo.fullName,
+                      currentStep.name,
+                      currentStep.description
+                    );
+
                     return {
-                      txHash: `0x_soroban_${Date.now()}`,
-                      projectId,
+                      txHash,
+                      projectId: newId.toString(),
                     };
                   }
                 );
