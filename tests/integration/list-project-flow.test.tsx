@@ -22,6 +22,46 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
 }));
 
+const { VALID_TEST_XDR } = vi.hoisted(() => {
+  const { Account, Asset, BASE_FEE, Networks, Operation, TransactionBuilder } = require("stellar-sdk");
+  const mockDummyAcc = new Account("GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE", "100");
+  const mockDummyTx = new TransactionBuilder(mockDummyAcc, {
+    fee: BASE_FEE,
+    networkPassphrase: Networks.TESTNET,
+    timebounds: { minTime: 0, maxTime: 1900000000 },
+  })
+    .addOperation(
+      Operation.payment({
+        destination: "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE",
+        asset: Asset.native(),
+        amount: "1",
+      })
+    )
+    .build();
+  return { VALID_TEST_XDR: mockDummyTx.toXDR() };
+});
+
+vi.mock("stellar-sdk", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("stellar-sdk")>();
+  return {
+    ...actual,
+    Horizon: {
+      ...actual.Horizon,
+      Server: vi.fn().mockImplementation(() => ({
+        submitTransaction: vi.fn().mockResolvedValue({
+          hash: "c24e6504a378854497e59b207559e2f9d5045050fbe76ef77be9dfd2d346ff02",
+          successful: true,
+        }),
+      })),
+    },
+  };
+});
+
+vi.mock("@/lib/soroban-client", () => ({
+  checkOnChainRepoExists: vi.fn().mockResolvedValue({ exists: false }),
+  fetchOnChainProjects: vi.fn().mockResolvedValue([]),
+}));
+
 vi.mock("@/features/wallet/use-wallet", () => ({
   useWallet: () => ({
     publicKey: "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE",
@@ -36,6 +76,9 @@ vi.mock("@/features/wallet/use-wallet", () => ({
     connect: vi.fn(),
     disconnect: vi.fn(),
     refreshBalance: vi.fn(),
+  }),
+  getKit: vi.fn().mockResolvedValue({
+    signTransaction: vi.fn().mockResolvedValue({ signedTxXdr: VALID_TEST_XDR }),
   }),
 }));
 
@@ -94,13 +137,22 @@ describe("List Project Flow — state transitions", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockFetch.mockImplementation((url: string) => {
-      if (typeof url === "string" && url.includes("/api/listing/repos")) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ repos: [mockRepo] }),
-        });
-      }
-      return Promise.resolve({ ok: true, json: async () => ({}) });
+      const responseData = typeof url === "string" && url.includes("/api/listing/repos")
+        ? { repos: [mockRepo] }
+        : typeof url === "string" && url.includes("/accounts/")
+        ? { sequence: "100", id: "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE" }
+        : {
+            hash: "c24e6504a378854497e59b207559e2f9d5045050fbe76ef77be9dfd2d346ff02",
+            ledger: 1234567,
+            successful: true,
+          };
+
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: async () => responseData,
+        text: async () => JSON.stringify(responseData),
+      });
     });
   });
 
@@ -170,10 +222,14 @@ describe("List Project Flow — state transitions", () => {
       screen.getByText(/GDWRIC\.\.\.EPQ3SE/)
     ).toBeInTheDocument();
 
+    // Wait for on-chain duplicate check to finish and button to enable
+    const submitBtn = screen.getByRole("button", { name: /Sign & Submit to Network/i });
+    await waitFor(() => {
+      expect(submitBtn).not.toBeDisabled();
+    });
+
     // Click "Sign & Submit to Network"
-    fireEvent.click(
-      screen.getByRole("button", { name: /Sign & Submit to Network/i })
-    );
+    fireEvent.click(submitBtn);
 
     // STEP 5: Success — the mock submit resolves immediately
     await waitFor(() => {
@@ -241,11 +297,15 @@ describe("List Project Flow — state transitions", () => {
   });
 
   it("shows pending state while submitting", async () => {
-    // Make submit take a moment
-    let _resolveSubmit: (v: unknown) => void = () => {};
-    new Promise((resolve) => {
-      _resolveSubmit = resolve;
+    let resolveSign: (val: any) => void = () => {};
+    const signPromise = new Promise((resolve) => {
+      resolveSign = resolve;
     });
+
+    const { getKit } = await import("@/features/wallet/use-wallet");
+    vi.mocked(getKit).mockResolvedValueOnce({
+      signTransaction: vi.fn().mockReturnValue(signPromise),
+    } as any);
 
     render(<ListProjectPage />);
 
@@ -265,14 +325,23 @@ describe("List Project Flow — state transitions", () => {
       expect(screen.getByText("Review Your Project Listing")).toBeInTheDocument();
     });
 
-    // Click submit
-    fireEvent.click(
-      screen.getByRole("button", { name: /Sign & Submit to Network/i })
-    );
+    // Wait for on-chain duplicate check to finish and button to enable
+    const submitBtn = screen.getByRole("button", { name: /Sign & Submit to Network/i });
+    await waitFor(() => {
+      expect(submitBtn).not.toBeDisabled();
+    });
 
-    // Should show pending
-    expect(
-      screen.getByText(/Please sign the transaction in your wallet/)
-    ).toBeInTheDocument();
+    // Click submit
+    fireEvent.click(submitBtn);
+
+    // Should show pending message while waiting for wallet signature
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Please sign the transaction in your wallet/)
+      ).toBeInTheDocument();
+    });
+
+    // Resolve signTransaction to finish test
+    resolveSign({ signedTxXdr: VALID_TEST_XDR });
   });
 });
