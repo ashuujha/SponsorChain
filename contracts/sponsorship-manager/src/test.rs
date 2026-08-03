@@ -86,7 +86,7 @@ fn test_create_project_fails_without_owner_auth() {
     let env = Env::default();
 
     let admin = Address::generate(&env);
-    let owner = Address::generate(&env);
+    let _owner = Address::generate(&env);
 
     let registry_client = deploy_registry(&env);
 

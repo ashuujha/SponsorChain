@@ -22,8 +22,8 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
 }));
 
-const { VALID_TEST_XDR } = vi.hoisted(() => {
-  const { Account, Asset, BASE_FEE, Networks, Operation, TransactionBuilder } = require("stellar-sdk");
+const { VALID_TEST_XDR } = await vi.hoisted(async () => {
+  const { Account, Asset, BASE_FEE, Networks, Operation, TransactionBuilder } = await import("stellar-sdk");
   const mockDummyAcc = new Account("GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE", "100");
   const mockDummyTx = new TransactionBuilder(mockDummyAcc, {
     fee: BASE_FEE,
@@ -60,6 +60,10 @@ vi.mock("stellar-sdk", async (importOriginal) => {
 vi.mock("@/lib/soroban-client", () => ({
   checkOnChainRepoExists: vi.fn().mockResolvedValue({ exists: false }),
   fetchOnChainProjects: vi.fn().mockResolvedValue([]),
+  createOnChainProject: vi.fn().mockResolvedValue({
+    txHash: "c24e6504a378854497e59b207559e2f9d5045050fbe76ef77be9dfd2d346ff02",
+    projectId: "0",
+  }),
 }));
 
 vi.mock("@/features/wallet/use-wallet", () => ({
@@ -297,7 +301,7 @@ describe("List Project Flow — state transitions", () => {
   });
 
   it("shows pending state while submitting", async () => {
-    let resolveSign: (val: any) => void = () => {};
+    let resolveSign: (val: unknown) => void = () => {};
     const signPromise = new Promise((resolve) => {
       resolveSign = resolve;
     });
@@ -305,7 +309,7 @@ describe("List Project Flow — state transitions", () => {
     const { getKit } = await import("@/features/wallet/use-wallet");
     vi.mocked(getKit).mockResolvedValueOnce({
       signTransaction: vi.fn().mockReturnValue(signPromise),
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof getKit>>);
 
     render(<ListProjectPage />);
 

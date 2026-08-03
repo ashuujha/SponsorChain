@@ -35,8 +35,7 @@ describe("Payment Builder - buildPaymentTransaction", () => {
     const op = decodedTx.operations[0];
     expect(op.type).toBe("payment");
     
-    // Cast to check properties
-    const paymentOp = op as any;
+    const paymentOp = op as { destination: string; amount: string; asset: { isNative: () => boolean } };
     expect(paymentOp.destination).toBe(destinationPublicKey);
     expect(paymentOp.amount).toBe(amountXLM);
     expect(paymentOp.asset.isNative()).toBe(true);

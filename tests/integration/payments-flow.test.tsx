@@ -2,10 +2,7 @@ import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ProjectDetailPage from "@/app/(main)/projects/[id]/page";
-import * as paymentService from "@/features/payments/payment-service";
-import { getAllProjects, createMockProject } from "@/features/projects/contract-data";
-
-let mockProjectId = "0";
+const mockProjectId = "0";
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
@@ -53,6 +50,7 @@ vi.mock("@/lib/soroban-client", async (importOriginal) => {
       totalRaised: "0",
       sponsorCount: 0,
       createdAt: BigInt(1785784403),
+      active: true,
     }),
   };
 });
@@ -65,23 +63,7 @@ describe("Project Detail & Payments Flow Integration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    const projects = getAllProjects();
-    let project = projects.find(p => p.repoFullName === "stellar/stellar-core");
-    if (!project) {
-      const id = createMockProject(
-        "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE",
-        "stellar/stellar-core",
-        "Stellar Core",
-        "Stellar Core backbone."
-      );
-      mockProjectId = id.toString();
-    } else {
-      mockProjectId = project.id.toString();
-      project.name = "Stellar Core";
-      project.description = "Stellar Core backbone.";
-    }
-
-    mockFetch.mockImplementation((url: string) => {
+    mockFetch.mockImplementation(() => {
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve({ success: true }),

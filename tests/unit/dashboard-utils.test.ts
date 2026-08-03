@@ -44,7 +44,7 @@ describe("Dashboard Utilities - aggregateLiveTotalRaised", () => {
         amount: "10.0000000",
         transaction_hash: "H3",
         created_at: "2026-07-31T06:10:00Z",
-      } as any,
+      } as unknown as HorizonPaymentEvent,
       {
         id: "4",
         type: "payment",

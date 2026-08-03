@@ -8,9 +8,6 @@ import { useSponsorProject } from "@/features/projects/use-sponsor-project";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 import { Button } from "@/components/ui/button";
 import {
-  getProject,
-  getSponsorshipsForProject,
-  mockSponsor,
   ProjectData,
   SponsorshipData,
 } from "@/features/projects/contract-data";
@@ -25,7 +22,6 @@ export default function ProjectDetailPage() {
   const idStr = (params.id as string) || "0";
 
   const wallet = useWallet();
-
   const [project, setProject] = useState<ProjectData | null>(null);
   const [sponsorships, setSponsorships] = useState<SponsorshipData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,8 +34,7 @@ export default function ProjectDetailPage() {
 
     try {
       const numericId = BigInt(isNaN(Number(idStr)) ? 0 : idStr);
-      let p = await fetchOnChainProject(numericId);
-      if (!p) p = getProject(numericId);
+      const p = await fetchOnChainProject(numericId);
 
       if (!p) {
         setNotFound(true);
@@ -72,10 +67,7 @@ export default function ProjectDetailPage() {
         }
       }
 
-      let chainSponsorships = await fetchOnChainSponsorshipsForProject(numericId);
-      if (chainSponsorships.length === 0) {
-        chainSponsorships = getSponsorshipsForProject(numericId);
-      }
+      const chainSponsorships = await fetchOnChainSponsorshipsForProject(numericId);
 
       const updatedProject: ProjectData = {
         ...p,
@@ -93,20 +85,8 @@ export default function ProjectDetailPage() {
 
   const onSuccessRef = useRef<(txHash: string) => void>(() => {});
   useEffect(() => {
-    onSuccessRef.current = async (txHash: string) => {
-      if (!wallet.publicKey || !project) return;
-      const amountXLM = sponsor.amount;
-      const amountStroops = BigInt(
-        Math.floor(parseFloat(amountXLM) * 10_000_000)
-      );
-
-      try {
-        const numericId = BigInt(isNaN(Number(idStr)) ? 0 : idStr);
-        mockSponsor(wallet.publicKey, numericId, amountStroops, txHash);
-      } catch (e) {
-        console.warn("Mock sponsor update notice:", e);
-      }
-
+    onSuccessRef.current = async (_txHash: string) => {
+      void _txHash;
       loadProject();
     };
   });

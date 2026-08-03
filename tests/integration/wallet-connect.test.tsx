@@ -41,7 +41,7 @@ describe("Wallet Connect Page - Integration", () => {
       publicKey: null,
       isConnected: false,
       walletType: null,
-    }) as any);
+    }) as unknown as ReturnType<typeof useWallet>);
 
     render(<WalletConnectPage />);
 
@@ -57,7 +57,7 @@ describe("Wallet Connect Page - Integration", () => {
       walletType: "freighter",
       balance: "3998.3140000",
       hasFunded: true,
-    }) as any);
+    }) as unknown as ReturnType<typeof useWallet>);
 
     render(<WalletConnectPage />);
 
@@ -71,7 +71,7 @@ describe("Wallet Connect Page - Integration", () => {
       publicKey: null,
       isConnected: false,
       walletType: null,
-    }) as any);
+    }) as unknown as ReturnType<typeof useWallet>);
 
     render(<WalletConnectPage />);
 
@@ -87,7 +87,7 @@ describe("Wallet Connect Page - Integration", () => {
       isConnected: true,
       walletType: "freighter",
       balance: "3998.3140000",
-    }) as any);
+    }) as unknown as ReturnType<typeof useWallet>);
 
     render(<WalletConnectPage />);
 
