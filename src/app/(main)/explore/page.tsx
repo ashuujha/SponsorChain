@@ -2,10 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  getAllProjects,
-  ProjectData,
-} from "@/features/projects/contract-data";
+import { ProjectData } from "@/features/projects/contract-data";
+import { fetchOnChainProjects } from "@/lib/soroban-client";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 
 
@@ -17,8 +15,19 @@ export default function ExplorePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setProjects(getAllProjects());
-    setIsLoading(false);
+    let isMounted = true;
+    async function loadProjects() {
+      setIsLoading(true);
+      const data = await fetchOnChainProjects();
+      if (isMounted) {
+        setProjects(data);
+        setIsLoading(false);
+      }
+    }
+    loadProjects();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const formatXlm = (stroops: string): string => {

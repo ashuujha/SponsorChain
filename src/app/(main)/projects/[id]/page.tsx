@@ -14,6 +14,10 @@ import {
   ProjectData,
   SponsorshipData,
 } from "@/features/projects/contract-data";
+import {
+  fetchOnChainProject,
+  fetchOnChainSponsorshipsForProject,
+} from "@/lib/soroban-client";
 
 
 export default function ProjectDetailPage() {
@@ -34,7 +38,9 @@ export default function ProjectDetailPage() {
 
     try {
       const numericId = BigInt(isNaN(Number(idStr)) ? 0 : idStr);
-      const p = getProject(numericId);
+      let p = await fetchOnChainProject(numericId);
+      if (!p) p = getProject(numericId);
+
       if (!p) {
         setNotFound(true);
         setIsLoading(false);
@@ -66,7 +72,11 @@ export default function ProjectDetailPage() {
         }
       }
 
-      const chainSponsorships = getSponsorshipsForProject(numericId);
+      let chainSponsorships = await fetchOnChainSponsorshipsForProject(numericId);
+      if (chainSponsorships.length === 0) {
+        chainSponsorships = getSponsorshipsForProject(numericId);
+      }
+
       const updatedProject: ProjectData = {
         ...p,
         totalRaised: (BigInt(p.totalRaised) + liveTotalStroops).toString(),

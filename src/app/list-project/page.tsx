@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useWallet } from "@/features/wallet/use-wallet";
@@ -11,6 +11,7 @@ import {
   useCreateProject,
   PROJECT_REGISTRY_CONTRACT_ID,
 } from "@/features/projects/use-create-project";
+import { checkOnChainRepoExists } from "@/lib/soroban-client";
 import type { FilteredRepo } from "@/app/api/listing/repos/route";
 
 type ListStep =
@@ -413,6 +414,25 @@ function ReviewStep({
   onReset: () => void;
   onRetry: () => void;
 }) {
+  const [checkingRepo, setCheckingRepo] = useState(true);
+  const [repoExists, setRepoExists] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function verifyRepo() {
+      setCheckingRepo(true);
+      const result = await checkOnChainRepoExists(repo.fullName);
+      if (isMounted) {
+        setRepoExists(result.exists);
+        setCheckingRepo(false);
+      }
+    }
+    verifyRepo();
+    return () => {
+      isMounted = false;
+    };
+  }, [repo.fullName]);
+
   return (
     <div className="space-y-6">
       <section className="bg-surface border border-hairline rounded-none p-6 sm:p-8 space-y-4">
@@ -420,6 +440,20 @@ function ReviewStep({
         <p className="body-serif text-muted text-sm">
           All future sponsorships will be sent to the owner wallet address shown below.
         </p>
+
+        {checkingRepo ? (
+          <div className="p-4 bg-background border border-hairline flex items-center justify-center gap-3">
+            <span className="animate-spin material-symbols-outlined text-[20px] text-foreground">progress_activity</span>
+            <span className="caption-uppercase text-xs text-muted">Checking on-chain ProjectRegistry...</span>
+          </div>
+        ) : repoExists ? (
+          <div className="p-4 bg-surface border border-rose-500/50 text-xs font-mono text-rose-400 space-y-2">
+            <div className="font-bold uppercase tracking-[1px]">Repository Already Listed On-Chain</div>
+            <p className="body-serif text-muted text-xs">
+              The GitHub repository <code className="text-foreground">{repo.fullName}</code> has already been registered in the ProjectRegistry contract.
+            </p>
+          </div>
+        ) : null}
 
         <div className="bg-background border border-hairline p-4 space-y-3 font-mono text-xs overflow-hidden">
           <FieldRow label="Repository" value={repo.fullName} mono />
@@ -457,8 +491,13 @@ function ReviewStep({
           >
             &larr; Edit Details
           </button>
-          <Button onClick={onSubmit} size="lg" className="w-full sm:w-auto min-h-[44px]">
-            Sign &amp; Submit to Network
+          <Button
+            onClick={onSubmit}
+            disabled={checkingRepo || repoExists}
+            size="lg"
+            className="w-full sm:w-auto min-h-[44px]"
+          >
+            {repoExists ? "Already Listed On-Chain" : "Sign & Submit to Network"}
           </Button>
         </div>
       )}

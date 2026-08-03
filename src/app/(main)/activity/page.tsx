@@ -13,6 +13,10 @@ import {
   ProjectData,
   SponsorshipData,
 } from "@/features/projects/contract-data";
+import {
+  fetchOnChainProjectsByOwner,
+  fetchOnChainSponsorshipsBySponsor,
+} from "@/lib/soroban-client";
 
 function formatXlm(stroops: string): string {
   const n = BigInt(stroops);
@@ -34,20 +38,36 @@ export default function ActivityPage() {
 
   useEffect(() => {
     if (!wallet.publicKey) return;
-    const listed = getProjectsByOwner(wallet.publicKey);
-    setListedProjects(listed);
+    let isMounted = true;
 
-    const sps = getSponsorshipsBySponsor(wallet.publicKey);
-    const enriched = sps.map((s) => {
-      const p = getProject(s.projectId);
-      return {
-        ...s,
-        projectName: p?.name ?? "Unknown",
-        repoFullName: p?.repoFullName ?? "unknown/repo",
-      };
-    });
-    setSponsoredEntries(enriched);
-    setIsLoading(false);
+    async function loadActivity() {
+      setIsLoading(true);
+      let listed = await fetchOnChainProjectsByOwner(wallet.publicKey!);
+      if (listed.length === 0) listed = getProjectsByOwner(wallet.publicKey!);
+
+      let sps = await fetchOnChainSponsorshipsBySponsor(wallet.publicKey!);
+      if (sps.length === 0) sps = getSponsorshipsBySponsor(wallet.publicKey!);
+
+      const enriched = sps.map((s) => {
+        const p = getProject(s.projectId);
+        return {
+          ...s,
+          projectName: p?.name ?? "Unknown",
+          repoFullName: p?.repoFullName ?? "unknown/repo",
+        };
+      });
+
+      if (isMounted) {
+        setListedProjects(listed);
+        setSponsoredEntries(enriched);
+        setIsLoading(false);
+      }
+    }
+
+    loadActivity();
+    return () => {
+      isMounted = false;
+    };
   }, [wallet.publicKey]);
 
   return (
