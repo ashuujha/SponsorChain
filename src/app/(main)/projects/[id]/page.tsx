@@ -15,13 +15,6 @@ import {
   SponsorshipData,
 } from "@/features/projects/contract-data";
 
-interface ApiSponsorship {
-  sponsorWalletKey?: string;
-  sponsor?: { walletPublicKey?: string };
-  amountXLM?: string;
-  createdAt: string;
-  txHash: string;
-}
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -40,79 +33,6 @@ export default function ProjectDetailPage() {
     setNotFound(false);
 
     try {
-      const res = await fetch(`/api/projects/${idStr}`);
-      if (res.ok) {
-        const data = await res.json();
-        const p = data.project;
-        if (p) {
-          const ownerKey = p.ownerWalletKey || p.owner?.walletPublicKey || "";
-          let liveTotalStroops = BigInt(0);
-
-          if (ownerKey) {
-            try {
-              const hRes = await fetch(
-                `https://horizon-testnet.stellar.org/accounts/${ownerKey}/payments?limit=200`
-              );
-              if (hRes.ok) {
-                const hData = await hRes.json();
-                const payments = hData._embedded?.records || [];
-                for (const pay of payments) {
-                  if (
-                    pay.type === "payment" &&
-                    pay.asset_type === "native" &&
-                    pay.to === ownerKey
-                  ) {
-                    const amountXlm = parseFloat(pay.amount || "0");
-                    liveTotalStroops += BigInt(Math.floor(amountXlm * 10_000_000));
-                  }
-                }
-              }
-            } catch (hErr) {
-              console.warn("Horizon live balance fetch warning:", hErr);
-            }
-          }
-
-          let dbTotalStroops = BigInt(0);
-          const mappedSponsorships: SponsorshipData[] = (p.sponsorships || []).map(
-            (s: ApiSponsorship, idx: number) => {
-              const amtNum = parseFloat(s.amountXLM || "0");
-              const amtStroops = BigInt(Math.floor(amtNum * 10_000_000));
-              dbTotalStroops += amtStroops;
-              return {
-                id: BigInt(idx),
-                sponsor: s.sponsorWalletKey || s.sponsor?.walletPublicKey || "Anonymous",
-                projectId: BigInt(0),
-                amount: amtStroops.toString(),
-                timestamp: BigInt(Math.floor(new Date(s.createdAt).getTime() / 1000)),
-                txHash: s.txHash,
-              };
-            }
-          );
-
-          const finalTotalStroops = liveTotalStroops > dbTotalStroops ? liveTotalStroops : dbTotalStroops;
-
-          const projectData: ProjectData = {
-            id: p.id,
-            owner: ownerKey,
-            repoFullName: p.repoUrl,
-            name: p.name,
-            description: p.description,
-            totalRaised: finalTotalStroops.toString(),
-            sponsorCount: Math.max(p.sponsorships?.length || 0, mappedSponsorships.length),
-            createdAt: BigInt(Math.floor(new Date(p.createdAt).getTime() / 1000)),
-          };
-
-          setProject(projectData);
-          setSponsorships(mappedSponsorships);
-          setIsLoading(false);
-          return;
-        }
-      }
-    } catch (err) {
-      console.warn("Failed to fetch project from DB, trying mock registry:", err);
-    }
-
-    try {
       const numericId = BigInt(isNaN(Number(idStr)) ? 0 : idStr);
       const p = getProject(numericId);
       if (!p) {
@@ -120,8 +40,41 @@ export default function ProjectDetailPage() {
         setIsLoading(false);
         return;
       }
-      setProject(p);
-      setSponsorships(getSponsorshipsForProject(numericId));
+
+      let liveTotalStroops = BigInt(0);
+      if (p.owner) {
+        try {
+          const hRes = await fetch(
+            `https://horizon-testnet.stellar.org/accounts/${p.owner}/payments?limit=200`
+          );
+          if (hRes.ok) {
+            const hData = await hRes.json();
+            const payments = hData._embedded?.records || [];
+            for (const pay of payments) {
+              if (
+                pay.type === "payment" &&
+                pay.asset_type === "native" &&
+                pay.to === p.owner
+              ) {
+                const amountXlm = parseFloat(pay.amount || "0");
+                liveTotalStroops += BigInt(Math.floor(amountXlm * 10_000_000));
+              }
+            }
+          }
+        } catch (hErr) {
+          console.warn("Horizon live balance fetch notice:", hErr);
+        }
+      }
+
+      const chainSponsorships = getSponsorshipsForProject(numericId);
+      const updatedProject: ProjectData = {
+        ...p,
+        totalRaised: (BigInt(p.totalRaised) + liveTotalStroops).toString(),
+        sponsorCount: Math.max(p.sponsorCount, chainSponsorships.length),
+      };
+
+      setProject(updatedProject);
+      setSponsorships(chainSponsorships);
     } catch {
       setNotFound(true);
     }
@@ -142,21 +95,6 @@ export default function ProjectDetailPage() {
         mockSponsor(wallet.publicKey, numericId, amountStroops, txHash);
       } catch (e) {
         console.warn("Mock sponsor update notice:", e);
-      }
-
-      try {
-        await fetch("/api/sponsorships", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            projectId: project.id,
-            sponsorWalletKey: wallet.publicKey,
-            amountXLM,
-            txHash,
-          }),
-        });
-      } catch (apiErr) {
-        console.error("Failed to post sponsorship to DB:", apiErr);
       }
 
       loadProject();

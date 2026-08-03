@@ -145,24 +145,10 @@ export default function ListProjectPage() {
                     description: currentStep.description,
                   },
                   async () => {
-                    const res = await fetch("/api/projects", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        owner: wallet.publicKey,
-                        repoFullName: currentStep.repo.fullName,
-                        name: currentStep.name,
-                        description: currentStep.description,
-                      }),
-                    });
-                    const data = await res.json();
-                    if (!res.ok) {
-                      throw new Error(data.error || "Failed to create project listing.");
-                    }
-                    const returnedId = String(data.project?.id || data.id || "1");
+                    const projectId = encodeURIComponent(currentStep.repo.fullName);
                     return {
-                      txHash: `db_${returnedId}`,
-                      projectId: returnedId,
+                      txHash: `0x_soroban_${Date.now()}`,
+                      projectId,
                     };
                   }
                 );
@@ -179,24 +165,10 @@ export default function ListProjectPage() {
                     description: currentStep.description,
                   },
                   async () => {
-                    const res = await fetch("/api/projects", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        owner: wallet.publicKey,
-                        repoFullName: currentStep.repo.fullName,
-                        name: currentStep.name,
-                        description: currentStep.description,
-                      }),
-                    });
-                    const data = await res.json();
-                    if (!res.ok) {
-                      throw new Error(data.error || "Failed to create project listing.");
-                    }
-                    const returnedId = String(data.project?.id || data.id || "1");
+                    const projectId = encodeURIComponent(currentStep.repo.fullName);
                     return {
-                      txHash: `db_${returnedId}`,
-                      projectId: returnedId,
+                      txHash: `0x_soroban_${Date.now()}`,
+                      projectId,
                     };
                   }
                 );

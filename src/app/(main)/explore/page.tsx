@@ -8,16 +8,6 @@ import {
 } from "@/features/projects/contract-data";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 
-interface ApiProject {
-  id: string;
-  ownerWalletKey?: string;
-  owner?: { walletPublicKey?: string };
-  repoUrl: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  sponsorships?: Array<{ id: string }>;
-}
 
 export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,40 +17,8 @@ export default function ExplorePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true;
-    async function loadProjects() {
-      try {
-        const res = await fetch("/api/projects");
-        if (res.ok) {
-          const data = await res.json();
-          if (isMounted && data.projects && data.projects.length > 0) {
-            const mapped: ProjectData[] = data.projects.map((p: ApiProject) => ({
-              id: p.id,
-              owner: p.ownerWalletKey || p.owner?.walletPublicKey || "",
-              repoFullName: p.repoUrl,
-              name: p.name,
-              description: p.description,
-              totalRaised: "0",
-              sponsorCount: p.sponsorships?.length || 0,
-              createdAt: BigInt(Math.floor(new Date(p.createdAt).getTime() / 1000)),
-            }));
-            setProjects(mapped);
-            setIsLoading(false);
-            return;
-          }
-        }
-      } catch (err) {
-        console.warn("Failed to fetch projects from API, falling back to seed:", err);
-      }
-      if (isMounted) {
-        setProjects(getAllProjects());
-        setIsLoading(false);
-      }
-    }
-    loadProjects();
-    return () => {
-      isMounted = false;
-    };
+    setProjects(getAllProjects());
+    setIsLoading(false);
   }, []);
 
   const formatXlm = (stroops: string): string => {
