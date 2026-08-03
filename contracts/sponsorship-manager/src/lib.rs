@@ -94,6 +94,11 @@ impl SponsorshipManager {
         project_registry::Client::new(&env, &registry_addr)
             .update_totals(&project_id, &amount);
 
+        env.events().publish(
+            (soroban_sdk::symbol_short!("sponsor"), soroban_sdk::symbol_short!("funded")),
+            (next_id, sponsor.clone(), project_id, amount),
+        );
+
         next_id
     }
 

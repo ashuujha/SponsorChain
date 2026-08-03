@@ -39,6 +39,24 @@ vi.mock("@/features/payments/use-live-account-payments", () => ({
   }),
 }));
 
+// Mock fetchOnChainProject for deterministic test isolation
+vi.mock("@/lib/soroban-client", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/lib/soroban-client")>();
+  return {
+    ...original,
+    fetchOnChainProject: vi.fn().mockResolvedValue({
+      id: BigInt(0),
+      owner: "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE",
+      repoFullName: "stellar/stellar-core",
+      name: "Stellar Core",
+      description: "Stellar Core backbone.",
+      totalRaised: "0",
+      sponsorCount: 0,
+      createdAt: BigInt(1785784403),
+    }),
+  };
+});
+
 // Mock fetch global response for API calls
 const mockFetch = vi.fn();
 global.fetch = mockFetch;

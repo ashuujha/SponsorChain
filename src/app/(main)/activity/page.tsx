@@ -7,8 +7,6 @@ import { RequireWallet } from "@/features/wallet-session";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
 import { Button } from "@/components/ui/button";
 import {
-  getProjectsByOwner,
-  getSponsorshipsBySponsor,
   getProject,
   ProjectData,
   SponsorshipData,
@@ -35,15 +33,15 @@ export default function ActivityPage() {
     (SponsorshipData & { projectName?: string; repoFullName?: string })[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
-  useEffect(() => {
+  const loadActivity = async () => {
     if (!wallet.publicKey) return;
-    let isMounted = true;
-
-    async function loadActivity() {
-      setIsLoading(true);
-      const listed = await fetchOnChainProjectsByOwner(wallet.publicKey!);
-      const sps = await fetchOnChainSponsorshipsBySponsor(wallet.publicKey!);
+    setIsLoading(true);
+    setHasError(false);
+    try {
+      const listed = await fetchOnChainProjectsByOwner(wallet.publicKey);
+      const sps = await fetchOnChainSponsorshipsBySponsor(wallet.publicKey);
 
       const enriched = sps.map((s) => {
         const p = getProject(s.projectId);
@@ -54,17 +52,20 @@ export default function ActivityPage() {
         };
       });
 
-      if (isMounted) {
-        setListedProjects(listed);
-        setSponsoredEntries(enriched);
-        setIsLoading(false);
-      }
+      setListedProjects(listed);
+      setSponsoredEntries(enriched);
+    } catch (err) {
+      console.error("Activity page fetch error:", err);
+      setHasError(true);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
+  useEffect(() => {
     loadActivity();
-    return () => {
-      isMounted = false;
-    };
+    const interval = setInterval(loadActivity, 15000);
+    return () => clearInterval(interval);
   }, [wallet.publicKey]);
 
   return (
@@ -91,14 +92,31 @@ export default function ActivityPage() {
           </Link>
         </div>
 
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <span className="animate-spin material-symbols-outlined text-[40px] text-foreground">
-              progress_activity
+        {hasError ? (
+          <div className="text-center py-16 sm:py-24 border border-hairline bg-surface p-8 sm:p-12 space-y-4">
+            <span className="material-symbols-outlined text-[40px] text-destructive mb-2">
+              cloud_off
             </span>
-            <p className="caption-uppercase text-muted">
-              READING CONTRACT STATE...
+            <h3 className="font-mono text-base sm:text-lg text-foreground uppercase tracking-[2px]">
+              COULDN&apos;T REACH STELLAR TESTNET
+            </h3>
+            <p className="body-serif text-muted text-sm max-w-md mx-auto">
+              Failed to load activity logs from Stellar Testnet RPC. Please verify network connectivity and try again.
             </p>
+            <Button onClick={loadActivity} variant="secondary" size="sm" className="min-h-[44px]">
+              RETRY QUERY
+            </Button>
+          </div>
+        ) : isLoading ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 animate-pulse">
+            <div className="space-y-6">
+              <div className="h-6 bg-hairline/40 w-1/3" />
+              <div className="bg-surface border border-hairline p-6 h-36" />
+            </div>
+            <div className="space-y-6">
+              <div className="h-6 bg-hairline/40 w-1/3" />
+              <div className="bg-surface border border-hairline p-6 h-36" />
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">

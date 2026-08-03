@@ -13,21 +13,26 @@ export default function ExplorePage() {
 
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  const loadProjects = async () => {
+    setIsLoading(true);
+    setHasError(false);
+    try {
+      const data = await fetchOnChainProjects();
+      setProjects(data);
+    } catch (err) {
+      console.error("Explore page load error:", err);
+      setHasError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    let isMounted = true;
-    async function loadProjects() {
-      setIsLoading(true);
-      const data = await fetchOnChainProjects();
-      if (isMounted) {
-        setProjects(data);
-        setIsLoading(false);
-      }
-    }
     loadProjects();
-    return () => {
-      isMounted = false;
-    };
+    const interval = setInterval(loadProjects, 15000);
+    return () => clearInterval(interval);
   }, []);
 
   const formatXlm = (stroops: string): string => {
@@ -89,14 +94,37 @@ export default function ExplorePage() {
         ))}
       </section>
 
-      {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-24 gap-4">
-          <span className="animate-spin material-symbols-outlined text-[36px] text-foreground">
-            progress_activity
+      {hasError ? (
+        <div className="text-center py-16 sm:py-24 border border-hairline bg-surface p-8 sm:p-12 space-y-4">
+          <span className="material-symbols-outlined text-[40px] text-destructive mb-2">
+            cloud_off
           </span>
-          <p className="caption-uppercase text-muted">
-            READING CONTRACT STATE...
+          <h3 className="font-mono text-base sm:text-lg text-foreground uppercase tracking-[2px]">
+            COULDN&apos;T REACH STELLAR TESTNET
+          </h3>
+          <p className="body-serif text-muted text-sm max-w-md mx-auto">
+            Failed to query live contract state from the Stellar Soroban RPC endpoint. Please check your network connection and try again.
           </p>
+          <button
+            onClick={loadProjects}
+            className="bugatti-link text-xs min-h-[44px] inline-flex items-center gap-2"
+          >
+            RETRY NETWORK QUERY &rarr;
+          </button>
+        </div>
+      ) : isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-surface border border-hairline p-6 h-[260px] animate-pulse flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="w-12 h-12 bg-hairline/40 rounded-none" />
+                <div className="h-4 bg-hairline/40 w-3/4" />
+                <div className="h-3 bg-hairline/30 w-1/2" />
+                <div className="h-12 bg-hairline/20 w-full" />
+              </div>
+              <div className="h-4 bg-hairline/40 w-1/3 pt-4 border-t border-hairline" />
+            </div>
+          ))}
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-16 sm:py-24 border border-hairline bg-surface p-8 sm:p-12">

@@ -88,6 +88,11 @@ impl ProjectRegistry {
 
         env.storage().instance().set(&RegistryKey::NextId, &(next_id + 1));
 
+        env.events().publish(
+            (soroban_sdk::symbol_short!("project"), soroban_sdk::symbol_short!("created")),
+            (next_id, owner.clone(), repo_full_name.clone()),
+        );
+
         next_id
     }
 

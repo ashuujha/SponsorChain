@@ -101,3 +101,47 @@ export async function preparePaymentTransaction({
     sequenceNumber,
   });
 }
+
+export interface HorizonTransactionRecord {
+  id: string;
+  hash: string;
+  ledger: number;
+  createdAt: string;
+  successful: boolean;
+  feeCharged: string;
+  memoType: string;
+  memo: string | null;
+  stellarExpertUrl: string;
+}
+
+/**
+ * Fetches recent transactions for a given account or contract address from Horizon Testnet.
+ */
+export async function fetchHorizonAccountTransactions(
+  address: string,
+  limit: number = 20
+): Promise<HorizonTransactionRecord[]> {
+  try {
+    const url = `https://horizon-testnet.stellar.org/accounts/${address}/transactions?order=desc&limit=${limit}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`Horizon API error: HTTP status ${res.status}`);
+    }
+    const data = await res.json();
+    const records = data._embedded?.records || [];
+    return records.map((tx: Record<string, unknown>) => ({
+      id: (tx.id as string) || (tx.hash as string),
+      hash: tx.hash as string,
+      ledger: (tx.ledger_attr as number) || (tx.ledger as number),
+      createdAt: tx.created_at as string,
+      successful: (tx.successful as boolean) ?? true,
+      feeCharged: (tx.fee_charged as string) || "100",
+      memoType: (tx.memo_type as string) || "none",
+      memo: (tx.memo as string) || null,
+      stellarExpertUrl: `https://stellar.expert/explorer/testnet/tx/${tx.hash}`,
+    }));
+  } catch (err) {
+    console.warn("Horizon fetch account transactions error:", err);
+    return [];
+  }
+}
