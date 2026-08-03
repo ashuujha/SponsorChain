@@ -194,3 +194,58 @@ fn test_set_sponsorship_manager_once_only() {
     }));
     assert!(result.is_err());
 }
+
+#[test]
+fn test_owner_can_unlist_project() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let admin = Address::generate(&env);
+    let owner = Address::generate(&env);
+
+    let client = deploy(&env);
+    client.init(&admin);
+
+    let id = client.create_project(
+        &owner,
+        &String::from_str(&env, "stellar/test-repo"),
+        &String::from_str(&env, "Test Repo"),
+        &String::from_str(&env, "Description"),
+    );
+
+    let project_before = client.get_project(&id);
+    assert_eq!(project_before.active, true);
+
+    client.unlist_project(&id, &owner);
+
+    let project_after = client.get_project(&id);
+    assert_eq!(project_after.active, false);
+}
+
+#[test]
+fn test_non_owner_cannot_unlist_project() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let admin = Address::generate(&env);
+    let owner = Address::generate(&env);
+    let stranger = Address::generate(&env);
+
+    let client = deploy(&env);
+    client.init(&admin);
+
+    let id = client.create_project(
+        &owner,
+        &String::from_str(&env, "stellar/test-repo"),
+        &String::from_str(&env, "Test Repo"),
+        &String::from_str(&env, "Description"),
+    );
+
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        client.unlist_project(&id, &stranger);
+    }));
+    assert!(result.is_err());
+
+    let project = client.get_project(&id);
+    assert_eq!(project.active, true);
+}

@@ -20,13 +20,36 @@
                   "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
                 },
                 {
-                  "string": "stellar/soroban-tools"
+                  "string": "stellar/test-repo"
                 },
                 {
-                  "string": "soroban-tools"
+                  "string": "Test Repo"
                 },
                 {
-                  "string": "First listing"
+                  "string": "Description"
+                }
+              ]
+            }
+          },
+          "sub_invocations": []
+        }
+      ]
+    ],
+    [],
+    [
+      [
+        "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4",
+        {
+          "function": {
+            "contract_fn": {
+              "contract_address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+              "function_name": "unlist_project",
+              "args": [
+                {
+                  "u64": "0"
+                },
+                {
+                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
                 }
               ]
             }
@@ -73,6 +96,26 @@
           "data": {
             "contract_data": {
               "ext": "v0",
+              "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4",
+              "key": {
+                "ledger_key_nonce": {
+                  "nonce": "5541220902715666415"
+                }
+              },
+              "durability": "temporary",
+              "val": "void"
+            }
+          },
+          "ext": "v0"
+        },
+        "live_until": 6311999
+      },
+      {
+        "entry": {
+          "last_modified_ledger_seq": 0,
+          "data": {
+            "contract_data": {
+              "ext": "v0",
               "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
               "key": {
                 "vec": [
@@ -92,7 +135,7 @@
                       "symbol": "active"
                     },
                     "val": {
-                      "bool": true
+                      "bool": false
                     }
                   },
                   {
@@ -108,7 +151,7 @@
                       "symbol": "description"
                     },
                     "val": {
-                      "string": "First listing"
+                      "string": "Description"
                     }
                   },
                   {
@@ -116,7 +159,7 @@
                       "symbol": "name"
                     },
                     "val": {
-                      "string": "soroban-tools"
+                      "string": "Test Repo"
                     }
                   },
                   {
@@ -132,7 +175,7 @@
                       "symbol": "repo_full_name"
                     },
                     "val": {
-                      "string": "stellar/soroban-tools"
+                      "string": "stellar/test-repo"
                     }
                   },
                   {
@@ -172,7 +215,7 @@
                     "symbol": "RepoIndex"
                   },
                   {
-                    "string": "stellar/soroban-tools"
+                    "string": "stellar/test-repo"
                   }
                 ]
               },

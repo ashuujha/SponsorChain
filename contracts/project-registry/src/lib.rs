@@ -12,6 +12,7 @@ pub struct Project {
     pub total_raised: i128,
     pub sponsor_count: u32,
     pub created_at: u64,
+    pub active: bool,
 }
 
 #[contracttype]
@@ -80,6 +81,7 @@ impl ProjectRegistry {
             total_raised: 0,
             sponsor_count: 0,
             created_at: env.ledger().timestamp(),
+            active: true,
         };
 
         let project_key = RegistryKey::Project(next_id);
@@ -94,6 +96,29 @@ impl ProjectRegistry {
         );
 
         next_id
+    }
+
+    pub fn unlist_project(env: Env, id: u64, caller: Address) {
+        caller.require_auth();
+
+        let project_key = RegistryKey::Project(id);
+        let mut project: Project = env
+            .storage()
+            .persistent()
+            .get(&project_key)
+            .expect("project not found");
+
+        if caller != project.owner {
+            panic!("only project owner can unlist");
+        }
+
+        project.active = false;
+        env.storage().persistent().set(&project_key, &project);
+
+        env.events().publish(
+            (soroban_sdk::symbol_short!("project"), soroban_sdk::symbol_short!("unlisted")),
+            (id, caller),
+        );
     }
 
     pub fn get_project(env: Env, id: u64) -> Project {

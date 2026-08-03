@@ -3,6 +3,7 @@ import {
   Contract,
   TransactionBuilder,
   Account,
+  Address,
   Networks,
   nativeToScVal,
   scValToNative,
@@ -16,6 +17,7 @@ import {
   getSponsorshipsForProject,
   getSponsorshipsBySponsor,
 } from "@/features/projects/contract-data";
+import { fetchAccountFromHorizon } from "@/features/wallet/wallet-service";
 
 export const SOROBAN_RPC_URL =
   process.env.NEXT_PUBLIC_SOROBAN_RPC_URL || "https://soroban-testnet.stellar.org";
@@ -109,7 +111,7 @@ export async function fetchOnChainProjects(
       return await fetchOnChainProject(id);
     })
   );
-  return projects.filter((p): p is ProjectData => p !== null);
+  return projects.filter((p): p is ProjectData => p !== null && p.active);
 }
 
 /**
@@ -154,6 +156,7 @@ export async function fetchOnChainProject(
       totalRaised: (native.total_raised || 0).toString(),
       sponsorCount: Number(native.sponsor_count || 0),
       createdAt: BigInt(native.created_at || 0),
+      active: typeof native.active === "boolean" ? native.active : true,
     };
   }
 
@@ -268,6 +271,55 @@ export async function fetchOnChainActivityEvents(startLedger: number = 3950000):
     console.warn("Error querying Soroban contract events:", err);
     return [];
   }
+}
+
+/**
+ * Unlists a project on-chain via ProjectRegistry.unlist_project(id, caller) with wallet signature auth.
+ */
+export async function unlistOnChainProject({
+  projectId,
+  callerPublicKey,
+  kit,
+}: {
+  projectId: bigint;
+  callerPublicKey: string;
+  kit: { signTransaction: (xdr: string, opts: { networkPassphrase: string; address: string }) => Promise<{ signedTxXdr: string }> };
+}): Promise<{ txHash: string }> {
+  const contract = new Contract(REGISTRY_CONTRACT_ID);
+  const accountRes = await fetchAccountFromHorizon(callerPublicKey);
+  if (!accountRes) {
+    throw new Error("Wallet account is unfunded or not found on Stellar Testnet.");
+  }
+  const sequenceNumber = (accountRes as { sequence?: string }).sequence || "0";
+  const sourceAccount = new Account(callerPublicKey, sequenceNumber);
+
+  const tx = new TransactionBuilder(sourceAccount, {
+    fee: "1000000",
+    networkPassphrase: Networks.TESTNET,
+    timebounds: { minTime: 0, maxTime: Math.floor(Date.now() / 1000) + 600 },
+  })
+    .addOperation(
+      contract.call(
+        "unlist_project",
+        nativeToScVal(projectId, { type: "u64" }),
+        new Address(callerPublicKey).toScVal()
+      )
+    )
+    .build();
+
+  const preparedTx = await sorobanServer.prepareTransaction(tx);
+  const { signedTxXdr } = await kit.signTransaction(preparedTx.toXDR(), {
+    networkPassphrase: Networks.TESTNET,
+    address: callerPublicKey,
+  });
+
+  const signedTx = TransactionBuilder.fromXDR(signedTxXdr, Networks.TESTNET);
+  const sendRes = await sorobanServer.sendTransaction(signedTx);
+  if (sendRes.status === "ERROR" || !sendRes.hash) {
+    throw new Error("Failed to submit unlist_project transaction to Stellar Testnet");
+  }
+
+  return { txHash: sendRes.hash };
 }
 
 export { REGISTRY_CONTRACT_ID, MANAGER_CONTRACT_ID };

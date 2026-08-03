@@ -17,6 +17,7 @@ export interface ProjectData {
   totalRaised: string; // i128 as decimal string
   sponsorCount: number;
   createdAt: bigint;
+  active: boolean;
 }
 
 export interface SponsorshipData {
@@ -65,6 +66,7 @@ export function createMockProject(
     totalRaised: "0",
     sponsorCount: 0,
     createdAt: BigInt(Math.floor(Date.now() / 1000)),
+    active: true,
   };
   _projects.set(_projectKey(id), project);
   return id;

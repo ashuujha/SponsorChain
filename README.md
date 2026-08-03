@@ -385,11 +385,3 @@ The production application is continuously deployed to **Vercel** via `.github/w
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contract Addresses
-
-| Contract | Address |
-|----------|---------|
-| ProjectRegistry | `CA7LOVDULNNGB5XLFGYMC6PDMFMMLSUQZKO4ZFL7KIKKVRLFNOE5MGXV` |
-| SponsorshipManager | `CAFJXAO247Y3YGPVKI7PDECOPS7KCZVP3HD33W5FFB2JUWHLT5D56SXL` |
-| Native XLM SAC | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
-
-> Deployed on Stellar Testnet. See [CONTRACTS.md](./CONTRACTS.md) for full details.
