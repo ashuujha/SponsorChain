@@ -1,0 +1,104 @@
+name: Deploy Soroban Contracts
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: 'Target Stellar network'
+        required: true
+        default: 'testnet'
+        type: choice
+        options:
+          - testnet
+      confirm_redeploy:
+        description: 'Confirm deployment of fresh contracts at new addresses'
+        required: false
+        default: false
+        type: boolean
+      skip_verify:
+        description: 'Skip post-deployment verification checks'
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-contracts:
+    name: Build, Deploy & Verify Soroban Contracts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          target: wasm32v1-none
+
+      - name: Cache Cargo Dependencies & Target
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            contracts/target
+          key: cargo-deploy-${{ runner.os }}-${{ hashFiles('contracts/**/Cargo.toml') }}
+          restore-keys: |
+            cargo-deploy-${{ runner.os }}-
+
+      - name: Install Stellar CLI
+        run: |
+          if ! command -v stellar &> /dev/null; then
+            echo "Installing Stellar CLI..."
+            cargo install --locked stellar-cli --features opt
+          fi
+          stellar --version
+
+      - name: Configure Deployer Identity Key
+        env:
+          STELLAR_SECRET: ${{ secrets.STELLAR_ACCOUNT_SECRET }}
+        run: |
+          if [ -n "$STELLAR_SECRET" ]; then
+            echo "Importing deployer secret key into Stellar CLI..."
+            echo "$STELLAR_SECRET" | stellar keys add sponsorchain-deployer --secret-key
+          else
+            echo "STELLAR_ACCOUNT_SECRET not found in repository secrets. Using/generating fallback identity..."
+          fi
+
+      - name: Run Deployment Script
+        env:
+          STELLAR_NETWORK: ${{ inputs.network || 'testnet' }}
+          SOROBAN_RPC_URL: 'https://soroban-testnet.stellar.org'
+          HORIZON_URL: 'https://horizon-testnet.stellar.org'
+          STELLAR_IDENTITY: 'sponsorchain-deployer'
+        run: |
+          ARGS=""
+          if [ "${{ inputs.confirm_redeploy }}" = "true" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ARGS="--confirm-redeploy"
+          fi
+          if [ "${{ inputs.skip_verify }}" = "true" ]; then
+            ARGS="$ARGS --skip-verify"
+          fi
+          ./scripts/deploy.sh $ARGS
+
+      - name: Run Post-Deployment Verification
+        if: ${{ inputs.skip_verify != true }}
+        run: |
+          ./scripts/verify-deployment.sh .env.local
+
+      - name: Upload Deployment Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-artifacts
+          path: |
+            CONTRACTS.md
+            .env.local
+            .env.example

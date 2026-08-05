@@ -10,7 +10,10 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "deploy": "./scripts/deploy.sh",
+    "deploy:contracts": "./scripts/deploy-contracts.sh",
+    "verify:deployment": "./scripts/verify-deployment.sh"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^1.1.2",

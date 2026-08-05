@@ -38,7 +38,7 @@
                   "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
                 },
                 {
-                  "i128": "100000000000"
+                  "i128": "1000000"
                 }
               ]
             }
@@ -146,13 +146,13 @@
                   "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
                 },
                 {
-                  "string": "stellar/soroban-examples"
+                  "string": "stellar/pagination-test"
                 },
                 {
-                  "string": "soroban-examples"
+                  "string": "pagination-test"
                 },
                 {
-                  "string": "Example Soroban contracts"
+                  "string": "Pagination test"
                 }
               ]
             }
@@ -161,53 +161,6 @@
         }
       ]
     ],
-    [
-      [
-        "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
-        {
-          "function": {
-            "contract_fn": {
-              "contract_address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
-              "function_name": "sponsor",
-              "args": [
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
-                },
-                {
-                  "u64": "0"
-                },
-                {
-                  "i128": "5000000000"
-                }
-              ]
-            }
-          },
-          "sub_invocations": [
-            {
-              "function": {
-                "contract_fn": {
-                  "contract_address": "CCABDO7UZXYE4W6GVSEGSNNZTKSLFQGKXXQTH6OX7M7GKZ4Z6CUJNGZN",
-                  "function_name": "transfer",
-                  "args": [
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
-                    },
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                    },
-                    {
-                      "i128": "5000000000"
-                    }
-                  ]
-                }
-              },
-              "sub_invocations": []
-            }
-          ]
-        }
-      ]
-    ],
-    [],
     [
       [
         "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
@@ -224,10 +177,10 @@
                   "u64": "0"
                 },
                 {
-                  "i128": "10000000"
+                  "i128": "1"
                 },
                 {
-                  "string": "Keep building on Stellar!"
+                  "string": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
                 }
               ]
             }
@@ -246,7 +199,7 @@
                       "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
                     },
                     {
-                      "i128": "10000000"
+                      "i128": "1"
                     }
                   ]
                 }
@@ -263,17 +216,12 @@
     [],
     [],
     [],
-    [],
-    [],
-    [],
-    [],
-    [],
     []
   ],
   "ledger": {
     "protocol_version": 27,
     "sequence_number": 0,
-    "timestamp": 1700000000,
+    "timestamp": 0,
     "network_id": "0000000000000000000000000000000000000000000000000000000000000000",
     "base_reserve": 0,
     "min_persistent_entry_ttl": 4096,
@@ -430,26 +378,6 @@
               "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
               "key": {
                 "ledger_key_nonce": {
-                  "nonce": "5806905060045992000"
-                }
-              },
-              "durability": "temporary",
-              "val": "void"
-            }
-          },
-          "ext": "v0"
-        },
-        "live_until": 6311999
-      },
-      {
-        "entry": {
-          "last_modified_ledger_seq": 0,
-          "data": {
-            "contract_data": {
-              "ext": "v0",
-              "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
-              "key": {
-                "ledger_key_nonce": {
                   "nonce": "6277191135259896685"
                 }
               },
@@ -521,36 +449,6 @@
               "key": {
                 "vec": [
                   {
-                    "symbol": "ProjectSponsorship"
-                  },
-                  {
-                    "u64": "0"
-                  },
-                  {
-                    "u64": "1"
-                  }
-                ]
-              },
-              "durability": "persistent",
-              "val": {
-                "u64": "1"
-              }
-            }
-          },
-          "ext": "v0"
-        },
-        "live_until": 535679
-      },
-      {
-        "entry": {
-          "last_modified_ledger_seq": 0,
-          "data": {
-            "contract_data": {
-              "ext": "v0",
-              "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
-              "key": {
-                "vec": [
-                  {
                     "symbol": "ProjectSponsorshipCount"
                   },
                   {
@@ -560,7 +458,7 @@
               },
               "durability": "persistent",
               "val": {
-                "u64": "2"
+                "u64": "1"
               }
             }
           },
@@ -608,13 +506,10 @@
               "key": {
                 "vec": [
                   {
-                    "symbol": "SponsorSponsorship"
+                    "symbol": "SponsorSponsorshipCount"
                   },
                   {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
-                  },
-                  {
-                    "u64": "1"
                   }
                 ]
               },
@@ -638,33 +533,6 @@
               "key": {
                 "vec": [
                   {
-                    "symbol": "SponsorSponsorshipCount"
-                  },
-                  {
-                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
-                  }
-                ]
-              },
-              "durability": "persistent",
-              "val": {
-                "u64": "2"
-              }
-            }
-          },
-          "ext": "v0"
-        },
-        "live_until": 535679
-      },
-      {
-        "entry": {
-          "last_modified_ledger_seq": 0,
-          "data": {
-            "contract_data": {
-              "ext": "v0",
-              "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
-              "key": {
-                "vec": [
-                  {
                     "symbol": "Sponsorship"
                   },
                   {
@@ -680,7 +548,7 @@
                       "symbol": "amount"
                     },
                     "val": {
-                      "i128": "5000000000"
+                      "i128": "1"
                     }
                   },
                   {
@@ -719,104 +587,16 @@
                     "key": {
                       "symbol": "sponsor_message"
                     },
-                    "val": "void"
+                    "val": {
+                      "string": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    }
                   },
                   {
                     "key": {
                       "symbol": "timestamp"
-                    },
-                    "val": {
-                      "u64": "1700000000"
-                    }
-                  },
-                  {
-                    "key": {
-                      "symbol": "transaction_hash"
-                    },
-                    "val": "void"
-                  }
-                ]
-              }
-            }
-          },
-          "ext": "v0"
-        },
-        "live_until": 535679
-      },
-      {
-        "entry": {
-          "last_modified_ledger_seq": 0,
-          "data": {
-            "contract_data": {
-              "ext": "v0",
-              "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
-              "key": {
-                "vec": [
-                  {
-                    "symbol": "Sponsorship"
-                  },
-                  {
-                    "u64": "1"
-                  }
-                ]
-              },
-              "durability": "persistent",
-              "val": {
-                "map": [
-                  {
-                    "key": {
-                      "symbol": "amount"
-                    },
-                    "val": {
-                      "i128": "10000000"
-                    }
-                  },
-                  {
-                    "key": {
-                      "symbol": "donation_number"
-                    },
-                    "val": {
-                      "u64": "2"
-                    }
-                  },
-                  {
-                    "key": {
-                      "symbol": "id"
-                    },
-                    "val": {
-                      "u64": "1"
-                    }
-                  },
-                  {
-                    "key": {
-                      "symbol": "project_id"
                     },
                     "val": {
                       "u64": "0"
-                    }
-                  },
-                  {
-                    "key": {
-                      "symbol": "sponsor"
-                    },
-                    "val": {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
-                    }
-                  },
-                  {
-                    "key": {
-                      "symbol": "sponsor_message"
-                    },
-                    "val": {
-                      "string": "Keep building on Stellar!"
-                    }
-                  },
-                  {
-                    "key": {
-                      "symbol": "timestamp"
-                    },
-                    "val": {
-                      "u64": "1700000000"
                     }
                   },
                   {
@@ -847,33 +627,6 @@
                   },
                   {
                     "u64": "0"
-                  }
-                ]
-              },
-              "durability": "persistent",
-              "val": {
-                "u32": 2
-              }
-            }
-          },
-          "ext": "v0"
-        },
-        "live_until": 535679
-      },
-      {
-        "entry": {
-          "last_modified_ledger_seq": 0,
-          "data": {
-            "contract_data": {
-              "ext": "v0",
-              "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
-              "key": {
-                "vec": [
-                  {
-                    "symbol": "SponsorshipVersion"
-                  },
-                  {
-                    "u64": "1"
                   }
                 ]
               },
@@ -935,7 +688,7 @@
                         ]
                       },
                       "val": {
-                        "u64": "2"
+                        "u64": "1"
                       }
                     },
                     {
@@ -1007,7 +760,7 @@
                       "symbol": "timestamp"
                     },
                     "val": {
-                      "u64": "1700000000"
+                      "u64": "0"
                     }
                   }
                 ]
@@ -1078,7 +831,7 @@
                       "symbol": "created_at"
                     },
                     "val": {
-                      "u64": "1700000000"
+                      "u64": "0"
                     }
                   },
                   {
@@ -1086,7 +839,7 @@
                       "symbol": "description"
                     },
                     "val": {
-                      "string": "Example Soroban contracts"
+                      "string": "Pagination test"
                     }
                   },
                   {
@@ -1094,7 +847,7 @@
                       "symbol": "last_sponsored_at"
                     },
                     "val": {
-                      "u64": "1700000000"
+                      "u64": "0"
                     }
                   },
                   {
@@ -1102,7 +855,7 @@
                       "symbol": "name"
                     },
                     "val": {
-                      "string": "soroban-examples"
+                      "string": "pagination-test"
                     }
                   },
                   {
@@ -1118,7 +871,7 @@
                       "symbol": "repo_full_name"
                     },
                     "val": {
-                      "string": "stellar/soroban-examples"
+                      "string": "stellar/pagination-test"
                     }
                   },
                   {
@@ -1126,7 +879,7 @@
                       "symbol": "repository_name"
                     },
                     "val": {
-                      "string": "soroban-examples"
+                      "string": "pagination-test"
                     }
                   },
                   {
@@ -1150,7 +903,7 @@
                       "symbol": "total_donations"
                     },
                     "val": {
-                      "u64": "2"
+                      "u64": "1"
                     }
                   },
                   {
@@ -1158,7 +911,7 @@
                       "symbol": "total_raised"
                     },
                     "val": {
-                      "i128": "5010000000"
+                      "i128": "1"
                     }
                   }
                 ]
@@ -1296,7 +1049,7 @@
                     "symbol": "RepoIndex"
                   },
                   {
-                    "string": "stellar/soroban-examples"
+                    "string": "stellar/pagination-test"
                   }
                 ]
               },
@@ -1395,7 +1148,7 @@
                       "symbol": "amount"
                     },
                     "val": {
-                      "i128": "5010000000"
+                      "i128": "1"
                     }
                   },
                   {
@@ -1447,7 +1200,7 @@
                       "symbol": "amount"
                     },
                     "val": {
-                      "i128": "94990000000"
+                      "i128": "999999"
                     }
                   },
                   {
