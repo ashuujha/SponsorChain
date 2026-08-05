@@ -6,7 +6,6 @@ import { useParams } from "next/navigation";
 import { useWallet } from "@/features/wallet/use-wallet";
 import { useSponsorProject } from "@/features/projects/use-sponsor-project";
 import { ProjectAvatar } from "@/components/shared/project-avatar";
-import { Button } from "@/components/ui/button";
 import {
   ProjectData,
   SponsorshipData,
