@@ -216,7 +216,7 @@ export function extractErrorMessage(
     lowerText.includes("502")
   ) {
     return {
-      message: "Network error — couldn't reach Stellar Mainnet. Check your connection and try again.",
+      message: "Network error — couldn't reach Stellar Testnet. Check your connection and try again.",
       errorType: "network_error",
     };
   }

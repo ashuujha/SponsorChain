@@ -1,38 +1,34 @@
 import { Networks } from "stellar-sdk";
 
 /**
- * SponsorChain production is Mainnet-only. Contract IDs and endpoints are
- * public configuration, but they must be supplied by the deployment
- * environment so a non-Mainnet contract can never become a production
- * fallback.
+ * SponsorChain is configured for Stellar Testnet only in this deployment.
+ * Contract IDs and endpoints remain deployment-provided configuration.
  */
-export const STELLAR_NETWORK = "PUBLIC" as const;
-export const NETWORK_PASSPHRASE = Networks.PUBLIC;
+export const STELLAR_NETWORK = "TESTNET" as const;
+export const NETWORK_PASSPHRASE = Networks.TESTNET;
 
-function mainnetEndpoint(value: string | undefined, fallback: string, name: string): string {
+function testnetEndpoint(value: string | undefined, fallback: string, name: string): string {
   const endpoint = (value || fallback).replace(/\/$/, "");
-  if (/testnet|futurenet|friendbot/i.test(endpoint)) {
-    throw new Error(`${name} must point to Stellar Mainnet, not a test network.`);
+  if (/mainnet|futurenet|public|horizon\.stellar\.org/i.test(endpoint)) {
+    throw new Error(`${name} must point to Stellar Testnet, not another network.`);
   }
   return endpoint;
 }
 
-export const HORIZON_URL = mainnetEndpoint(
+export const HORIZON_URL = testnetEndpoint(
   process.env.NEXT_PUBLIC_HORIZON_URL,
-  "https://horizon.stellar.org",
+  "https://horizon-testnet.stellar.org",
   "NEXT_PUBLIC_HORIZON_URL"
 );
 
-// Stellar documents Mainnet Soroban RPC providers rather than one SDF-hosted
-// public endpoint. The provider remains replaceable through deployment config.
-export const SOROBAN_RPC_URL = mainnetEndpoint(
+export const SOROBAN_RPC_URL = testnetEndpoint(
   process.env.NEXT_PUBLIC_SOROBAN_RPC_URL,
-  "https://mainnet.sorobanrpc.com",
+  "https://soroban-testnet.stellar.org",
   "NEXT_PUBLIC_SOROBAN_RPC_URL"
 );
 
-export const EXPLORER_BASE = mainnetEndpoint(
+export const EXPLORER_BASE = testnetEndpoint(
   process.env.NEXT_PUBLIC_EXPLORER_BASE,
-  "https://stellar.expert/explorer/public",
+  "https://stellar.expert/explorer/testnet",
   "NEXT_PUBLIC_EXPLORER_BASE"
 );

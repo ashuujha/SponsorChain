@@ -287,7 +287,7 @@ export interface OnChainEvent {
 
 /**
  * Queries getEvents endpoint on Soroban RPC for live contract events emitted
- * by ProjectRegistry and SponsorshipManager contracts on Stellar Mainnet.
+ * by ProjectRegistry and SponsorshipManager contracts on Stellar Testnet.
  */
 export async function fetchOnChainActivityEvents(): Promise<OnChainEvent[]> {
   try {
@@ -361,7 +361,7 @@ export async function createOnChainProject({
   const contract = new Contract(requireProjectRegistryContractId());
   const accountRes = await fetchAccountFromHorizon(ownerPublicKey);
   if (!accountRes) {
-    throw new Error("Your wallet account is not funded on Stellar Mainnet yet.");
+    throw new Error("Your wallet account is not funded on Stellar Testnet yet.");
   }
   const sequenceNumber = (accountRes as { sequence?: string }).sequence || "0";
   const sourceAccount = new Account(ownerPublicKey, sequenceNumber);
@@ -391,7 +391,7 @@ export async function createOnChainProject({
   const signedTx = TransactionBuilder.fromXDR(signedTxXdr, NETWORK_PASSPHRASE);
   const sendRes = await sorobanServer.sendTransaction(signedTx);
   if (sendRes.status === "ERROR" || !sendRes.hash) {
-    throw new Error("Failed to submit create_project transaction to Stellar Mainnet");
+    throw new Error("Failed to submit create_project transaction to Stellar Testnet");
   }
 
   const finalized = await waitForSorobanTransaction(sendRes.hash);
@@ -420,11 +420,11 @@ async function waitForSorobanTransaction(
       return result;
     }
     if (result.status === SorobanRpc.Api.GetTransactionStatus.FAILED) {
-      throw new Error("Soroban transaction failed on Stellar Mainnet.");
+      throw new Error("Soroban transaction failed on Stellar Testnet.");
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
-  throw new Error("Soroban transaction did not finalize before timeout.");
+  throw new Error("Soroban Testnet transaction did not finalize before timeout.");
 }
 
 /**
@@ -447,7 +447,7 @@ export async function sponsorOnChainProject({
   const manager = new Contract(requireSponsorshipManagerContractId());
   const accountRes = await fetchAccountFromHorizon(sponsorPublicKey);
   if (!accountRes) {
-    throw new Error("Sponsor account is unfunded or not found on Stellar Mainnet.");
+    throw new Error("Sponsor account is unfunded or not found on Stellar Testnet.");
   }
   const sequenceNumber = (accountRes as { sequence?: string }).sequence || "0";
   const sourceAccount = new Account(sponsorPublicKey, sequenceNumber);
@@ -478,7 +478,7 @@ export async function sponsorOnChainProject({
   const signedTx = TransactionBuilder.fromXDR(signedTxXdr, NETWORK_PASSPHRASE);
   const sendRes = await sorobanServer.sendTransaction(signedTx);
   if (sendRes.status === "ERROR" || !sendRes.hash) {
-    throw new Error("Failed to submit sponsorship transaction to Stellar Mainnet.");
+    throw new Error("Failed to submit sponsorship transaction to Stellar Testnet.");
   }
 
   const finalized = await waitForSorobanTransaction(sendRes.hash);
@@ -503,7 +503,7 @@ export async function unlistOnChainProject({
   const contract = new Contract(requireProjectRegistryContractId());
   const accountRes = await fetchAccountFromHorizon(callerPublicKey);
   if (!accountRes) {
-    throw new Error("Wallet account is unfunded or not found on Stellar Mainnet.");
+    throw new Error("Wallet account is unfunded or not found on Stellar Testnet.");
   }
   const sequenceNumber = (accountRes as { sequence?: string }).sequence || "0";
   const sourceAccount = new Account(callerPublicKey, sequenceNumber);
@@ -531,7 +531,7 @@ export async function unlistOnChainProject({
   const signedTx = TransactionBuilder.fromXDR(signedTxXdr, NETWORK_PASSPHRASE);
   const sendRes = await sorobanServer.sendTransaction(signedTx);
   if (sendRes.status === "ERROR" || !sendRes.hash) {
-    throw new Error("Failed to submit unlist_project transaction to Stellar Mainnet");
+    throw new Error("Failed to submit unlist_project transaction to Stellar Testnet");
   }
 
   await waitForSorobanTransaction(sendRes.hash);
@@ -553,7 +553,7 @@ export async function transferMaintainerOnChainProject({
   const contract = new Contract(requireProjectRegistryContractId());
   const accountRes = await fetchAccountFromHorizon(currentMaintainerPublicKey);
   if (!accountRes) {
-    throw new Error("Current maintainer account is unfunded or not found on Stellar Mainnet.");
+    throw new Error("Current maintainer account is unfunded or not found on Stellar Testnet.");
   }
   const sequenceNumber = (accountRes as { sequence?: string }).sequence || "0";
   const sourceAccount = new Account(currentMaintainerPublicKey, sequenceNumber);
@@ -580,7 +580,7 @@ export async function transferMaintainerOnChainProject({
   const signedTx = TransactionBuilder.fromXDR(signedTxXdr, NETWORK_PASSPHRASE);
   const sendRes = await sorobanServer.sendTransaction(signedTx);
   if (sendRes.status === "ERROR" || !sendRes.hash) {
-    throw new Error("Failed to submit transfer_maintainer transaction to Stellar Mainnet");
+    throw new Error("Failed to submit transfer_maintainer transaction to Stellar Testnet");
   }
   await waitForSorobanTransaction(sendRes.hash);
   return { txHash: sendRes.hash };

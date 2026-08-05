@@ -165,12 +165,12 @@ export default function LandingPage() {
         {/* Pre-Footer CTA Band */}
         <section className="bg-surface border border-hairline rounded-none p-8 sm:p-12 md:p-16 text-center">
           <div className="max-w-2xl mx-auto space-y-6">
-            <div className="caption-uppercase text-muted">STELLAR MAINNET FACILITY</div>
+            <div className="caption-uppercase text-muted">STELLAR TESTNET FACILITY</div>
             <h2 className="display-md text-foreground font-normal">
               DISCOVER SPONSORCHAIN
             </h2>
             <p className="body-serif text-muted leading-relaxed">
-              All project registrations and sponsorship transactions run transparently on Stellar Mainnet.
+            All project registrations and sponsorship transactions run transparently on Stellar Testnet.
             </p>
             <div className="pt-4 flex justify-center">
               <Link href="/explore">

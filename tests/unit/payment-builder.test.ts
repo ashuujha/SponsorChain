@@ -23,7 +23,7 @@ describe("Payment Builder - buildPaymentTransaction", () => {
     expect(typeof xdr).toBe("string");
 
     // Decode the transaction from XDR to inspect internal parameters
-    const decodedTx = new Transaction(xdr, Networks.PUBLIC);
+    const decodedTx = new Transaction(xdr, Networks.TESTNET);
 
     expect(decodedTx.source).toBe(sponsorPublicKey);
     

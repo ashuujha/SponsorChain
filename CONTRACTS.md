@@ -1,27 +1,27 @@
-# Stellar Mainnet Contracts
+# Stellar Testnet Contracts
 
-Project listings are stored only by the deployed Stellar Mainnet
-`ProjectRegistry` contract and read through Mainnet Soroban RPC.
+Project listings are stored only by the deployed Stellar Testnet
+`ProjectRegistry` contract and read through Testnet Soroban RPC.
 
 The deployment environment must provide these public values:
 
 | Variable | Required value |
 |---|---|
-| `NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS` | Mainnet `ProjectRegistry` contract ID |
-| `NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS` | Mainnet `SponsorshipManager` contract ID |
-| `NEXT_PUBLIC_XLM_SAC_ADDRESS` | Mainnet native XLM SAC contract ID |
-| `NEXT_PUBLIC_SOROBAN_RPC_URL` | Mainnet Soroban RPC provider URL |
-| `NEXT_PUBLIC_HORIZON_URL` | `https://horizon.stellar.org` |
-| `NEXT_PUBLIC_STELLAR_NETWORK` | `PUBLIC` |
+| `NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS` | Testnet `ProjectRegistry` contract ID |
+| `NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS` | Testnet `SponsorshipManager` contract ID |
+| `NEXT_PUBLIC_XLM_SAC_ADDRESS` | Testnet native XLM SAC contract ID |
+| `NEXT_PUBLIC_SOROBAN_RPC_URL` | Testnet Soroban RPC provider URL |
+| `NEXT_PUBLIC_HORIZON_URL` | `https://horizon-testnet.stellar.org` |
+| `NEXT_PUBLIC_STELLAR_NETWORK` | `TESTNET` |
 
 Deployment creates no project or sponsorship records. The frontend never uses
 an off-chain project store or fallback contract address for discovery.
 
-Deploy or update Mainnet contracts with:
+Deploy or update Testnet contracts with:
 
 ```bash
-STELLAR_IDENTITY=<funded-mainnet-identity> \
-NEXT_PUBLIC_XLM_SAC_ADDRESS=<mainnet-xlm-sac> \
+STELLAR_IDENTITY=<funded-testnet-identity> \
+NEXT_PUBLIC_XLM_SAC_ADDRESS=<testnet-xlm-sac> \
 ./scripts/deploy-contracts.sh
 ```
 

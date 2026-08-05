@@ -22,7 +22,7 @@ export async function getKit() {
   } = await import("@creit.tech/stellar-wallets-kit");
 
   kitInstance = new KitClass({
-    network: WalletNetwork.PUBLIC,
+    network: WalletNetwork.TESTNET,
     modules: [
       new FreighterModule(),
       new xBullModule(),
@@ -51,7 +51,7 @@ export function useWallet() {
 
   useEffect(() => {
     const savedAddress = localStorage.getItem("sponsorchain_wallet_pk") || store.publicKey;
-    const savedNetwork = "PUBLIC";
+    const savedNetwork = "TESTNET";
     const savedType = localStorage.getItem("sponsorchain_wallet_type") || store.walletType;
 
     if (savedAddress) {
@@ -119,18 +119,18 @@ export function useWallet() {
                     ? currentNetwork
                     : currentNetwork?.network || "";
                 
-                if (networkName && !["PUBLIC", "MAINNET"].includes(networkName.toUpperCase())) {
+                if (networkName && networkName.toUpperCase() !== "TESTNET") {
                   store.setConnectionError(
-                    "Network mismatch detected. Please switch your wallet to Stellar Mainnet."
+                    "Network mismatch detected. Please switch your wallet to Stellar Testnet."
                   );
                   return;
                 }
               }
             }
 
-            store.setConnection(address, "PUBLIC", option.id);
+            store.setConnection(address, "TESTNET", option.id);
             localStorage.setItem("sponsorchain_wallet_pk", address);
-            localStorage.setItem("sponsorchain_wallet_net", "PUBLIC");
+            localStorage.setItem("sponsorchain_wallet_net", "TESTNET");
             localStorage.setItem("sponsorchain_wallet_type", option.id);
             
             await refreshBalance(address);

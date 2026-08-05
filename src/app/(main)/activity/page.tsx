@@ -76,7 +76,7 @@ export default function ActivityPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 border-b border-hairline pb-6 sm:pb-8">
           <div>
-            <div className="caption-uppercase text-muted mb-2 text-[10px] sm:text-xs">STELLAR MAINNET // MAINTAINER DASHBOARD</div>
+            <div className="caption-uppercase text-muted mb-2 text-[10px] sm:text-xs">STELLAR TESTNET // MAINTAINER DASHBOARD</div>
             <h1 className="display-lg font-normal text-foreground uppercase">MY REPOSITORIES & ACTIVITY</h1>
             <p className="caption-uppercase text-muted text-xs mt-3 flex items-center gap-2 max-w-full">
               <span className="shrink-0">CONNECTED WALLET:</span>
@@ -175,7 +175,7 @@ export default function ActivityPage() {
           {eventsError ? (
             <div className="text-center py-12 border border-hairline bg-surface p-8 space-y-4">
               <span className="material-symbols-outlined text-[36px] text-destructive mb-2">cloud_off</span>
-              <h3 className="font-mono text-sm text-foreground uppercase tracking-[2px]">COULDN&apos;T REACH STELLAR MAINNET RPC</h3>
+              <h3 className="font-mono text-sm text-foreground uppercase tracking-[2px]">COULDN&apos;T REACH STELLAR TESTNET RPC</h3>
               <Button onClick={() => refetchEvents()} variant="secondary" size="sm">RETRY QUERY</Button>
             </div>
           ) : eventsLoading ? (
@@ -209,7 +209,7 @@ export default function ActivityPage() {
                   </div>
 
                   <a
-                    href={`https://stellar.expert/explorer/public/tx/${evt.txHash}`}
+                    href={`https://stellar.expert/explorer/testnet/tx/${evt.txHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bugatti-link text-[11px] shrink-0"

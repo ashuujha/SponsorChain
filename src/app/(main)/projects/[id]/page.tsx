@@ -317,7 +317,7 @@ function SponsorCard({
           </Button>
 
           <p className="caption-uppercase text-[10px] text-muted text-center leading-relaxed">
-            STELLAR MAINNET FACILITY // REAL FUNDS REQUIRED
+            STELLAR TESTNET FACILITY // TEST XLM REQUIRED
           </p>
 
           {ownerKeyError && (
@@ -392,7 +392,7 @@ function SponsorCard({
             Sponsored {sponsor.amount} XLM!
           </h4>
           <p className="body-serif text-muted text-sm">
-              Your contribution is live on Stellar Mainnet.
+              Your contribution is live on Stellar Testnet.
           </p>
           {sponsor.state.txHash && (
             <a

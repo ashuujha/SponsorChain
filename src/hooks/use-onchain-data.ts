@@ -33,7 +33,7 @@ export function useOnChainProjects() {
       pollIntervalRef.current = BASE_POLL_INTERVAL;
     } catch (err) {
       console.error("useOnChainProjects fetch error:", err);
-      setError(err instanceof Error ? err : new Error("Failed to load projects from Stellar Mainnet"));
+      setError(err instanceof Error ? err : new Error("Failed to load projects from Stellar Testnet"));
       pollIntervalRef.current = Math.min(pollIntervalRef.current * 2, MAX_POLL_INTERVAL);
     } finally {
       setIsLoading(false);

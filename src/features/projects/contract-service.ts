@@ -26,7 +26,7 @@ export interface UnsignedContractCall {
     description: string;
   };
   simulatedFee: string;
-  networkPassphrase: "Public Global Stellar Network ; September 2015";
+  networkPassphrase: "Test SDF Network ; September 2015";
 }
 
 /**
@@ -55,7 +55,7 @@ export function buildUnsignedCreateProjectCall(
       description: params.description,
     },
     simulatedFee: "0.00001 XLM",
-    networkPassphrase: "Public Global Stellar Network ; September 2015",
+    networkPassphrase: "Test SDF Network ; September 2015",
   };
 }
 

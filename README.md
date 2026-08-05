@@ -1,11 +1,11 @@
 # SponsorChain
 
-SponsorChain is a Mainnet Soroban dapp for direct XLM sponsorship of GitHub
+SponsorChain is a Stellar Testnet Soroban dapp for direct XLM sponsorship of GitHub
 open-source projects.
 
 ## Source of truth
 
-The Stellar Mainnet `ProjectRegistry` contract is the only source of truth for
+The Stellar Testnet `ProjectRegistry` contract is the only source of truth for
 listed projects. A listing is created by:
 
 ```text
@@ -15,7 +15,7 @@ Frontend validation
         ↓
 Wallet signs ProjectRegistry.create_project
         ↓
-Soroban Mainnet stores the project
+Soroban Testnet stores the project
         ↓
 Frontend reads list_projects and get_project from Soroban RPC
 ```
@@ -23,7 +23,7 @@ Frontend reads list_projects and get_project from Soroban RPC
 Project cards are reconstructed from contract state after every load. Browser
 state is only transient rendering state; it is never used as a project
 database or fallback. A browser restart or another device reads the same
-Mainnet ledger entries.
+Testnet ledger entries.
 
 SponsorshipManager is the only source of truth for sponsorship history. Every
 successful sponsorship stores a persistent record on Soroban, while
@@ -46,31 +46,30 @@ the full audit and sponsorship history while Explore lists active projects.
 - GitHub OAuth verifies repository ownership and exposes the user's public
   repositories through `/api/listing/repos`.
 - `stellar-sdk` builds, simulates, signs, and submits Soroban transactions.
-- Stellar Mainnet Soroban RPC reads `ProjectRegistry.list_projects` and
+- Stellar Testnet Soroban RPC reads `ProjectRegistry.list_projects` and
   `ProjectRegistry.get_project`.
-- Stellar Mainnet Horizon supplies account and payment-network data.
+- Stellar Testnet Horizon supplies account and payment-network data.
 - Wallet signing happens in the browser through StellarWalletsKit.
 - No off-chain project database, persistence layer, cache, seed records, or
   server-side project API exists.
 
-## Mainnet configuration
+## Testnet configuration
 
 Set these public values in the deployment environment. Contract IDs must be
-the contracts deployed on Stellar Mainnet; there are no Testnet fallbacks.
+the contracts deployed on Stellar Testnet; there are no Mainnet fallbacks.
 
 ```env
-NEXT_PUBLIC_STELLAR_NETWORK=PUBLIC
-NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS=<Mainnet ProjectRegistry contract ID>
-NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS=<Mainnet SponsorshipManager contract ID>
-NEXT_PUBLIC_XLM_SAC_ADDRESS=<Mainnet native XLM SAC contract ID>
-NEXT_PUBLIC_SOROBAN_RPC_URL=https://mainnet.sorobanrpc.com
-NEXT_PUBLIC_HORIZON_URL=https://horizon.stellar.org
-NEXT_PUBLIC_EXPLORER_BASE=https://stellar.expert/explorer/public
+NEXT_PUBLIC_STELLAR_NETWORK=TESTNET
+NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS=<Testnet ProjectRegistry contract ID>
+NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS=<Testnet SponsorshipManager contract ID>
+NEXT_PUBLIC_XLM_SAC_ADDRESS=<Testnet native XLM SAC contract ID>
+NEXT_PUBLIC_SOROBAN_RPC_URL=https://soroban-testnet.stellar.org
+NEXT_PUBLIC_HORIZON_URL=https://horizon-testnet.stellar.org
+NEXT_PUBLIC_EXPLORER_BASE=https://stellar.expert/explorer/testnet
 ```
 
-The network passphrase is `Public Global Stellar Network ; September 2015`.
-Mainnet requires real XLM for account reserves, transaction fees, and
-sponsorships.
+The network passphrase is `Test SDF Network ; September 2015`. Testnet XLM is
+available through the Stellar Testnet Friendbot.
 
 ## GitHub OAuth
 
@@ -96,7 +95,7 @@ NEXTAUTH_SECRET=<random secret>
 NEXTAUTH_URL=http://localhost:3000
 ```
 
-The Mainnet public configuration above is also required to use listing and
+The Testnet public configuration above is also required to use listing and
 project retrieval locally.
 
 ## Contract development
@@ -107,17 +106,17 @@ cargo build --locked --target wasm32v1-none --release
 cargo test -- --nocapture
 ```
 
-The deployment script is Mainnet-only and intentionally creates no project or
+The deployment script is Testnet-only and intentionally creates no project or
 sponsorship records. It deploys the registry and manager, links them,
 initializes them, and writes the resulting public configuration:
 
 ```bash
-STELLAR_IDENTITY=<funded-mainnet-identity> \
-NEXT_PUBLIC_XLM_SAC_ADDRESS=<mainnet-xlm-sac> \
+STELLAR_IDENTITY=<funded-testnet-identity> \
+NEXT_PUBLIC_XLM_SAC_ADDRESS=<testnet-xlm-sac> \
 ./scripts/deploy-contracts.sh
 ```
 
-Use `--confirm-redeploy` only when a fresh Mainnet deployment and new contract
+Use `--confirm-redeploy` only when a fresh Testnet deployment and new contract
 addresses are explicitly intended.
 
 ## Checks
@@ -129,7 +128,7 @@ npm run build
 ```
 
 The CI workflow builds and tests Soroban contracts, then checks the frontend.
-The Vercel workflow supplies the Mainnet public configuration during the
+The Vercel workflow supplies the Testnet public configuration during the
 production build.
 
 ## Official Stellar references

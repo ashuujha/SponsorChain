@@ -79,7 +79,7 @@ jobs:
           NEXTAUTH_URL: http://localhost:3000
           GITHUB_CLIENT_ID: ci_mock_id
           GITHUB_CLIENT_SECRET: ci_mock_secret
-          NEXT_PUBLIC_STELLAR_NETWORK: PUBLIC
-          NEXT_PUBLIC_HORIZON_URL: https://horizon.stellar.org
-          NEXT_PUBLIC_SOROBAN_RPC_URL: https://mainnet.sorobanrpc.com
-          NEXT_PUBLIC_EXPLORER_BASE: https://stellar.expert/explorer/public
+          NEXT_PUBLIC_STELLAR_NETWORK: TESTNET
+          NEXT_PUBLIC_HORIZON_URL: https://horizon-testnet.stellar.org
+          NEXT_PUBLIC_SOROBAN_RPC_URL: https://soroban-testnet.stellar.org
+          NEXT_PUBLIC_EXPLORER_BASE: https://stellar.expert/explorer/testnet

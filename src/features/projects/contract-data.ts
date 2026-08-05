@@ -47,7 +47,7 @@ export const XLM_SAC_ADDRESS =
 export function requireProjectRegistryContractId(): string {
   if (!REGISTRY_CONTRACT_ID) {
     throw new Error(
-      "NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS is required for the Stellar Mainnet ProjectRegistry."
+      "NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS is required for the Stellar Testnet ProjectRegistry."
     );
   }
   return REGISTRY_CONTRACT_ID;
@@ -56,7 +56,7 @@ export function requireProjectRegistryContractId(): string {
 export function requireSponsorshipManagerContractId(): string {
   if (!MANAGER_CONTRACT_ID) {
     throw new Error(
-      "NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS is required for Mainnet sponsorships."
+      "NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS is required for Testnet sponsorships."
     );
   }
   return MANAGER_CONTRACT_ID;

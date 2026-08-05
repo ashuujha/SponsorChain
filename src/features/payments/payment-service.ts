@@ -115,7 +115,7 @@ export interface HorizonTransactionRecord {
 }
 
 /**
- * Fetches recent transactions for a given account or contract address from Horizon Mainnet.
+ * Fetches recent transactions for a given account or contract address from Horizon Testnet.
  */
 export async function fetchHorizonAccountTransactions(
   address: string,

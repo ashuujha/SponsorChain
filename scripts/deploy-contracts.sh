@@ -5,20 +5,20 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CONTRACTS_DIR="$PROJECT_ROOT/contracts"
 
-NETWORK="${STELLAR_NETWORK:-mainnet}"
-if [[ "${NETWORK,,}" != "mainnet" && "${NETWORK,,}" != "public" ]]; then
-  echo "✗ This deployment script is Mainnet-only. Set STELLAR_NETWORK=mainnet."
+NETWORK="${STELLAR_NETWORK:-testnet}"
+if [[ "${NETWORK,,}" != "testnet" ]]; then
+  echo "✗ This deployment script is Testnet-only. Set STELLAR_NETWORK=testnet."
   exit 1
 fi
 
-RPC_URL="${SOROBAN_RPC_URL:-https://mainnet.sorobanrpc.com}"
-NETWORK_PASSPHRASE="Public Global Stellar Network ; September 2015"
-IDENTITY="${STELLAR_IDENTITY:?Set STELLAR_IDENTITY to the funded Mainnet deployer identity}"
-XLM_SAC_ADDRESS="${NEXT_PUBLIC_XLM_SAC_ADDRESS:?Set NEXT_PUBLIC_XLM_SAC_ADDRESS to the Mainnet native XLM SAC address}"
-EXPLORER_BASE="https://stellar.expert/explorer/public"
+RPC_URL="${SOROBAN_RPC_URL:-https://soroban-testnet.stellar.org}"
+NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
+IDENTITY="${STELLAR_IDENTITY:?Set STELLAR_IDENTITY to the funded Testnet deployer identity}"
+XLM_SAC_ADDRESS="${NEXT_PUBLIC_XLM_SAC_ADDRESS:?Set NEXT_PUBLIC_XLM_SAC_ADDRESS to the Testnet native XLM SAC address}"
+EXPLORER_BASE="https://stellar.expert/explorer/testnet"
 
-if [[ "$RPC_URL" =~ (testnet|futurenet|friendbot|localhost|127\.0\.0\.1) ]]; then
-  echo "✗ SOROBAN_RPC_URL points to a non-Mainnet or local endpoint: $RPC_URL"
+if [[ "$RPC_URL" =~ (mainnet|futurenet|public|friendbot|localhost|127\.0\.0\.1) ]]; then
+  echo "✗ SOROBAN_RPC_URL points to a non-Testnet or local endpoint: $RPC_URL"
   exit 1
 fi
 
@@ -40,8 +40,8 @@ if [[ -f "$ENV_LOCAL" ]] && grep -Eq '^NEXT_PUBLIC_(PROJECT_REGISTRY|SPONSORSHIP
     echo "================================================================"
     grep -E "NEXT_PUBLIC_(PROJECT_REGISTRY|SPONSORSHIP_MANAGER)_ADDRESS" "$ENV_LOCAL" || true
     echo ""
-    echo "Re-running deploys FRESH contracts at NEW addresses."
-    echo "Any already-listed projects become unreachable."
+    echo "Re-running deploys FRESH Testnet contracts at NEW addresses."
+    echo "Any already-listed Testnet projects become unreachable."
     echo ""
     echo "Re-run with: ./scripts/deploy-contracts.sh --confirm-redeploy"
     exit 1
@@ -155,8 +155,8 @@ echo "=== Step 6: Writing files ==="
   echo "NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS=$REGISTRY_ADDRESS"
   echo "NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS=$MANAGER_ADDRESS"
   echo "NEXT_PUBLIC_XLM_SAC_ADDRESS=$XLM_SAC_ADDRESS"
-  echo "NEXT_PUBLIC_STELLAR_NETWORK=PUBLIC"
-  echo "NEXT_PUBLIC_HORIZON_URL=https://horizon.stellar.org"
+  echo "NEXT_PUBLIC_STELLAR_NETWORK=TESTNET"
+  echo "NEXT_PUBLIC_HORIZON_URL=https://horizon-testnet.stellar.org"
   echo "NEXT_PUBLIC_SOROBAN_RPC_URL=$RPC_URL"
   echo "NEXT_PUBLIC_EXPLORER_BASE=$EXPLORER_BASE"
 } | sort -u > "$ENV_LOCAL.tmp" && mv "$ENV_LOCAL.tmp" "$ENV_LOCAL"
@@ -167,9 +167,9 @@ ENV_EXAMPLE="$PROJECT_ROOT/.env.example"
   grep -v "NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS\|NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS\|NEXT_PUBLIC_XLM_SAC_ADDRESS\|NEXT_PUBLIC_STELLAR_NETWORK\|NEXT_PUBLIC_HORIZON_URL\|NEXT_PUBLIC_SOROBAN_RPC_URL\|NEXT_PUBLIC_EXPLORER_BASE" "$ENV_EXAMPLE" 2>/dev/null || true
   echo "NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS=# deployed contract address"
   echo "NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS=# deployed contract address"
-  echo "NEXT_PUBLIC_XLM_SAC_ADDRESS=# Mainnet native XLM SAC address"
-  echo "NEXT_PUBLIC_STELLAR_NETWORK=PUBLIC"
-  echo "NEXT_PUBLIC_HORIZON_URL=https://horizon.stellar.org"
+  echo "NEXT_PUBLIC_XLM_SAC_ADDRESS=# Testnet native XLM SAC address"
+  echo "NEXT_PUBLIC_STELLAR_NETWORK=TESTNET"
+  echo "NEXT_PUBLIC_HORIZON_URL=https://horizon-testnet.stellar.org"
   echo "NEXT_PUBLIC_SOROBAN_RPC_URL=$RPC_URL"
   echo "NEXT_PUBLIC_EXPLORER_BASE=$EXPLORER_BASE"
 } | sort -u > "$ENV_EXAMPLE.tmp" && mv "$ENV_EXAMPLE.tmp" "$ENV_EXAMPLE"
@@ -205,12 +205,12 @@ Last deployed: $TIMESTAMP
 
 ## Network
 
-- Network: Stellar Mainnet
+- Network: Stellar Testnet
 - RPC: $RPC_URL
 - Passphrase: \`$NETWORK_PASSPHRASE\`
 - Explorer: $EXPLORER_BASE
 
-> **Warning:** Re-running with \`--confirm-redeploy\` deploys **fresh** contracts at
+> **Warning:** Re-running with \`--confirm-redeploy\` deploys **fresh** Testnet contracts at
 > **new** addresses. Projects under old addresses become unreachable. Update all
 > environment files and inform all users.
 
@@ -257,7 +257,7 @@ if ! grep -q "^## Contract Addresses" "$README" 2>/dev/null; then
 | SponsorshipManager | \`$MANAGER_ADDRESS\` |
 | Native XLM SAC | \`$XLM_SAC_ADDRESS\` |
 
-> Deployed on Stellar Mainnet. See [CONTRACTS.md](./CONTRACTS.md) for full details.
+> Deployed on Stellar Testnet. See [CONTRACTS.md](./CONTRACTS.md) for full details.
 READMEEOF
 fi
   echo "  ✓ README.md"

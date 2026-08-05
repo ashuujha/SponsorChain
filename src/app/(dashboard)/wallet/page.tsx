@@ -65,7 +65,7 @@ export default function WalletConnectPage() {
             <div className="mt-8 w-full bg-background border border-hairline p-4 text-left space-y-1">
               <span className="caption-uppercase text-foreground">NEW TO STELLAR?</span>
               <p className="body-serif text-muted text-xs leading-relaxed">
-                Stellar Mainnet uses real XLM. Fund your wallet before signing a project-registration or sponsorship transaction.
+                Stellar Testnet uses faucet XLM. Fund your wallet before signing a project-registration or sponsorship transaction.
               </p>
             </div>
           </div>
