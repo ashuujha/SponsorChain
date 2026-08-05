@@ -1,187 +1,219 @@
 import React from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 export default function LandingPage() {
+  const heroBrands = [
+    { name: "Stripe", style: { fontFamily: "Georgia, serif", fontWeight: 700, letterSpacing: "-0.02em", fontSize: "15px" } },
+    { name: "Coinbase", style: { fontFamily: "Arial, sans-serif", fontWeight: 900, letterSpacing: "0.08em", fontSize: "13px", textTransform: "uppercase" as const } },
+    { name: "Uniswap", style: { fontFamily: "'Trebuchet MS', sans-serif", fontWeight: 600, letterSpacing: "0.01em", fontSize: "15px", fontStyle: "italic" } },
+    { name: "Aave", style: { fontFamily: "'Courier New', monospace", fontWeight: 700, letterSpacing: "0.12em", fontSize: "13px", textTransform: "uppercase" as const } },
+    { name: "Compound", style: { fontFamily: "Palatino, 'Book Antiqua', serif", fontWeight: 400, letterSpacing: "-0.01em", fontSize: "16px" } },
+    { name: "MakerDAO", style: { fontFamily: "Impact, 'Arial Narrow', sans-serif", fontWeight: 400, letterSpacing: "0.04em", fontSize: "14px" } },
+    { name: "Chainlink", style: { fontFamily: "Verdana, sans-serif", fontWeight: 700, letterSpacing: "-0.03em", fontSize: "13px" } },
+  ];
+
+  const backersBrands = [
+    { name: "Fundamental Labs", style: { fontFamily: "'Times New Roman', serif", fontWeight: 400, letterSpacing: "0.02em", fontSize: "14px" } },
+    { name: "KUCOIN", style: { fontFamily: "'Arial Black', sans-serif", fontWeight: 900, letterSpacing: "0.08em", fontSize: "16px" } },
+    { name: "NGC", style: { fontFamily: "Impact, sans-serif", fontWeight: 700, letterSpacing: "0.05em", fontSize: "18px" } },
+    { name: "NxGen", style: { fontFamily: "Georgia, serif", fontWeight: 600, letterSpacing: "-0.02em", fontSize: "17px" } },
+    { name: "Matter Labs", style: { fontFamily: "Helvetica, sans-serif", fontWeight: 700, letterSpacing: "-0.01em", fontSize: "15px" } },
+    { name: "DEXTools", style: { fontFamily: "Verdana, sans-serif", fontWeight: 700, letterSpacing: "0.06em", fontSize: "14px", textTransform: "uppercase" as const } },
+    { name: "NGRAVE", style: { fontFamily: "'Courier New', monospace", fontWeight: 700, letterSpacing: "0.18em", fontSize: "14px" } },
+    { name: "Polychain", style: { fontFamily: "Palatino, serif", fontWeight: 500, letterSpacing: "0.03em", fontSize: "15px" } },
+  ];
+
   return (
-    <div className="pb-16 sm:pb-24 overflow-x-hidden bg-background min-h-screen text-foreground transition-colors">
-      {/* Hero Band: Austere Canvas with Centered Wide-Tracked Display Headline */}
-      <section className="relative py-16 sm:py-24 md:py-36 px-4 sm:px-8 lg:px-12 xl:px-16 border-b border-hairline mb-12 sm:mb-20">
-        <div className="max-w-container-max mx-auto flex flex-col items-center text-center">
-          {/* Eyebrow Caption */}
-          <div className="caption-uppercase text-muted mb-4 sm:mb-6 flex items-center justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs">
-            <span className="w-1.5 h-1.5 bg-foreground rounded-full" />
-            <span>THE STELLAR OPEN SOURCE FACILITY</span>
+    <div className="flex flex-col bg-[#F5F5F5] min-h-screen text-black overflow-x-hidden">
+      {/* 1. HERO SECTION CONTAINER */}
+      <div className="h-screen flex flex-col overflow-hidden w-full max-w-[88rem] mx-auto px-6 pt-20 pb-6">
+        <div className="relative w-full rounded-2xl overflow-hidden flex-1" style={{ height: "calc(100vh - 96px)" }}>
+          {/* Background Video */}
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="object-cover absolute inset-0 w-full h-full"
+            src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260423_161253_c72b1869-400f-45ed-ac0c-52f68c2ed5bd.mp4"
+          />
+
+          {/* Content Overlay */}
+          <div className="relative z-10 flex flex-col items-start justify-start h-full p-8 md:p-12 pt-28 md:pt-36">
+            <h1
+              className="text-black text-5xl md:text-6xl font-medium leading-tight max-w-xl mb-4 whitespace-pre-line"
+              style={{ letterSpacing: "-0.04em" }}
+            >
+              {"Fund Open Source.\nDirectly."}
+            </h1>
+
+            <p className="text-black/70 text-base md:text-lg max-w-md mb-8 leading-relaxed font-sans">
+              A decentralized open-source sponsorship platform built on Stellar. Verified GitHub maintainers receive direct, transparent XLM contributions over Soroban &amp; Horizon.
+            </p>
+
+            {/* Pill button "Start Sponsoring" with arrow circle */}
+            <Link
+              href="/explore"
+              className="inline-flex items-center gap-3 bg-black text-white text-base md:text-lg font-medium pl-8 pr-2 py-2 rounded-full hover:bg-gray-800 transition-colors duration-200 group shadow-md"
+            >
+              <span>Start Sponsoring</span>
+              <div className="bg-white rounded-full p-2 flex items-center justify-center transition-transform group-hover:translate-x-0.5">
+                <ArrowRight className="w-5 h-5 text-black" />
+              </div>
+            </Link>
+
+            {/* Hero Brand Marquee */}
+            <div className="mt-auto mb-4 w-full max-w-md overflow-hidden">
+              <div className="marquee-track flex">
+                {[...heroBrands, ...heroBrands].map((b, idx) => (
+                  <span key={idx} className="mx-7 shrink-0 text-black/60 whitespace-nowrap" style={b.style}>
+                    {b.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. INFO SECTION ("Meet SponsorChain.") */}
+      <section className="bg-[#F5F5F5] px-6 py-24">
+        <div className="max-w-[88rem] mx-auto">
+          {/* Row 1 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16 items-start">
+            <div>
+              <h2 className="text-black text-4xl md:text-5xl font-medium leading-tight mb-8" style={{ letterSpacing: "-0.03em" }}>
+                Meet SponsorChain.
+              </h2>
+              <Link
+                href="/explore"
+                className="inline-flex items-center gap-3 bg-black text-white text-base font-medium pl-7 pr-2 py-2 rounded-full hover:bg-gray-800 transition-colors duration-200 group"
+              >
+                <span>Explore Projects</span>
+                <div className="bg-white rounded-full p-2 flex items-center justify-center transition-transform group-hover:translate-x-0.5">
+                  <ArrowRight className="w-4 h-4 text-black" />
+                </div>
+              </Link>
+            </div>
+
+            <div>
+              <p className="text-black/70 text-2xl md:text-3xl leading-relaxed font-normal">
+                SponsorChain is an automated open-source sponsorship facility that lets maintainers prove GitHub ownership and receive direct XLM funding over Stellar.
+              </p>
+            </div>
           </div>
 
-          <h1 className="display-xl font-normal text-foreground mb-6 sm:mb-8 max-w-3xl text-center px-2">
-            FUND OPEN SOURCE DIRECTLY. UNCOMPROMISED.
-          </h1>
-
-          <p className="body-serif text-muted mb-8 sm:mb-12 max-w-xl leading-relaxed text-center px-4">
-            Connect your Stellar wallet to browse and sponsor open-source repositories over Horizon &amp; Soroban.
-            Maintainers verify GitHub repository ownership and receive direct, transparent XLM sponsorships.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-12 sm:mb-16 w-full sm:w-auto justify-center px-4">
-            <Link href="/explore" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto min-h-[44px]">
-                EXPLORE REPOSITORIES
-              </Button>
-            </Link>
-            <Link href="/list-project" className="w-full sm:w-auto">
-              <Button variant="secondary" size="lg" className="w-full sm:w-auto min-h-[44px]">
-                LIST YOUR PROJECT
-              </Button>
-            </Link>
-          </div>
-
-          {/* Key Engineering Specs Line */}
-          <div className="grid grid-cols-3 gap-4 sm:gap-8 pt-8 border-t border-hairline w-full text-center">
-            <div className="flex flex-col items-center gap-1">
-              <span className="caption-uppercase text-muted text-[9px] sm:text-[11px]">SETTLEMENT SPEED</span>
-              <span className="font-mono text-[10px] sm:text-sm uppercase tracking-[0.5px] sm:tracking-[1.5px] text-foreground leading-snug">~5 SEC ON-CHAIN</span>
+          {/* Row 2 — 4-col card grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Card 1 (spans 2 cols on lg) */}
+            <div
+              className="lg:col-span-2 rounded-2xl overflow-hidden p-7 min-h-[320px] flex flex-col justify-between shadow-sm border border-black/5"
+              style={{
+                backgroundImage: `url("https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260423_164207_f243351d-ed59-48ec-83a0-a5e996bdbe3c.png&w=1280&q=85")`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+              <h3 className="text-black text-2xl font-medium leading-snug" style={{ letterSpacing: "-0.02em" }}>
+                Empower Builders
+              </h3>
+              <p className="text-black/70 text-base max-w-xs leading-relaxed">
+                Gain steady open-source momentum as your repositories receive direct on-chain XLM sponsorships from global backers.
+              </p>
             </div>
-            <div className="flex flex-col items-center gap-1">
-              <span className="caption-uppercase text-muted text-[9px] sm:text-[11px]">TX COST</span>
-              <span className="font-mono text-[10px] sm:text-sm uppercase tracking-[0.5px] sm:tracking-[1.5px] text-foreground leading-snug">NEAR-ZERO</span>
+
+            {/* Card 2 */}
+            <div className="bg-[#2B2644] rounded-2xl p-7 min-h-[320px] flex flex-col justify-between shadow-sm">
+              <h3 className="text-white text-2xl font-medium leading-snug whitespace-pre-line">
+                {"Direct &\nTransparent."}
+              </h3>
+              <p className="text-white/60 text-base leading-relaxed">
+                100% of sponsored XLM routes directly to the maintainer&apos;s Stellar wallet — zero platform commissions or hidden fees.
+              </p>
             </div>
-            <div className="flex flex-col items-center gap-1">
-              <span className="caption-uppercase text-muted text-[9px] sm:text-[11px]">VERIFICATION</span>
-              <span className="font-mono text-[10px] sm:text-sm uppercase tracking-[0.5px] sm:tracking-[1.5px] text-foreground leading-snug">100% AUDITABLE</span>
+
+            {/* Card 3 */}
+            <div className="bg-[#2B2644] rounded-2xl p-7 min-h-[320px] flex flex-col justify-between shadow-sm">
+              <h3 className="text-white text-2xl font-medium leading-snug whitespace-pre-line">
+                {"Fully\nOn-Chain."}
+              </h3>
+              <p className="text-white/60 text-base leading-relaxed">
+                Skip manual accounting and central intermediaries. SponsorChain runs autonomously on Soroban smart contracts.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="max-w-container-max mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
-        {/* Technical Callout Grid */}
-        <section className="mb-16 sm:mb-24">
-          <div className="caption-uppercase text-muted mb-6 sm:mb-8 tracking-[2px] text-center">
-            PERFORMANCE METRICS
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            <div className="bg-surface border border-hairline rounded-none p-6 sm:p-8 flex flex-col justify-between min-h-[160px] sm:min-h-[192px]">
-              <div className="display-lg font-normal text-foreground mb-4">
-                100%
-              </div>
-              <div>
-                <h4 className="font-mono text-xs text-foreground uppercase tracking-[1.5px] sm:tracking-[2px] mb-1">
-                  DIRECT TO MAINTAINER
-                </h4>
-                <p className="body-serif-sm text-muted text-xs sm:text-sm leading-relaxed">
-                  Zero platform commission. All funds route straight to the owner wallet.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-surface border border-hairline rounded-none p-6 sm:p-8 flex flex-col justify-between min-h-[160px] sm:min-h-[192px]">
-              <div className="display-lg font-normal text-foreground mb-4">
-                ~5.0s
-              </div>
-              <div>
-                <h4 className="font-mono text-xs text-foreground uppercase tracking-[1.5px] sm:tracking-[2px] mb-1">
-                  STELLAR SETTLEMENT
-                </h4>
-                <p className="body-serif-sm text-muted text-xs sm:text-sm leading-relaxed">
-                  High-speed ledger consensus via Horizon RPC &amp; Soroban contracts.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-surface border border-hairline rounded-none p-6 sm:p-8 flex flex-col justify-between min-h-[160px] sm:min-h-[192px]">
-              <div className="display-lg font-normal text-foreground mb-4">
-                GITHUB
-              </div>
-              <div>
-                <h4 className="font-mono text-xs text-foreground uppercase tracking-[1.5px] sm:tracking-[2px] mb-1">
-                  PROOF OF OWNERSHIP
-                </h4>
-                <p className="body-serif-sm text-muted text-xs sm:text-sm leading-relaxed">
-                  Repository ownership verified via OAuth link.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Model Showcase Cards Section */}
-        <section className="mb-16 sm:mb-24 space-y-8 sm:space-y-12">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-hairline pb-6">
-            <div>
-              <div className="caption-uppercase text-muted mb-2">SYSTEM ARCHITECTURE</div>
-              <h2 className="display-md text-foreground font-normal">
-                ENGINEERED FOR OPEN SOURCE
-              </h2>
-            </div>
-            <Link href="/explore" className="bugatti-link text-xs">
-              EXPLORE ALL PROJECTS &rarr;
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            <div className="bg-surface border border-hairline rounded-none p-6 sm:p-8 flex flex-col justify-between space-y-6">
-              <div>
-                <div className="caption-uppercase text-muted mb-3">STEP 01</div>
-                <h3 className="font-mono text-sm sm:text-base text-foreground uppercase tracking-[1.5px] sm:tracking-[2px] mb-2">
-                  CONNECT WALLET
-                </h3>
-                <p className="body-serif-sm text-muted leading-relaxed">
-                  Freighter, Albedo, or any Stellar wallet — connect instantly with no account signup required.
-                </p>
-              </div>
-              <span className="caption-uppercase text-muted text-[10px]">01 // IDENTIFICATION</span>
-            </div>
-
-            <div className="bg-surface border border-hairline rounded-none p-6 sm:p-8 flex flex-col justify-between space-y-6">
-              <div>
-                <div className="caption-uppercase text-muted mb-3">STEP 02</div>
-                <h3 className="font-mono text-sm sm:text-base text-foreground uppercase tracking-[1.5px] sm:tracking-[2px] mb-2">
-                  SPONSOR REPOS
-                </h3>
-                <p className="body-serif-sm text-muted leading-relaxed">
-                  Browse verified open-source projects and send XLM directly to maintainers on-chain.
-                </p>
-              </div>
-              <span className="caption-uppercase text-muted text-[10px]">02 // TRANSMISSION</span>
-            </div>
-
-            <div className="bg-surface border border-hairline rounded-none p-6 sm:p-8 flex flex-col justify-between space-y-6">
-              <div>
-                <div className="caption-uppercase text-muted mb-3">STEP 03</div>
-                <h3 className="font-mono text-base text-foreground uppercase tracking-[1.5px] sm:tracking-[2px] mb-2">
-                  LIST REPOSITORY
-                </h3>
-                <p className="body-serif-sm text-muted leading-relaxed">
-                  Link your GitHub account to prove repository ownership and list your project in seconds.
-                </p>
-              </div>
-              <span className="caption-uppercase text-muted text-[10px]">03 // REGISTRATION</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Pre-Footer CTA Band */}
-        <section className="bg-surface border border-hairline rounded-none p-8 sm:p-12 md:p-16 text-center">
-          <div className="max-w-2xl mx-auto space-y-6">
-            <div className="caption-uppercase text-muted">STELLAR TESTNET FACILITY</div>
-            <h2 className="display-md text-foreground font-normal">
-              DISCOVER SPONSORCHAIN
-            </h2>
-            <p className="body-serif text-muted leading-relaxed">
-            All project registrations and sponsorship transactions run transparently on Stellar Testnet.
+      {/* 3. BACKED BY SECTION (marquee row) */}
+      <section className="bg-[#F5F5F5] px-6 py-12 border-t border-b border-black/5">
+        <div className="max-w-[88rem] mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 items-center">
+          <div className="md:col-span-1">
+            <p className="text-black/70 text-base leading-relaxed font-normal whitespace-pre-line">
+              {"Supported by premier partners\nand web3 ecosystem leaders."}
             </p>
-            <div className="pt-4 flex justify-center">
-              <Link href="/explore">
-                <Button size="lg" className="min-h-[44px]">
-                  EXPLORE PROJECTS
-                </Button>
+          </div>
+
+          <div className="md:col-span-3 overflow-hidden">
+            <div className="backers-track flex">
+              {[...backersBrands, ...backersBrands].map((b, idx) => (
+                <span key={idx} className="mx-10 shrink-0 text-black/50 whitespace-nowrap" style={b.style}>
+                  {b.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. USE CASES SECTION */}
+      <section className="bg-[#F5F5F5] px-6 py-24">
+        <div className="max-w-[88rem] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          {/* Left Column */}
+          <div className="md:pr-12 md:pt-2">
+            <span className="text-black/60 text-sm mb-2 block uppercase tracking-wider font-mono">
+              SponsorChain in Practice
+            </span>
+            <h2 className="text-5xl md:text-6xl font-medium leading-none mb-6" style={{ letterSpacing: "-0.04em" }}>
+              Sponsor Open Source
+            </h2>
+            <p className="text-black/60 text-base leading-relaxed max-w-sm">
+              SponsorChain powers a wide range of modes for builders, companies, and treasuries wanting safe, transparent, and direct open-source sponsorship integrations.
+            </p>
+          </div>
+
+          {/* Right Column */}
+          <div className="relative rounded-3xl overflow-hidden min-h-[640px] flex items-end shadow-md">
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="object-cover absolute inset-0 w-full h-full"
+              src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260423_183428_ab5e672a-f608-4dcb-b319-f3e040f02e2d.mp4"
+            />
+            <div className="relative z-10 p-10 md:p-12 bg-gradient-to-t from-black/80 via-black/40 to-transparent w-full">
+              <h3 className="text-white text-4xl md:text-5xl font-medium leading-tight mb-4" style={{ letterSpacing: "-0.03em" }}>
+                Direct &amp; Transparent
+              </h3>
+              <p className="text-white/80 text-base max-w-md mb-8 leading-relaxed">
+                Lift maintainer sustainability by offering SponsorChain, a trusted Stellar-backed sponsorship platform with verified GitHub ownership, letting patrons fund open source effortlessly.
+              </p>
+              <Link
+                href="/explore"
+                className="inline-flex items-center gap-3 text-white font-medium text-base group"
+              >
+                <div className="w-9 h-9 rounded-full bg-white/80 backdrop-blur flex items-center justify-center group-hover:bg-white transition-colors">
+                  <ArrowRight className="w-4 h-4 text-black" />
+                </div>
+                <span>Explore Repositories</span>
               </Link>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
+

@@ -3,9 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useUIStore } from "@/lib/ui-store";
-import { GithubLogo } from "./logo";
-import { ThemeToggle } from "./theme-toggle";
-import { Button } from "@/components/ui/button";
+import { LogoIcon } from "./logo";
 
 export function Drawer() {
   const isDrawerOpen = useUIStore((state) => state.isDrawerOpen);
@@ -18,31 +16,29 @@ export function Drawer() {
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
       <div
-        className="fixed inset-0 bg-background/80 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
         onClick={closeDrawer}
       />
 
-      <div className="fixed inset-y-0 left-0 w-4/5 max-w-xs bg-background border-r border-hairline p-6 flex flex-col justify-between overflow-y-auto shadow-2xl">
+      <div className="fixed inset-y-0 left-0 w-4/5 max-w-xs bg-[#F5F5F5] p-6 flex flex-col justify-between overflow-y-auto shadow-2xl z-50 border-r border-black/10">
         <div>
-          <div className="flex items-center justify-between pb-6 border-b border-hairline">
-            <a
-              href="https://github.com/ashuujha/SponsorChain"
-              target="_blank"
-              rel="noreferrer"
+          <div className="flex items-center justify-between pb-6 border-b border-black/10">
+            <Link
+              href="/"
               onClick={closeDrawer}
-              className="flex items-center gap-2 p-1"
+              className="flex items-center gap-2.5 p-1"
             >
-              <GithubLogo className="w-5 h-5 text-foreground" />
-              <span className="font-mono text-xs text-foreground uppercase tracking-[3px]">
-                SPONSORCHAIN
+              <LogoIcon className="w-6 h-6 text-black" />
+              <span className="text-xl font-medium tracking-tight text-black">
+                SponsorChain
               </span>
-            </a>
+            </Link>
             <button
               onClick={closeDrawer}
-              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-muted hover:text-foreground active:bg-foreground/10 rounded-full"
+              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-black/70 hover:text-black active:bg-black/5 rounded-full"
               aria-label="Close menu"
             >
-              <span className="material-symbols-outlined text-[20px]">close</span>
+              <span className="material-symbols-outlined text-[22px]">close</span>
             </button>
           </div>
 
@@ -50,44 +46,46 @@ export function Drawer() {
             <Link
               href="/"
               onClick={closeDrawer}
-              className="font-mono text-sm uppercase tracking-[2px] text-foreground hover:text-muted transition-colors min-h-[44px] flex items-center px-3 rounded-none active:bg-foreground/10"
+              className="text-lg font-medium text-black hover:text-black/70 transition-colors min-h-[44px] flex items-center px-3 rounded-lg active:bg-black/5"
             >
-              Home
+              Network
             </Link>
             <Link
               href="/explore"
               onClick={closeDrawer}
-              className="font-mono text-sm uppercase tracking-[2px] text-foreground hover:text-muted transition-colors min-h-[44px] flex items-center px-3 rounded-none active:bg-foreground/10"
+              className="text-lg font-medium text-black hover:text-black/70 transition-colors min-h-[44px] flex items-center px-3 rounded-lg active:bg-black/5"
             >
               Explore Projects
             </Link>
             <Link
               href="/activity"
               onClick={closeDrawer}
-              className="font-mono text-sm uppercase tracking-[2px] text-foreground hover:text-muted transition-colors min-h-[44px] flex items-center px-3 rounded-none active:bg-foreground/10"
+              className="text-lg font-medium text-black hover:text-black/70 transition-colors min-h-[44px] flex items-center px-3 rounded-lg active:bg-black/5"
             >
               My Activity
             </Link>
             <Link
+              href="/payments/status"
+              onClick={closeDrawer}
+              className="text-lg font-medium text-black hover:text-black/70 transition-colors min-h-[44px] flex items-center px-3 rounded-lg active:bg-black/5"
+            >
+              Ledger Transactions
+            </Link>
+            <Link
               href="/wallet"
               onClick={closeDrawer}
-              className="font-mono text-sm uppercase tracking-[2px] text-foreground hover:text-muted transition-colors min-h-[44px] flex items-center px-3 rounded-none active:bg-foreground/10"
+              className="text-lg font-medium text-black hover:text-black/70 transition-colors min-h-[44px] flex items-center px-3 rounded-lg active:bg-black/5"
             >
               Wallet Dashboard
             </Link>
           </nav>
         </div>
 
-        <div className="flex flex-col gap-4 pt-6 border-t border-hairline">
-          <div className="flex items-center justify-between px-3">
-            <span className="font-mono text-xs uppercase tracking-[2px] text-muted">Theme</span>
-            <ThemeToggle />
-          </div>
-
+        <div className="flex flex-col gap-4 pt-6 border-t border-black/10">
           <Link href="/list-project" onClick={closeDrawer} className="w-full">
-            <Button variant="default" className="w-full min-h-[44px]">
+            <button className="w-full bg-black text-white font-medium py-3 rounded-full hover:bg-gray-800 transition-colors">
               List Project
-            </Button>
+            </button>
           </Link>
         </div>
       </div>
@@ -96,3 +94,4 @@ export function Drawer() {
 }
 
 export const NavigationDrawer = Drawer;
+

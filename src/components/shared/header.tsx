@@ -3,10 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useUIStore } from "@/lib/ui-store";
-import { GithubLogo } from "./logo";
-import { ThemeToggle } from "./theme-toggle";
-import { Button } from "@/components/ui/button";
-
+import { LogoIcon } from "./logo";
 import { useWallet } from "@/features/wallet/use-wallet";
 
 export function Header() {
@@ -14,63 +11,58 @@ export function Header() {
   const wallet = useWallet();
 
   return (
-    <header className="fixed top-0 w-full bg-background/90 backdrop-blur-md z-40 border-b border-hairline transition-colors h-[56px] flex items-center overflow-hidden">
-      <div className="max-w-container-max mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 w-full flex items-center justify-between gap-2">
+    <header className="absolute top-0 left-0 right-0 z-30 px-6 py-5 w-full">
+      <div className="max-w-[88rem] mx-auto flex items-center justify-between">
 
-        {/* Left: Hamburger (mobile) or Nav links (desktop) */}
-        <div className="flex items-center gap-3 lg:gap-6 shrink-0">
+        {/* Left: Mobile Menu + LogoIcon + Wordmark */}
+        <div className="flex items-center gap-3">
           <button
-            className="p-2 w-9 h-9 flex items-center justify-center text-muted hover:text-foreground transition-colors lg:hidden rounded-full active:bg-foreground/10"
+            className="p-2 flex items-center justify-center text-black/70 hover:text-black transition-colors lg:hidden rounded-full active:bg-black/5"
             onClick={toggleDrawer}
             aria-label="Toggle Navigation Menu"
           >
-            <span className="material-symbols-outlined text-[22px]">menu</span>
+            <span className="material-symbols-outlined text-[24px]">menu</span>
           </button>
 
-          <nav className="hidden lg:flex items-center gap-6">
-            <Link href="/" className="font-mono text-xs text-muted hover:text-foreground uppercase tracking-[2px] transition-colors py-2">Home</Link>
-            <Link href="/explore" className="font-mono text-xs text-muted hover:text-foreground uppercase tracking-[2px] transition-colors py-2">Explore</Link>
-            <Link href="/activity" className="font-mono text-xs text-muted hover:text-foreground uppercase tracking-[2px] transition-colors py-2">Activity</Link>
-          </nav>
-        </div>
-
-        {/* Center: GitHub + Wordmark — shrinks gracefully */}
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 justify-center">
-          <a
-            href="https://github.com/ashuujha/SponsorChain"
-            target="_blank"
-            rel="noreferrer"
-            className="w-8 h-8 shrink-0 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors border border-hairline rounded-full active:bg-foreground/10"
-            title="SponsorChain GitHub Repository"
-            aria-label="GitHub Repository"
-          >
-            <GithubLogo className="w-3.5 h-3.5" />
-          </a>
-          <Link href="/" className="flex items-center group">
-            <span className="font-mono text-[10px] sm:text-xs text-foreground uppercase tracking-[2px] sm:tracking-[5px] font-normal transition-opacity group-hover:opacity-70 whitespace-nowrap">
-              SPONSORCHAIN
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <LogoIcon className="w-7 h-7 text-black transition-transform group-hover:scale-105" />
+            <span className="text-2xl font-medium tracking-tight text-black">
+              SponsorChain
             </span>
           </Link>
         </div>
 
-        {/* Right: Theme Toggle + Wallet */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <ThemeToggle />
-          <Link href="/list-project" className="hidden lg:inline-block">
-            <Button variant="default" size="sm">List Project</Button>
+        {/* Center: Navigation Links (hidden below md) */}
+        <nav className="hidden md:flex items-center gap-8">
+          <Link href="/" className="text-base text-gray-700 hover:text-black font-medium transition-colors duration-200">
+            Network
           </Link>
+          <Link href="/explore" className="text-base text-gray-700 hover:text-black font-medium transition-colors duration-200">
+            Explore
+          </Link>
+          <Link href="/activity" className="text-base text-gray-700 hover:text-black font-medium transition-colors duration-200">
+            Activity
+          </Link>
+          <Link href="/payments/status" className="text-base text-gray-700 hover:text-black font-medium transition-colors duration-200">
+            Ledger
+          </Link>
+          <Link href="/list-project" className="text-base text-gray-700 hover:text-black font-medium transition-colors duration-200">
+            List Project
+          </Link>
+        </nav>
+
+        {/* Right: Black pill button */}
+        <div className="flex items-center gap-3">
           <Link href="/wallet">
-            <Button variant="secondary" size="sm" className="px-3 sm:px-4 font-mono text-xs">
-              <span className="hidden xs:inline">
-                {wallet.isConnected && wallet.publicKey
-                  ? `${wallet.publicKey.slice(0, 4)}...${wallet.publicKey.slice(-4)}`
-                  : "Wallet"}
-              </span>
-              <span className="xs:hidden material-symbols-outlined text-[16px]">account_balance_wallet</span>
-            </Button>
+            <button className="bg-black text-white text-base font-medium px-7 py-2.5 rounded-full hover:bg-gray-800 transition-colors duration-200 active:scale-95">
+              {wallet.isConnected && wallet.publicKey
+                ? `${wallet.publicKey.slice(0, 4)}...${wallet.publicKey.slice(-4)}`
+                : "Connect Wallet"}
+            </button>
           </Link>
         </div>
       </div>
     </header>
   );
 }
+

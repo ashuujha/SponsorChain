@@ -3,28 +3,28 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-full font-mono text-xs uppercase tracking-[0.2em] transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground disabled:pointer-events-none disabled:opacity-40 active:scale-[0.98]",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-full text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black disabled:pointer-events-none disabled:opacity-40 active:scale-[0.98]",
   {
     variants: {
       variant: {
         default:
-          "bg-transparent border border-foreground text-foreground hover:bg-foreground/10 shadow-xs",
+          "bg-black text-white hover:bg-gray-800 shadow-xs",
         destructive:
-          "bg-transparent border border-rose-500 text-rose-500 hover:bg-rose-500/10",
+          "bg-rose-600 text-white hover:bg-rose-700",
         outline:
-          "bg-transparent border border-outline text-foreground hover:border-foreground hover:text-foreground",
+          "bg-transparent border border-black/20 text-black hover:border-black hover:bg-black/5",
         secondary:
-          "bg-surface border border-hairline text-foreground hover:bg-surface-container",
+          "bg-white border border-black/10 text-black hover:bg-gray-100 shadow-xs",
         ghost:
-          "bg-transparent text-foreground/80 hover:text-foreground hover:bg-foreground/5",
+          "bg-transparent text-black/70 hover:text-black hover:bg-black/5",
         link:
-          "text-link underline-offset-4 hover:underline p-0 h-auto font-mono text-xs uppercase tracking-[0.15em]",
+          "text-black underline underline-offset-4 hover:opacity-75 p-0 h-auto font-medium",
       },
       size: {
-        default: "px-8 py-3.5 h-[44px]",
-        sm: "px-6 py-2.5 h-[38px] text-[11px]",
-        lg: "px-10 py-4 h-[50px] text-[13px] tracking-[0.25em]",
-        icon: "h-10 w-10 p-0 rounded-full border border-foreground/60 text-foreground hover:bg-foreground/10",
+        default: "px-7 py-2.5 h-[44px] text-base",
+        sm: "px-5 py-2 h-[38px] text-sm",
+        lg: "px-8 py-3.5 h-[52px] text-lg font-medium",
+        icon: "h-10 w-10 p-0 rounded-full border border-black/20 text-black hover:bg-black/5",
       },
     },
     defaultVariants: {
@@ -52,3 +52,4 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button";
 
 export { Button, buttonVariants };
+

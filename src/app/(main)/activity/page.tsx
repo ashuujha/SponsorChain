@@ -12,6 +12,7 @@ import {
   unlistOnChainProject,
 } from "@/lib/soroban-client";
 import { ProjectData } from "@/features/projects/contract-data";
+import { ArrowRight } from "lucide-react";
 
 function formatXlm(stroops: string): string {
   const n = BigInt(stroops || "0");
@@ -72,91 +73,98 @@ export default function ActivityPage() {
 
   return (
     <RequireWallet>
-      <div className="w-full pb-24 px-4 sm:px-8 lg:px-12 xl:px-16 max-w-container-max mx-auto pt-8 sm:pt-12 bg-background min-h-screen text-foreground transition-colors overflow-x-hidden space-y-12">
+      <div className="w-full pb-24 px-6 max-w-[88rem] mx-auto pt-28 bg-[#F5F5F5] min-h-screen text-black transition-colors overflow-x-hidden space-y-12">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 border-b border-hairline pb-6 sm:pb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 border-b border-black/10 pb-8">
           <div>
-            <div className="caption-uppercase text-muted mb-2 text-[10px] sm:text-xs">STELLAR TESTNET // MAINTAINER DASHBOARD</div>
-            <h1 className="display-lg font-normal text-foreground uppercase">MY REPOSITORIES & ACTIVITY</h1>
-            <p className="caption-uppercase text-muted text-xs mt-3 flex items-center gap-2 max-w-full">
-              <span className="shrink-0">CONNECTED WALLET:</span>
-              <code className="font-mono text-xs text-foreground border border-hairline px-2.5 py-1 bg-surface truncate max-w-[200px] sm:max-w-none">
+            <span className="text-black/60 text-xs font-mono uppercase tracking-widest block mb-2">
+              Stellar Testnet // Maintainer Dashboard
+            </span>
+            <h1 className="text-4xl md:text-5xl font-medium text-black tracking-tight">
+              My Repositories &amp; Activity
+            </h1>
+            <div className="text-xs text-black/70 mt-3 flex items-center gap-2 max-w-full font-mono">
+              <span className="shrink-0 text-black/40">CONNECTED WALLET:</span>
+              <code className="text-black bg-white border border-black/10 px-3 py-1 rounded-full truncate max-w-[220px] sm:max-w-none">
                 {wallet.publicKey
                   ? `${wallet.publicKey.slice(0, 8)}...${wallet.publicKey.slice(-6)}`
                   : "..."}
               </code>
-            </p>
+            </div>
           </div>
 
           <Link href="/list-project" className="w-full sm:w-auto">
-            <Button size="sm" className="w-full sm:w-auto min-h-[44px]">
-              LIST NEW PROJECT
-            </Button>
+            <button className="w-full sm:w-auto bg-black text-white font-medium px-7 py-3 rounded-full hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 text-sm shadow-sm">
+              <span>List New Project</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </Link>
         </div>
 
         {actionError && (
-          <div className="p-4 border border-destructive/50 bg-destructive/10 text-destructive font-mono text-xs flex justify-between items-center">
+          <div className="p-4 border border-rose-500/30 bg-rose-500/10 text-rose-700 font-mono text-xs rounded-xl flex justify-between items-center">
             <span>{actionError}</span>
-            <button onClick={() => setActionError(null)} className="underline text-[10px] uppercase">DISMISS</button>
+            <button onClick={() => setActionError(null)} className="underline text-[10px] uppercase font-bold">Dismiss</button>
           </div>
         )}
 
         {/* My Registered Projects Section */}
         <section className="space-y-6">
-          <div className="flex justify-between items-center border-b border-hairline pb-4">
-            <h2 className="font-mono text-sm sm:text-base text-foreground uppercase tracking-[2px]">
-              MY REGISTERED PROJECTS ({myProjects.filter(p => p.active !== false).length})
+          <div className="flex justify-between items-center border-b border-black/10 pb-4">
+            <h2 className="text-2xl font-medium text-black tracking-tight">
+              My Registered Projects ({myProjects.filter(p => p.active !== false).length})
             </h2>
-            <Button onClick={loadMyProjects} variant="outline" size="sm" className="text-xs">
-              REFRESH
-            </Button>
+            <button
+              onClick={loadMyProjects}
+              className="text-xs font-mono font-medium text-black/70 hover:text-black bg-white border border-black/10 px-4 py-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              Refresh
+            </button>
           </div>
 
           {projectsLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-pulse">
-              <div className="bg-surface border border-hairline p-6 h-32" />
-              <div className="bg-surface border border-hairline p-6 h-32" />
+              <div className="bg-white border border-black/10 rounded-2xl p-6 h-36" />
+              <div className="bg-white border border-black/10 rounded-2xl p-6 h-36" />
             </div>
           ) : myProjects.filter(p => p.active !== false).length === 0 ? (
-            <div className="bg-surface border border-hairline p-8 text-center space-y-3">
-              <p className="body-serif text-muted text-sm">No active registered projects owned by this wallet.</p>
-              <Link href="/list-project" className="inline-block">
-                <Button variant="secondary" size="sm">LIST A PROJECT &rarr;</Button>
+            <div className="bg-white border border-black/10 rounded-2xl p-10 text-center space-y-4 shadow-xs">
+              <p className="text-black/70 text-base font-normal">No active registered projects owned by this wallet.</p>
+              <Link href="/list-project" className="inline-flex items-center gap-2 bg-black text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors">
+                <span>List a Project</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {myProjects.filter(p => p.active !== false).map((p) => (
-                <div key={p.id.toString()} className="bg-surface border border-hairline p-6 flex flex-col justify-between space-y-4">
+                <div key={p.id.toString()} className="bg-white border border-black/10 rounded-2xl p-7 flex flex-col justify-between space-y-6 shadow-xs">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-3 min-w-0">
                       <ProjectAvatar name={p.name} size="sm" />
                       <div className="min-w-0">
-                        <h3 className="font-mono text-sm uppercase tracking-[1.5px] text-foreground truncate">{p.name}</h3>
-                        <p className="font-mono text-xs text-muted truncate">{p.repoFullName}</p>
+                        <h3 className="text-lg font-medium text-black truncate">{p.name}</h3>
+                        <p className="text-xs font-mono text-black/50 truncate">{p.repoFullName}</p>
                       </div>
                     </div>
-                    <span className="caption-uppercase text-[10px] border border-emerald-500/40 text-emerald-400 bg-emerald-500/10 px-2 py-0.5 shrink-0">
-                      ON-CHAIN
+                    <span className="text-xs font-mono font-medium border border-emerald-500/30 text-emerald-700 bg-emerald-500/10 px-3 py-1 rounded-full shrink-0">
+                      On-Chain
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-hairline pt-4 font-mono text-xs">
+                  <div className="flex items-center justify-between border-t border-black/5 pt-4 text-xs font-mono">
                     <div>
-                      <span className="text-muted block text-[10px]">TOTAL RAISED</span>
-                      <span className="text-foreground">{formatXlm(p.totalRaised)} XLM</span>
+                      <span className="text-black/40 block text-[10px]">TOTAL RAISED</span>
+                      <span className="text-black font-semibold text-sm">{formatXlm(p.totalRaised)} XLM</span>
                     </div>
 
-                    <Button
-                      variant="destructive"
-                      size="sm"
+                    <button
                       disabled={unlistingId === p.id}
                       onClick={() => handleUnlist(p.id)}
-                      className="min-h-[38px] text-xs font-mono tracking-[1px]"
+                      className="bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white text-xs font-medium px-4 py-2 rounded-full transition-colors"
                     >
-                      {unlistingId === p.id ? "UNLISTING ON-CHAIN..." : "UNLIST PROJECT"}
-                    </Button>
+                      {unlistingId === p.id ? "Unlisting On-Chain..." : "Unlist Project"}
+                    </button>
                   </div>
                 </div>
               ))}
@@ -166,55 +174,55 @@ export default function ActivityPage() {
 
         {/* Live Contract Events Stream */}
         <section className="space-y-6">
-          <div className="flex justify-between items-center border-b border-hairline pb-4">
-            <h2 className="font-mono text-sm sm:text-base text-foreground uppercase tracking-[2px]">
-              LIVE CONTRACT EVENTS STREAM
+          <div className="flex justify-between items-center border-b border-black/10 pb-4">
+            <h2 className="text-2xl font-medium text-black tracking-tight">
+              Live Contract Events Stream
             </h2>
           </div>
 
           {eventsError ? (
-            <div className="text-center py-12 border border-hairline bg-surface p-8 space-y-4">
-              <span className="material-symbols-outlined text-[36px] text-destructive mb-2">cloud_off</span>
-              <h3 className="font-mono text-sm text-foreground uppercase tracking-[2px]">COULDN&apos;T REACH STELLAR TESTNET RPC</h3>
-              <Button onClick={() => refetchEvents()} variant="secondary" size="sm">RETRY QUERY</Button>
+            <div className="text-center py-12 border border-black/10 rounded-2xl bg-white p-8 space-y-4 shadow-xs">
+              <span className="material-symbols-outlined text-[36px] text-rose-500 mb-2">cloud_off</span>
+              <h3 className="text-lg font-medium text-black">Could not reach Stellar Testnet RPC</h3>
+              <Button onClick={() => refetchEvents()} variant="secondary" size="sm">Retry Query</Button>
             </div>
           ) : eventsLoading ? (
             <div className="space-y-4 animate-pulse">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-surface border border-hairline p-5 h-20" />
+                <div key={i} className="bg-white border border-black/10 rounded-2xl p-5 h-20" />
               ))}
             </div>
           ) : events.length === 0 ? (
-            <div className="bg-surface border border-hairline p-8 text-center">
-              <p className="body-serif text-muted text-sm">No contract events recorded yet.</p>
+            <div className="bg-white border border-black/10 rounded-2xl p-10 text-center shadow-xs">
+              <p className="text-black/60 text-base font-normal">No contract events recorded yet.</p>
             </div>
           ) : (
             <div className="space-y-3">
               {events.map((evt) => (
-                <div key={evt.id} className="bg-surface border border-hairline p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div key={evt.id} className="bg-white border border-black/10 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
                   <div className="space-y-1">
                     <div className="flex items-center gap-3">
-                      <span className={`px-2 py-0.5 text-[10px] font-mono uppercase tracking-[1px] border ${
+                      <span className={`px-3 py-1 text-xs font-mono font-medium rounded-full border ${
                         evt.type === "project_created"
-                          ? "border-emerald-500/50 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10"
+                          ? "border-emerald-500/30 text-emerald-700 bg-emerald-500/10"
                           : evt.type === "sponsor_funded"
-                          ? "border-blue-500/50 text-blue-600 dark:text-blue-400 bg-blue-500/10"
-                          : "border-amber-500/50 text-amber-600 dark:text-amber-400 bg-amber-500/10"
+                          ? "border-blue-500/30 text-blue-700 bg-blue-500/10"
+                          : "border-amber-500/30 text-amber-700 bg-amber-500/10"
                       }`}>
                         {evt.type === "project_created" ? "PROJECT REGISTERED" : evt.type === "sponsor_funded" ? "SPONSORSHIP FUNDED" : "PROJECT UNLISTED"}
                       </span>
-                      <span className="font-mono text-xs text-muted">LEDGER #{evt.ledger}</span>
+                      <span className="font-mono text-xs text-black/50">Ledger #{evt.ledger}</span>
                     </div>
-                    <p className="font-mono text-xs text-foreground truncate max-w-xl">TX: {evt.txHash}</p>
+                    <p className="font-mono text-xs text-black/70 truncate max-w-xl">Tx: {evt.txHash}</p>
                   </div>
 
                   <a
                     href={`https://stellar.expert/explorer/testnet/tx/${evt.txHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bugatti-link text-[11px] shrink-0"
+                    className="text-xs font-mono text-black/60 hover:text-black underline shrink-0"
                   >
-                    VIEW ON EXPLORER &rarr;
+                    View on Explorer &rarr;
                   </a>
                 </div>
               ))}
@@ -225,3 +233,4 @@ export default function ActivityPage() {
     </RequireWallet>
   );
 }
+
