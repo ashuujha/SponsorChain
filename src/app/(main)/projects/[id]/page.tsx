@@ -15,6 +15,7 @@ import {
   fetchOnChainProject,
   fetchOnChainSponsorshipsForProject,
 } from "@/lib/soroban-client";
+import { EXPLORER_BASE } from "@/lib/stellar-config";
 
 
 export default function ProjectDetailPage() {
@@ -42,40 +43,8 @@ export default function ProjectDetailPage() {
         return;
       }
 
-      let liveTotalStroops = BigInt(0);
-      if (p.owner) {
-        try {
-          const hRes = await fetch(
-            `https://horizon-testnet.stellar.org/accounts/${p.owner}/payments?limit=200`
-          );
-          if (hRes.ok) {
-            const hData = await hRes.json();
-            const payments = hData._embedded?.records || [];
-            for (const pay of payments) {
-              if (
-                pay.type === "payment" &&
-                pay.asset_type === "native" &&
-                pay.to === p.owner
-              ) {
-                const amountXlm = parseFloat(pay.amount || "0");
-                liveTotalStroops += BigInt(Math.floor(amountXlm * 10_000_000));
-              }
-            }
-          }
-        } catch (hErr) {
-          console.warn("Horizon live balance fetch notice:", hErr);
-        }
-      }
-
       const chainSponsorships = await fetchOnChainSponsorshipsForProject(numericId);
-
-      const updatedProject: ProjectData = {
-        ...p,
-        totalRaised: (BigInt(p.totalRaised) + liveTotalStroops).toString(),
-        sponsorCount: Math.max(p.sponsorCount, chainSponsorships.length),
-      };
-
-      setProject(updatedProject);
+      setProject(p);
       setSponsorships(chainSponsorships);
     } catch {
       setNotFound(true);
@@ -135,7 +104,7 @@ export default function ProjectDetailPage() {
     if (!wallet.publicKey || !project) return;
     await sponsor.submit(
       wallet.publicKey,
-      project.owner,
+      project.id,
       sponsor.amount,
       wallet.balance || "0"
     );
@@ -282,7 +251,7 @@ export default function ProjectDetailPage() {
                         </span>
                         {s.txHash && (
                           <a
-                            href={`https://stellar.expert/explorer/testnet/tx/${s.txHash}`}
+                            href={`${EXPLORER_BASE}/tx/${s.txHash}`}
                             target="_blank"
                             rel="noreferrer"
                             className="bugatti-link text-[10px]"
@@ -348,7 +317,7 @@ function SponsorCard({
           </Button>
 
           <p className="caption-uppercase text-[10px] text-muted text-center leading-relaxed">
-            STELLAR TESTNET FACILITY // NO REAL FUNDS REQUIRED
+            STELLAR MAINNET FACILITY // REAL FUNDS REQUIRED
           </p>
 
           {ownerKeyError && (
@@ -423,11 +392,11 @@ function SponsorCard({
             Sponsored {sponsor.amount} XLM!
           </h4>
           <p className="body-serif text-muted text-sm">
-            Your contribution is live on the Stellar testnet.
+              Your contribution is live on Stellar Mainnet.
           </p>
           {sponsor.state.txHash && (
             <a
-              href={`https://stellar.expert/explorer/testnet/tx/${sponsor.state.txHash}`}
+              href={`${EXPLORER_BASE}/tx/${sponsor.state.txHash}`}
               target="_blank"
               rel="noreferrer"
               className="bugatti-link inline-block min-h-[44px] leading-[44px]"

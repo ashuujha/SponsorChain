@@ -4,11 +4,11 @@ import { useWalletStore } from "../wallet/wallet-store";
 
 export interface WalletSessionState {
   publicKey: string | null;
-  network: "TESTNET" | null;
+  network: "PUBLIC" | null;
   connectionError: string | null;
   isRestoring: boolean;
 
-  setSession: (publicKey: string, network: "TESTNET") => void;
+  setSession: (publicKey: string, network: "PUBLIC") => void;
   clearSession: () => void;
   setConnectionError: (error: string | null) => void;
   setRestoring: (restoring: boolean) => void;

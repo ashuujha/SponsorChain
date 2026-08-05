@@ -100,7 +100,7 @@ describe("Sponsor Project Error Extractor — extractErrorMessage", () => {
     const res = extractErrorMessage(error);
 
     expect(res.errorType).toBe("network_error");
-    expect(res.message).toBe("Network error — couldn't reach Stellar Testnet. Check your connection and try again.");
+    expect(res.message).toBe("Network error — couldn't reach Stellar Mainnet. Check your connection and try again.");
   });
 
   it("Case 9: Unrecognized / Fallback Error — never returns [object Object]", () => {

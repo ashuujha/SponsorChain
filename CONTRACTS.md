@@ -1,45 +1,91 @@
-# Contract Addresses
+# Stellar Mainnet Contracts
 
-Last deployed: 2026-08-03T20:08:35Z
+Project listings are stored only by the deployed Stellar Mainnet
+`ProjectRegistry` contract and read through Mainnet Soroban RPC.
 
-## ProjectRegistry
+The deployment environment must provide these public values:
 
-| Field | Value |
-|-------|-------|
-| Contract address | `CATJVEHP2UCMX3MMI2JOIY5TFXODM33ZKUXGGG5AE5QTBGEMXW4EUOQ3` |
-| WASM hash | `4ca5184840032d542405d6b4e9eabec817c8962faac3bf19bbfd5a2a700b9ca6` |
-| Init tx | [9c360e6a2ec30816c17fc09d9705248bdd0742fa0328374a0928bc3c786b228c](https://stellar.expert/explorer/testnet/tx/9c360e6a2ec30816c17fc09d9705248bdd0742fa0328374a0928bc3c786b228c) |
-| Link tx | [5248953a59c56526e16151109b3194fa1848c4d48326d77e8e386948ca94e5b5](https://stellar.expert/explorer/testnet/tx/5248953a59c56526e16151109b3194fa1848c4d48326d77e8e386948ca94e5b5) |
+| Variable | Required value |
+|---|---|
+| `NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS` | Mainnet `ProjectRegistry` contract ID |
+| `NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS` | Mainnet `SponsorshipManager` contract ID |
+| `NEXT_PUBLIC_XLM_SAC_ADDRESS` | Mainnet native XLM SAC contract ID |
+| `NEXT_PUBLIC_SOROBAN_RPC_URL` | Mainnet Soroban RPC provider URL |
+| `NEXT_PUBLIC_HORIZON_URL` | `https://horizon.stellar.org` |
+| `NEXT_PUBLIC_STELLAR_NETWORK` | `PUBLIC` |
 
-## SponsorshipManager
+Deployment creates no project or sponsorship records. The frontend never uses
+an off-chain project store or fallback contract address for discovery.
 
-| Field | Value |
-|-------|-------|
-| Contract address | `CDADO5ZDVBTTCLXPMDUGN4J4NMG7XMDNTNQDNEELRNIDE7SABASUMZTW` |
-| WASM hash | `19bfc1cbf30db1ab17e49eed6d87f2d8a3d6fa9d3bec53bc91b223ae21129d1f` |
-| Init tx | [3f9e7f4b9a530235652f74805b80db268778edb11a6e51b2ef0f7efeaeab4aff](https://stellar.expert/explorer/testnet/tx/3f9e7f4b9a530235652f74805b80db268778edb11a6e51b2ef0f7efeaeab4aff) |
+Deploy or update Mainnet contracts with:
 
-## Smoke Test
+```bash
+STELLAR_IDENTITY=<funded-mainnet-identity> \
+NEXT_PUBLIC_XLM_SAC_ADDRESS=<mainnet-xlm-sac> \
+./scripts/deploy-contracts.sh
+```
 
-| Field | Value |
-|-------|-------|
-| Create project tx | [9581914a42082e1f1fb91042efc6e79c71a1a8fe1bbb446e1dac4b228425e406](https://stellar.expert/explorer/testnet/tx/9581914a42082e1f1fb91042efc6e79c71a1a8fe1bbb446e1dac4b228425e406) |
-| Sponsor tx | [d6b9aa3e651ee9a24d92c9361b5f98a349c73f003726737e7422a21776751cef](https://stellar.expert/explorer/testnet/tx/d6b9aa3e651ee9a24d92c9361b5f98a349c73f003726737e7422a21776751cef) |
-| Test project ID | `0` |
-| Amount | 5000000000 stroops |
-| Verified | total_raised=5000000000, sponsor_count=1 |
+The script requires `--confirm-redeploy` before replacing configured contract
+addresses, because a fresh contract instance has separate on-chain storage.
 
-## Native XLM SAC
+## On-chain sponsorship storage
 
-`CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC`
+`SponsorshipManager` stores each successful sponsorship as persistent Soroban
+data. Each record contains its ID, project ID, sponsor address, stroop amount,
+ledger timestamp, optional message, optional transaction hash, and sequential
+project donation number. The manager also stores project and sponsor indexes;
+the registry stores project totals, distinct sponsor count, donation count,
+creation time, last sponsorship time, and active status.
 
-## Network
+The canonical read methods are:
 
-- Network: Stellar Testnet
-- RPC: https://soroban-testnet.stellar.org
-- Passphrase: `Test SDF Network ; September 2015`
-- Explorer: https://stellar.expert/explorer/testnet
+- `ProjectRegistry.get_project(id)`
+- `ProjectRegistry.list_projects(start, limit)`
+- `ProjectRegistry.get_project_sponsors(id, start, limit)`
+- `SponsorshipManager.get_project_sponsors(id, start, limit)`
+- `SponsorshipManager.get_project_sponsorships(id, start, limit)`
+- `SponsorshipManager.get_sponsor_history(address, start, limit)`
+- `SponsorshipManager.get_recent_sponsorships(limit)`
 
-> **Warning:** Re-running with `--confirm-redeploy` deploys **fresh** contracts at
-> **new** addresses. Projects under old addresses become unreachable. Update all
-> environment files and inform all users.
+## Project ownership and maintainer authorization
+
+At registration, the frontend validates the exact GitHub repository through the
+authenticated GitHub API. The contract permanently stores the repository owner,
+repository name, maintainer Stellar address, and registration timestamp in the
+project record. The maintainer address is the project `owner` field for
+backward-compatible contract interfaces.
+
+`unlist_project(id, caller)` requires `caller` to equal the registered
+maintainer and requires the registered maintainer address to authorize the
+transaction. It only sets `active=false`; it never removes project,
+sponsorship, funding, or timestamp data.
+
+`transfer_maintainer(id, new_address)` requires authorization from the current
+maintainer, rejects self-transfers and inactive projects, and appends a
+persistent `MaintainerRecord`. The history is available through
+`get_maintainer_history(id, start, limit)`.
+
+Authorization and validation failures use the `ProjectRegistryError` contract
+error enum, including `ProjectNotFound`, `ProjectInactive`,
+`UnauthorizedMaintainer`, `InvalidMaintainerTransfer`,
+`RepositoryAlreadyRegistered`, and `InvalidRepository`.
+
+Pages are capped at 100 records. Events remain observability data only; the
+frontend reconstructs project cards and sponsorship history from contract
+simulation reads.
+
+## Storage migration and archival
+
+The contracts retain the original storage-key variant order and use per-entry
+version markers. Existing v1 project and sponsorship values are decoded lazily
+without rewriting or deleting them; fields that did not exist in v1 are
+reported with safe defaults. New writes use v3 project records, v2 sponsorship
+records, and indexed persistent
+storage. No project or sponsorship storage migration is performed by the
+frontend.
+
+Soroban persistent entries have archival TTLs. The contracts bump TTL on
+canonical reads and writes, while deployment operations must also keep the
+contract code and instance live. If an inactive historical entry is archived,
+restore/extend it with Stellar archival tooling before querying it; archival
+does not create an off-chain source of truth.

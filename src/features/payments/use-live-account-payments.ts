@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { fetchAccountFromHorizon, getNativeBalance } from "../wallet/wallet-service";
+import { HORIZON_URL } from "@/lib/stellar-config";
 
 export type ConnectionStatus = "connected" | "reconnecting" | "disconnected" | "polling";
 
@@ -56,7 +57,7 @@ export function useLiveAccountPayments(accountId: string | null) {
       }
 
       // 2. Fetch recent payments
-      const paymentsUrl = `https://horizon-testnet.stellar.org/accounts/${targetId}/payments?limit=10&order=desc`;
+      const paymentsUrl = `${HORIZON_URL}/accounts/${targetId}/payments?limit=10&order=desc`;
       const res = await fetch(paymentsUrl);
       if (res.ok) {
         const data = await res.json();
@@ -125,7 +126,7 @@ export function useLiveAccountPayments(accountId: string | null) {
 
       if (!isComponentMounted.current) return;
 
-      const url = `https://horizon-testnet.stellar.org/accounts/${accountId}/payments?cursor=now`;
+      const url = `${HORIZON_URL}/accounts/${accountId}/payments?cursor=now`;
       
       try {
         eventSource = new EventSource(url);

@@ -40,14 +40,6 @@ export default function WalletConnectPage() {
               </div>
             )}
 
-            {/* Success Friendbot Notification */}
-            {wallet.hasFunded && (
-              <div className="w-full mb-6 p-4 bg-background border border-hairline text-xs font-mono text-foreground text-left uppercase tracking-[1.5px] flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">done</span>
-                <span>Funded via Friendbot: 10,000 XLM</span>
-              </div>
-            )}
-
             {/* Primary Action Button */}
             {wallet.isInitializing ? (
               <Button disabled className="w-full min-h-[44px]">
@@ -57,11 +49,6 @@ export default function WalletConnectPage() {
             ) : !wallet.isConnected ? (
               <Button onClick={wallet.connect} size="lg" className="w-full min-h-[44px]">
                 Connect Wallet
-              </Button>
-            ) : wallet.isFunding ? (
-              <Button disabled className="w-full min-h-[44px]">
-                <span className="animate-spin material-symbols-outlined mr-2 text-[18px]">progress_activity</span>
-                Funding account via Friendbot...
               </Button>
             ) : (
               <Button
@@ -78,7 +65,7 @@ export default function WalletConnectPage() {
             <div className="mt-8 w-full bg-background border border-hairline p-4 text-left space-y-1">
               <span className="caption-uppercase text-foreground">NEW TO STELLAR?</span>
               <p className="body-serif text-muted text-xs leading-relaxed">
-                We automatically fund your testnet account with 10,000 test XLM via Friendbot — no real funds needed.
+                Stellar Mainnet uses real XLM. Fund your wallet before signing a project-registration or sponsorship transaction.
               </p>
             </div>
           </div>

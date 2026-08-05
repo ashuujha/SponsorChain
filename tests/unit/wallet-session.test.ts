@@ -15,17 +15,17 @@ describe("WalletSessionStore — persistence across reloads", () => {
   it("persists publicKey and network to localStorage on setSession", () => {
     const store = useWalletSessionStore;
 
-    store.getState().setSession("GABC123TESTNETPUBLICKEY56CHARS", "TESTNET");
+    store.getState().setSession("GABC123PUBLICKEY56CHARS", "PUBLIC");
 
-    expect(store.getState().publicKey).toBe("GABC123TESTNETPUBLICKEY56CHARS");
-    expect(store.getState().network).toBe("TESTNET");
+    expect(store.getState().publicKey).toBe("GABC123PUBLICKEY56CHARS");
+    expect(store.getState().network).toBe("PUBLIC");
 
     const raw = localStorage.getItem("sponsorchain-wallet-session");
     expect(raw).toBeTruthy();
 
     const parsed = JSON.parse(raw!);
-    expect(parsed.state.publicKey).toBe("GABC123TESTNETPUBLICKEY56CHARS");
-    expect(parsed.state.network).toBe("TESTNET");
+    expect(parsed.state.publicKey).toBe("GABC123PUBLICKEY56CHARS");
+    expect(parsed.state.network).toBe("PUBLIC");
   });
 
   it("partialize excludes connectionError and isRestoring from persisted state", () => {
@@ -33,21 +33,21 @@ describe("WalletSessionStore — persistence across reloads", () => {
 
     store.getState().setConnectionError("some transient error");
     store.getState().setRestoring(true);
-    store.getState().setSession("GXYZ456TESTNETPUBLICKEY56CHARS", "TESTNET");
+    store.getState().setSession("GXYZ456PUBLICKEY56CHARS", "PUBLIC");
 
     const raw = localStorage.getItem("sponsorchain-wallet-session");
     const parsed = JSON.parse(raw!);
 
     expect(parsed.state.connectionError).toBeUndefined();
     expect(parsed.state.isRestoring).toBeUndefined();
-    expect(parsed.state.publicKey).toBe("GXYZ456TESTNETPUBLICKEY56CHARS");
-    expect(parsed.state.network).toBe("TESTNET");
+    expect(parsed.state.publicKey).toBe("GXYZ456PUBLICKEY56CHARS");
+    expect(parsed.state.network).toBe("PUBLIC");
   });
 
   it("clearSession updates persisted storage to null values", () => {
     const store = useWalletSessionStore;
 
-    store.getState().setSession("GABC123TESTNETPUBLICKEY56CHARS", "TESTNET");
+    store.getState().setSession("GABC123PUBLICKEY56CHARS", "PUBLIC");
     expect(localStorage.getItem("sponsorchain-wallet-session")).toBeTruthy();
 
     store.getState().clearSession();
@@ -64,7 +64,7 @@ describe("WalletSessionStore — persistence across reloads", () => {
   it("serializes state in the format Zustand persist middleware expects", () => {
     const store = useWalletSessionStore;
 
-    store.getState().setSession("GPREHYDRATEDKEY56CHARACTERSXX", "TESTNET");
+    store.getState().setSession("GPREHYDRATEDKEY56CHARACTERSXX", "PUBLIC");
 
     const raw = localStorage.getItem("sponsorchain-wallet-session");
     const parsed = JSON.parse(raw!);
@@ -72,7 +72,7 @@ describe("WalletSessionStore — persistence across reloads", () => {
     expect(parsed).toHaveProperty("state");
     expect(parsed).toHaveProperty("version");
     expect(parsed.state.publicKey).toBe("GPREHYDRATEDKEY56CHARACTERSXX");
-    expect(parsed.state.network).toBe("TESTNET");
+    expect(parsed.state.network).toBe("PUBLIC");
     expect(typeof parsed.state.publicKey).toBe("string");
     expect(parsed.state.publicKey.startsWith("G")).toBe(true);
   });
@@ -81,7 +81,7 @@ describe("WalletSessionStore — persistence across reloads", () => {
 describe("WalletSessionStore — wrong-network state", () => {
   it("isConnected is false when publicKey is null", () => {
     const store = useWalletSessionStore;
-    store.getState().setSession("GABC123TESTNETPUBLICKEY56CHARS", "TESTNET");
+    store.getState().setSession("GABC123PUBLICKEY56CHARS", "PUBLIC");
     expect(store.getState().publicKey).not.toBeNull();
 
     store.getState().clearSession();
@@ -92,7 +92,7 @@ describe("WalletSessionStore — wrong-network state", () => {
     const store = useWalletSessionStore;
 
     const errorMsg =
-      "Network mismatch detected (current: MAINNET). Please switch your Freighter wallet to Testnet.";
+      "Network mismatch detected (current: TESTNET). Please switch your Freighter wallet to Mainnet.";
     store.getState().setConnectionError(errorMsg);
 
     expect(store.getState().connectionError).toBe(errorMsg);
@@ -117,7 +117,7 @@ describe("WalletSessionStore — wrong-network state", () => {
     store.getState().setConnectionError("Previous network error");
     expect(store.getState().connectionError).toBe("Previous network error");
 
-    store.getState().setSession("GNEWKEY1234567890ABCDEFGHIJKLM", "TESTNET");
+    store.getState().setSession("GNEWKEY1234567890ABCDEFGHIJKLM", "PUBLIC");
     expect(store.getState().connectionError).toBeNull();
     expect(store.getState().publicKey).toBe("GNEWKEY1234567890ABCDEFGHIJKLM");
   });

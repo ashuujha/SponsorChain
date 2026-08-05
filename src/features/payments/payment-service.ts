@@ -2,12 +2,12 @@ import {
   Asset,
   Account,
   BASE_FEE,
-  Networks,
   Operation,
   TransactionBuilder,
   StrKey,
 } from "stellar-sdk";
 import { fetchAccountFromHorizon, HorizonAccountResponse } from "../wallet/wallet-service";
+import { EXPLORER_BASE, HORIZON_URL, NETWORK_PASSPHRASE } from "@/lib/stellar-config";
 
 /**
  * Validates a Stellar public key using the canonical StrKey check.
@@ -51,7 +51,7 @@ export function buildPaymentTransaction({
 
   const tx = new TransactionBuilder(sourceAccount, {
     fee: BASE_FEE,
-    networkPassphrase: Networks.TESTNET,
+    networkPassphrase: NETWORK_PASSPHRASE,
     // Add default timebounds for security/correctness (10 minutes from now is typical)
     timebounds: {
       minTime: 0,
@@ -115,14 +115,14 @@ export interface HorizonTransactionRecord {
 }
 
 /**
- * Fetches recent transactions for a given account or contract address from Horizon Testnet.
+ * Fetches recent transactions for a given account or contract address from Horizon Mainnet.
  */
 export async function fetchHorizonAccountTransactions(
   address: string,
   limit: number = 20
 ): Promise<HorizonTransactionRecord[]> {
   try {
-    const url = `https://horizon-testnet.stellar.org/accounts/${address}/transactions?order=desc&limit=${limit}`;
+    const url = `${HORIZON_URL}/accounts/${address}/transactions?order=desc&limit=${limit}`;
     const res = await fetch(url);
     if (!res.ok) {
       throw new Error(`Horizon API error: HTTP status ${res.status}`);
@@ -138,7 +138,7 @@ export async function fetchHorizonAccountTransactions(
       feeCharged: (tx.fee_charged as string) || "100",
       memoType: (tx.memo_type as string) || "none",
       memo: (tx.memo as string) || null,
-      stellarExpertUrl: `https://stellar.expert/explorer/testnet/tx/${tx.hash}`,
+      stellarExpertUrl: `${EXPLORER_BASE}/tx/${tx.hash}`,
     }));
   } catch (err) {
     console.warn("Horizon fetch account transactions error:", err);

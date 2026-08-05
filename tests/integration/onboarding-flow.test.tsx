@@ -40,7 +40,7 @@ vi.mock("@/features/wallet-session/store", () => ({
   useWalletSessionStore: Object.assign(
     () => ({
       publicKey: "GD6X4A3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z",
-      network: "TESTNET",
+      network: "PUBLIC",
       connectionError: null,
       isRestoring: false,
       setSession: vi.fn(),
@@ -51,7 +51,7 @@ vi.mock("@/features/wallet-session/store", () => ({
     {
       getState: () => ({
         publicKey: "GD6X4A3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z",
-        network: "TESTNET",
+      network: "PUBLIC",
         connectionError: null,
         isRestoring: false,
         setSession: vi.fn(),

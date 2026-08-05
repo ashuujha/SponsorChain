@@ -14,6 +14,19 @@ import {
 import { checkOnChainRepoExists } from "@/lib/soroban-client";
 import type { FilteredRepo } from "@/app/api/listing/repos/route";
 
+async function validateRepositoryBeforeSigning(fullName: string): Promise<void> {
+  const response = await fetch("/api/listing/validate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fullName }),
+    cache: "no-store",
+  });
+  const body = (await response.json().catch(() => ({}))) as { error?: string };
+  if (!response.ok) {
+    throw new Error(body.error || "GitHub repository validation failed.");
+  }
+}
+
 type ListStep =
   | { step: "github-connect" }
   | { step: "repo-picker" }
@@ -146,6 +159,7 @@ export default function ListProjectPage() {
                     description: currentStep.description,
                   },
                   async () => {
+                    await validateRepositoryBeforeSigning(currentStep.repo.fullName);
                     const { getKit } = await import("@/features/wallet/use-wallet");
                     const kit = await getKit();
                     const { createOnChainProject } = await import("@/lib/soroban-client");
@@ -172,6 +186,7 @@ export default function ListProjectPage() {
                     description: currentStep.description,
                   },
                   async () => {
+                    await validateRepositoryBeforeSigning(currentStep.repo.fullName);
                     const { getKit } = await import("@/features/wallet/use-wallet");
                     const kit = await getKit();
                     const { createOnChainProject } = await import("@/lib/soroban-client");
@@ -428,15 +443,30 @@ function ReviewStep({
 }) {
   const [checkingRepo, setCheckingRepo] = useState(true);
   const [repoExists, setRepoExists] = useState(false);
+  const [repoCheckError, setRepoCheckError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
     async function verifyRepo() {
       setCheckingRepo(true);
-      const result = await checkOnChainRepoExists(repo.fullName);
-      if (isMounted) {
-        setRepoExists(result.exists);
+      setRepoCheckError(null);
+      try {
+        const result = await checkOnChainRepoExists(repo.fullName);
+        if (isMounted) {
+          setRepoExists(result.exists);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setRepoCheckError(
+            err instanceof Error
+              ? err.message
+              : "Could not verify the live ProjectRegistry."
+          );
+        }
+      } finally {
+        if (isMounted) {
         setCheckingRepo(false);
+        }
       }
     }
     verifyRepo();
@@ -464,6 +494,11 @@ function ReviewStep({
             <p className="body-serif text-muted text-xs">
               The GitHub repository <code className="text-foreground">{repo.fullName}</code> has already been registered in the ProjectRegistry contract.
             </p>
+          </div>
+        ) : repoCheckError ? (
+          <div className="p-4 bg-surface border border-rose-500/50 text-xs font-mono text-rose-400 space-y-2">
+            <div className="font-bold uppercase tracking-[1px]">ProjectRegistry Check Failed</div>
+            <p className="body-serif text-muted text-xs">{repoCheckError}</p>
           </div>
         ) : null}
 
@@ -505,7 +540,7 @@ function ReviewStep({
           </button>
           <Button
             onClick={onSubmit}
-            disabled={checkingRepo || repoExists}
+            disabled={checkingRepo || repoExists || Boolean(repoCheckError)}
             size="lg"
             className="w-full sm:w-auto min-h-[44px]"
           >

@@ -27,7 +27,7 @@ const { VALID_TEST_XDR } = await vi.hoisted(async () => {
   const mockDummyAcc = new Account("GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE", "100");
   const mockDummyTx = new TransactionBuilder(mockDummyAcc, {
     fee: BASE_FEE,
-    networkPassphrase: Networks.TESTNET,
+    networkPassphrase: Networks.PUBLIC,
     timebounds: { minTime: 0, maxTime: 1900000000 },
   })
     .addOperation(
@@ -70,7 +70,7 @@ vi.mock("@/features/wallet/use-wallet", () => ({
   useWallet: () => ({
     publicKey: "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE",
     isConnected: true,
-    network: "TESTNET",
+    network: "PUBLIC",
     balance: "10000.0000000",
     isFunding: false,
     fundingError: null,
@@ -92,7 +92,7 @@ vi.mock("@/features/wallet-session/store", () => ({
     () => ({
       publicKey:
         "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE",
-      network: "TESTNET",
+      network: "PUBLIC",
       connectionError: null,
       isRestoring: false,
       setSession: vi.fn(),
@@ -104,7 +104,7 @@ vi.mock("@/features/wallet-session/store", () => ({
       getState: () => ({
         publicKey:
           "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE",
-        network: "TESTNET",
+        network: "PUBLIC",
         connectionError: null,
         isRestoring: false,
         setSession: vi.fn(),

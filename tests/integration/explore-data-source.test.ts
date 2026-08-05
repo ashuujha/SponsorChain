@@ -64,12 +64,12 @@ describe("Explore Page Data Source Verification — Strict On-Chain Invariant", 
 
   it("MUST throw an explicit error on RPC simulation failure — NEVER silently fall back to dummy/local data", async () => {
     vi.spyOn(sorobanServer, "simulateTransaction").mockRejectedValue(
-      new Error("Stellar Testnet Soroban RPC Endpoint Unreachable (503)")
+      new Error("Stellar Mainnet Soroban RPC Endpoint Unreachable (503)")
     );
 
     // Assert that fetchOnChainProjects throws an error rather than swallowing it or returning dummy fallback data
     await expect(fetchOnChainProjects()).rejects.toThrow(
-      "Stellar Testnet Soroban RPC Endpoint Unreachable (503)"
+      "Stellar Mainnet Soroban RPC Endpoint Unreachable (503)"
     );
   });
 });

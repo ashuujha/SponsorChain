@@ -84,7 +84,7 @@ export default function DashboardLayout({
 
         <div className="pt-lg border-t border-outline-variant">
           <p className="text-[10px] text-secondary font-mono-code uppercase tracking-wider px-xs">
-            Stellar Testnet
+            Stellar Mainnet
           </p>
         </div>
       </aside>

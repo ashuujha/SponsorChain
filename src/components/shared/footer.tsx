@@ -24,7 +24,7 @@ export function Footer() {
             </p>
             <div className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[2px] text-muted border border-hairline px-3 py-1">
               <span className="w-1.5 h-1.5 rounded-full bg-foreground animate-pulse" />
-              Stellar Testnet Live
+              Stellar Mainnet Live
             </div>
           </div>
 

@@ -76,7 +76,7 @@ export default function ExplorePage() {
             cloud_off
           </span>
           <h3 className="font-mono text-base sm:text-lg text-foreground uppercase tracking-[2px]">
-            COULDN&apos;T REACH STELLAR TESTNET
+            COULDN&apos;T REACH STELLAR MAINNET
           </h3>
           <p className="body-serif text-muted text-sm max-w-md mx-auto">
             Failed to query live contract state from the Stellar Soroban RPC endpoint. Please check your network connection and try again.
@@ -111,7 +111,7 @@ export default function ExplorePage() {
             NO PROJECTS FOUND
           </h3>
           <p className="body-serif text-muted text-sm mb-6">
-            No projects registered on Stellar Testnet yet. Be the first maintainer to list your repository!
+            No projects registered on Stellar Mainnet yet. Be the first maintainer to list your repository!
           </p>
           <Link href="/list-project" className="bugatti-link text-xs min-h-[44px] inline-flex items-center">
             LIST A PROJECT &rarr;

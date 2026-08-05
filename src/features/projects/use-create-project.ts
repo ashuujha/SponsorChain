@@ -11,6 +11,7 @@ import {
   submitCreateProject,
   CreateProjectParams,
 } from "./contract-service";
+import { REGISTRY_CONTRACT_ID } from "./contract-data";
 
 export interface UseCreateProjectReturn {
   state: CreateProjectState;
@@ -23,9 +24,7 @@ export interface UseCreateProjectReturn {
   reset: () => void;
 }
 
-export const PROJECT_REGISTRY_CONTRACT_ID =
-  process.env.NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS ||
-  "CDTINQP4HOUWLLCUCGOVTLPYHVHVP3KIYVVCKWHPIWQEIOGO775FIDN6";
+export const PROJECT_REGISTRY_CONTRACT_ID = REGISTRY_CONTRACT_ID;
 
 export function useCreateProject(): UseCreateProjectReturn {
   const [state, dispatch] = useReducer(

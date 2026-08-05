@@ -216,7 +216,7 @@ export function extractErrorMessage(
     lowerText.includes("502")
   ) {
     return {
-      message: "Network error — couldn't reach Stellar Testnet. Check your connection and try again.",
+      message: "Network error — couldn't reach Stellar Mainnet. Check your connection and try again.",
       errorType: "network_error",
     };
   }
@@ -274,9 +274,10 @@ export function useSponsorProject(onSuccess?: (txHash: string) => void) {
   const submit = useCallback(
     async (
       sponsorAddress: string,
-      recipientAddress: string,
+      projectId: bigint,
       amountXlm: string,
-      walletBalance?: string
+      walletBalance?: string,
+      sponsorMessage?: string
     ) => {
       // 0. Pre-flight Amount Validation
       const parsedAmount = parseFloat(amountXlm);
@@ -307,37 +308,20 @@ export function useSponsorProject(onSuccess?: (txHash: string) => void) {
 
       dispatch({ type: "SUBMIT" });
       try {
-        // ── 1. Build unsigned XDR ─────────────────────────────────────────────
-        const { preparePaymentTransaction } = await import(
-          "@/features/payments/payment-service"
-        );
-        const unsignedXdr = await preparePaymentTransaction({
-          sponsorPublicKey: sponsorAddress,
-          destinationPublicKey: recipientAddress,
-          amountXLM: amountXlm,
-        });
-
-        // ── 2. Sign via StellarWalletsKit ─────────────────────────────────────
+        // Sponsorships are Soroban contract calls. The contract transfers XLM,
+        // persists the donation record, and updates project statistics atomically.
         const { getKit } = await import("@/features/wallet/use-wallet");
         const kit = await getKit();
-
-        const { Networks } = await import("stellar-sdk");
-        const { signedTxXdr } = await kit.signTransaction(unsignedXdr, {
-          networkPassphrase: Networks.TESTNET,
-          address: sponsorAddress,
+        const { sponsorOnChainProject } = await import("@/lib/soroban-client");
+        const { txHash } = await sponsorOnChainProject({
+          sponsorPublicKey: sponsorAddress,
+          projectId,
+          amountXlm,
+          sponsorMessage,
+          kit,
         });
 
-        // ── 3. Reconstruct Transaction from signed XDR ────────────────────────
-        const { TransactionBuilder } = await import("stellar-sdk");
-        const signedTx = TransactionBuilder.fromXDR(signedTxXdr, Networks.TESTNET);
-        const txHash = (signedTx.hash() as Buffer).toString("hex");
-
         dispatch({ type: "RECEIVE_HASH", txHash });
-
-        // ── 4. Submit to Horizon testnet ──────────────────────────────────────
-        const { Horizon } = await import("stellar-sdk");
-        const server = new Horizon.Server("https://horizon-testnet.stellar.org");
-        await server.submitTransaction(signedTx);
 
         dispatch({ type: "SUCCESS" });
         onSuccessRef.current?.(txHash);

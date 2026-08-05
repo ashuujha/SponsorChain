@@ -12,6 +12,9 @@ export interface GitHubRepoResponse {
   owner: {
     login: string;
   };
+  permissions?: {
+    admin?: boolean;
+  };
 }
 
 export interface FilteredRepo {
@@ -23,7 +26,11 @@ export interface FilteredRepo {
 }
 
 function isOwnNonFork(repo: GitHubRepoResponse, username: string): boolean {
-  return !repo.fork && repo.owner.login.toLowerCase() === username.toLowerCase();
+  return (
+    !repo.fork &&
+    (repo.owner.login.toLowerCase() === username.toLowerCase() ||
+      repo.permissions?.admin === true)
+  );
 }
 
 export async function GET() {
@@ -46,7 +53,7 @@ export async function GET() {
 
   try {
     const response = await fetch(
-      "https://api.github.com/user/repos?visibility=public&affiliation=owner&per_page=100",
+      "https://api.github.com/user/repos?visibility=public&affiliation=owner,collaborator&per_page=100",
       {
         headers: {
           Authorization: `token ${session.accessToken}`,

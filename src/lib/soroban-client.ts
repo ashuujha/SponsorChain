@@ -4,22 +4,61 @@ import {
   TransactionBuilder,
   Account,
   Address,
-  Networks,
   nativeToScVal,
   scValToNative,
 } from "stellar-sdk";
 import {
   REGISTRY_CONTRACT_ID,
   MANAGER_CONTRACT_ID,
+  requireProjectRegistryContractId,
+  requireSponsorshipManagerContractId,
   ProjectData,
   SponsorshipData,
 } from "@/features/projects/contract-data";
 import { fetchAccountFromHorizon } from "@/features/wallet/wallet-service";
-
-export const SOROBAN_RPC_URL =
-  process.env.NEXT_PUBLIC_SOROBAN_RPC_URL || "https://soroban-testnet.stellar.org";
+import { NETWORK_PASSPHRASE, SOROBAN_RPC_URL } from "@/lib/stellar-config";
 
 export const sorobanServer = new SorobanRpc.Server(SOROBAN_RPC_URL);
+
+const READ_ACCOUNT = new Account(
+  "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF",
+  "0"
+);
+
+async function simulateReadCall(
+  operation: ReturnType<Contract["call"]>
+): Promise<unknown> {
+  const tx = new TransactionBuilder(READ_ACCOUNT, {
+    fee: "100",
+    networkPassphrase: NETWORK_PASSPHRASE,
+  })
+    .addOperation(operation)
+    .setTimeout(30)
+    .build();
+
+  const simResult = await sorobanServer.simulateTransaction(tx);
+  if (!SorobanRpc.Api.isSimulationSuccess(simResult)) {
+    throw new Error("Soroban RPC sponsorship read simulation failed");
+  }
+
+  const val = simResult.result?.retval;
+  return val ? scValToNative(val) : null;
+}
+
+function parseSponsorship(native: unknown): SponsorshipData | null {
+  if (!native || typeof native !== "object") return null;
+  const record = native as Record<string, unknown>;
+  return {
+    id: BigInt(record.id as string | number | bigint),
+    projectId: BigInt(record.project_id as string | number | bigint),
+    sponsor: (record.sponsor as string) || "",
+    amount: (record.amount || 0).toString(),
+    timestamp: BigInt(record.timestamp as string | number | bigint),
+    txHash: (record.transaction_hash as string) || null,
+    sponsorMessage: (record.sponsor_message as string) || null,
+    donationNumber: BigInt(record.donation_number as string | number | bigint),
+  };
+}
 
 /**
  * Checks if a project with the given repo_full_name is already registered on-chain.
@@ -27,16 +66,12 @@ export const sorobanServer = new SorobanRpc.Server(SOROBAN_RPC_URL);
 export async function checkOnChainRepoExists(
   repoFullName: string
 ): Promise<{ exists: boolean; existingProjectId?: string }> {
-  try {
-    const allProjects = await fetchOnChainProjects();
-    const existing = allProjects.find(
-      (p) => p.repoFullName.toLowerCase() === repoFullName.toLowerCase()
-    );
-    if (existing) {
-      return { exists: true, existingProjectId: existing.id.toString() };
-    }
-  } catch (err) {
-    console.warn("On-chain repo check warning:", err);
+  const allProjects = await fetchOnChainProjects();
+  const existing = allProjects.find(
+    (p) => p.repoFullName.toLowerCase() === repoFullName.toLowerCase()
+  );
+  if (existing) {
+    return { exists: true, existingProjectId: existing.id.toString() };
   }
   return { exists: false };
 }
@@ -53,7 +88,7 @@ export async function fetchOnChainProjects(
     "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF",
     "0"
   );
-  const contract = new Contract(REGISTRY_CONTRACT_ID);
+  const contract = new Contract(requireProjectRegistryContractId());
 
   let currentStart = start;
   let allProjectIds: bigint[] = [];
@@ -62,7 +97,7 @@ export async function fetchOnChainProjects(
   while (hasMore) {
     const tx = new TransactionBuilder(dummyAccount, {
       fee: "100",
-      networkPassphrase: Networks.TESTNET,
+      networkPassphrase: NETWORK_PASSPHRASE,
     })
       .addOperation(
         contract.call(
@@ -122,11 +157,11 @@ export async function fetchOnChainProject(
     "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF",
     "0"
   );
-  const contract = new Contract(REGISTRY_CONTRACT_ID);
+  const contract = new Contract(requireProjectRegistryContractId());
 
   const tx = new TransactionBuilder(dummyAccount, {
     fee: "100",
-    networkPassphrase: Networks.TESTNET,
+    networkPassphrase: NETWORK_PASSPHRASE,
   })
     .addOperation(
       contract.call("get_project", nativeToScVal(id, { type: "u64" }))
@@ -144,15 +179,23 @@ export async function fetchOnChainProject(
 
   const native = scValToNative(val);
   if (native) {
+    const [legacyRepositoryOwner = "", legacyRepositoryName = ""] = String(
+      native.repo_full_name || ""
+    ).split("/");
     return {
       id: BigInt(id),
       owner: (native.owner as string) || "",
       repoFullName: (native.repo_full_name as string) || "",
+      repositoryOwner:
+        (native.repository_owner as string) || legacyRepositoryOwner,
+      repositoryName: (native.repository_name as string) || legacyRepositoryName,
       name: (native.name as string) || "",
       description: (native.description as string) || "",
       totalRaised: (native.total_raised || 0).toString(),
       sponsorCount: Number(native.sponsor_count || 0),
+      totalDonations: BigInt(native.total_donations || 0),
       createdAt: BigInt(native.created_at || 0),
+      lastSponsoredAt: BigInt(native.last_sponsored_at || 0),
       active: typeof native.active === "boolean" ? native.active : true,
     };
   }
@@ -166,62 +209,63 @@ export async function fetchOnChainProject(
 export async function fetchOnChainProjectsByOwner(
   owner: string
 ): Promise<ProjectData[]> {
-  try {
-    const all = await fetchOnChainProjects();
-    return all.filter((p) => p.owner.toLowerCase() === owner.toLowerCase());
-  } catch (err) {
-    console.warn("Error fetching projects by owner:", err);
-    return [];
-  }
+  const all = await fetchOnChainProjects();
+  return all.filter((p) => p.owner.toLowerCase() === owner.toLowerCase());
 }
 
 /**
- * Fetches sponsorships recorded for a specific project from live contract events.
+ * Fetches canonical sponsorship records for a specific project from Soroban storage.
  */
 export async function fetchOnChainSponsorshipsForProject(
-  projectId: bigint
+  projectId: bigint,
+  start: number = 0,
+  limit: number = 50
 ): Promise<SponsorshipData[]> {
   try {
-    const events = await fetchOnChainActivityEvents();
-    const sponsoredEvents = events.filter(
-      (e) => e.type === "sponsor_funded" && e.details.projectId === projectId.toString()
+    const contract = new Contract(requireSponsorshipManagerContractId());
+    const native = await simulateReadCall(
+      contract.call(
+        "get_project_sponsorships",
+        nativeToScVal(projectId, { type: "u64" }),
+        nativeToScVal(start, { type: "u64" }),
+        nativeToScVal(limit, { type: "u32" })
+      )
     );
-    return sponsoredEvents.map((e, idx) => ({
-      id: BigInt(idx),
-      sponsor: e.details.sponsor || "",
-      projectId,
-      amount: e.details.amount || "0",
-      timestamp: BigInt(Math.floor(new Date(e.ledgerClosedAt).getTime() / 1000)),
-      txHash: e.txHash,
-    }));
+    if (!Array.isArray(native)) return [];
+    return native
+      .map(parseSponsorship)
+      .filter((record): record is SponsorshipData => record !== null);
   } catch (err) {
-    console.warn("Error fetching sponsorships for project:", err);
-    return [];
+    console.warn("Error fetching sponsorship records for project:", err);
+    throw err;
   }
 }
 
 /**
- * Fetches sponsorships initiated by a specific sponsor wallet from live contract events.
+ * Fetches canonical sponsorship history initiated by a sponsor wallet.
  */
 export async function fetchOnChainSponsorshipsBySponsor(
-  sponsor: string
+  sponsor: string,
+  start: number = 0,
+  limit: number = 50
 ): Promise<SponsorshipData[]> {
   try {
-    const events = await fetchOnChainActivityEvents();
-    const sponsorEvents = events.filter(
-      (e) => e.type === "sponsor_funded" && e.details.sponsor?.toLowerCase() === sponsor.toLowerCase()
+    const contract = new Contract(requireSponsorshipManagerContractId());
+    const native = await simulateReadCall(
+      contract.call(
+        "get_sponsor_history",
+        new Address(sponsor).toScVal(),
+        nativeToScVal(start, { type: "u64" }),
+        nativeToScVal(limit, { type: "u32" })
+      )
     );
-    return sponsorEvents.map((e, idx) => ({
-      id: BigInt(idx),
-      sponsor: e.details.sponsor || sponsor,
-      projectId: BigInt(e.details.projectId || 0),
-      amount: e.details.amount || "0",
-      timestamp: BigInt(Math.floor(new Date(e.ledgerClosedAt).getTime() / 1000)),
-      txHash: e.txHash,
-    }));
+    if (!Array.isArray(native)) return [];
+    return native
+      .map(parseSponsorship)
+      .filter((record): record is SponsorshipData => record !== null);
   } catch (err) {
-    console.warn("Error fetching sponsorships by sponsor:", err);
-    return [];
+    console.warn("Error fetching sponsor history:", err);
+    throw err;
   }
 }
 
@@ -243,7 +287,7 @@ export interface OnChainEvent {
 
 /**
  * Queries getEvents endpoint on Soroban RPC for live contract events emitted
- * by ProjectRegistry and SponsorshipManager contracts on Stellar Testnet.
+ * by ProjectRegistry and SponsorshipManager contracts on Stellar Mainnet.
  */
 export async function fetchOnChainActivityEvents(): Promise<OnChainEvent[]> {
   try {
@@ -258,7 +302,10 @@ export async function fetchOnChainActivityEvents(): Promise<OnChainEvent[]> {
         params: {
           startLedger,
           filters: [
-            { type: "contract", contractIds: [REGISTRY_CONTRACT_ID, MANAGER_CONTRACT_ID] },
+            {
+              type: "contract",
+              contractIds: [REGISTRY_CONTRACT_ID, MANAGER_CONTRACT_ID].filter(Boolean),
+            },
           ],
           pagination: { limit: 100 },
         },
@@ -311,17 +358,17 @@ export async function createOnChainProject({
   description: string;
   kit: { signTransaction: (xdr: string, opts: { networkPassphrase: string; address: string }) => Promise<{ signedTxXdr: string }> };
 }): Promise<{ txHash: string; projectId: string }> {
-  const contract = new Contract(REGISTRY_CONTRACT_ID);
+  const contract = new Contract(requireProjectRegistryContractId());
   const accountRes = await fetchAccountFromHorizon(ownerPublicKey);
   if (!accountRes) {
-    throw new Error("Your wallet account is not funded on Stellar Testnet yet.");
+    throw new Error("Your wallet account is not funded on Stellar Mainnet yet.");
   }
   const sequenceNumber = (accountRes as { sequence?: string }).sequence || "0";
   const sourceAccount = new Account(ownerPublicKey, sequenceNumber);
 
   const tx = new TransactionBuilder(sourceAccount, {
     fee: "1000000",
-    networkPassphrase: Networks.TESTNET,
+    networkPassphrase: NETWORK_PASSPHRASE,
     timebounds: { minTime: 0, maxTime: Math.floor(Date.now() / 1000) + 600 },
   })
     .addOperation(
@@ -337,30 +384,108 @@ export async function createOnChainProject({
 
   const preparedTx = await sorobanServer.prepareTransaction(tx);
   const { signedTxXdr } = await kit.signTransaction(preparedTx.toXDR(), {
-    networkPassphrase: Networks.TESTNET,
+    networkPassphrase: NETWORK_PASSPHRASE,
     address: ownerPublicKey,
   });
 
-  const signedTx = TransactionBuilder.fromXDR(signedTxXdr, Networks.TESTNET);
+  const signedTx = TransactionBuilder.fromXDR(signedTxXdr, NETWORK_PASSPHRASE);
   const sendRes = await sorobanServer.sendTransaction(signedTx);
   if (sendRes.status === "ERROR" || !sendRes.hash) {
-    throw new Error("Failed to submit create_project transaction to Stellar Testnet");
+    throw new Error("Failed to submit create_project transaction to Stellar Mainnet");
   }
 
-  let projectId = "0";
-  try {
-    const projects = await fetchOnChainProjects();
-    const created = projects.find(
-      (p) => p.repoFullName.toLowerCase() === repoFullName.toLowerCase()
-    );
-    if (created) {
-      projectId = created.id.toString();
-    }
-  } catch (err) {
-    console.warn("Could not immediately query created project ID:", err);
-  }
+  const finalized = await waitForSorobanTransaction(sendRes.hash);
+  const projectId = finalized.returnValue
+    ? String(scValToNative(finalized.returnValue))
+    : "0";
 
   return { txHash: sendRes.hash, projectId };
+}
+
+function xlmToStroops(amountXlm: string): bigint {
+  const normalized = amountXlm.trim();
+  if (!/^\d+(\.\d{1,7})?$/.test(normalized)) {
+    throw new Error("Sponsorship amount must be a valid XLM decimal amount.");
+  }
+  const [whole, fraction = ""] = normalized.split(".");
+  return BigInt(whole) * 10_000_000n + BigInt(fraction.padEnd(7, "0"));
+}
+
+async function waitForSorobanTransaction(
+  hash: string
+): Promise<SorobanRpc.Api.GetSuccessfulTransactionResponse> {
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    const result = await sorobanServer.getTransaction(hash);
+    if (result.status === SorobanRpc.Api.GetTransactionStatus.SUCCESS) {
+      return result;
+    }
+    if (result.status === SorobanRpc.Api.GetTransactionStatus.FAILED) {
+      throw new Error("Soroban transaction failed on Stellar Mainnet.");
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  throw new Error("Soroban transaction did not finalize before timeout.");
+}
+
+/**
+ * Transfers XLM through the SponsorshipManager and atomically persists the
+ * canonical sponsorship record and project statistics on Soroban.
+ */
+export async function sponsorOnChainProject({
+  sponsorPublicKey,
+  projectId,
+  amountXlm,
+  sponsorMessage,
+  kit,
+}: {
+  sponsorPublicKey: string;
+  projectId: bigint;
+  amountXlm: string;
+  sponsorMessage?: string;
+  kit: { signTransaction: (xdr: string, opts: { networkPassphrase: string; address: string }) => Promise<{ signedTxXdr: string }> };
+}): Promise<{ txHash: string; sponsorshipId: string | null }> {
+  const manager = new Contract(requireSponsorshipManagerContractId());
+  const accountRes = await fetchAccountFromHorizon(sponsorPublicKey);
+  if (!accountRes) {
+    throw new Error("Sponsor account is unfunded or not found on Stellar Mainnet.");
+  }
+  const sequenceNumber = (accountRes as { sequence?: string }).sequence || "0";
+  const sourceAccount = new Account(sponsorPublicKey, sequenceNumber);
+  const amountStroops = xlmToStroops(amountXlm);
+  const message = sponsorMessage?.trim();
+
+  const tx = new TransactionBuilder(sourceAccount, {
+    fee: "1000000",
+    networkPassphrase: NETWORK_PASSPHRASE,
+    timebounds: { minTime: 0, maxTime: Math.floor(Date.now() / 1000) + 600 },
+  })
+    .addOperation(
+      manager.call(
+        "sponsor_with_message",
+        new Address(sponsorPublicKey).toScVal(),
+        nativeToScVal(projectId, { type: "u64" }),
+        nativeToScVal(amountStroops, { type: "i128" }),
+        message ? nativeToScVal(message, { type: "string" }) : nativeToScVal(undefined)
+      )
+    )
+    .build();
+
+  const preparedTx = await sorobanServer.prepareTransaction(tx);
+  const { signedTxXdr } = await kit.signTransaction(preparedTx.toXDR(), {
+    networkPassphrase: NETWORK_PASSPHRASE,
+    address: sponsorPublicKey,
+  });
+  const signedTx = TransactionBuilder.fromXDR(signedTxXdr, NETWORK_PASSPHRASE);
+  const sendRes = await sorobanServer.sendTransaction(signedTx);
+  if (sendRes.status === "ERROR" || !sendRes.hash) {
+    throw new Error("Failed to submit sponsorship transaction to Stellar Mainnet.");
+  }
+
+  const finalized = await waitForSorobanTransaction(sendRes.hash);
+  const sponsorshipId = finalized.returnValue
+    ? String(scValToNative(finalized.returnValue))
+    : null;
+  return { txHash: sendRes.hash, sponsorshipId };
 }
 
 /**
@@ -375,17 +500,17 @@ export async function unlistOnChainProject({
   callerPublicKey: string;
   kit: { signTransaction: (xdr: string, opts: { networkPassphrase: string; address: string }) => Promise<{ signedTxXdr: string }> };
 }): Promise<{ txHash: string }> {
-  const contract = new Contract(REGISTRY_CONTRACT_ID);
+  const contract = new Contract(requireProjectRegistryContractId());
   const accountRes = await fetchAccountFromHorizon(callerPublicKey);
   if (!accountRes) {
-    throw new Error("Wallet account is unfunded or not found on Stellar Testnet.");
+    throw new Error("Wallet account is unfunded or not found on Stellar Mainnet.");
   }
   const sequenceNumber = (accountRes as { sequence?: string }).sequence || "0";
   const sourceAccount = new Account(callerPublicKey, sequenceNumber);
 
   const tx = new TransactionBuilder(sourceAccount, {
     fee: "1000000",
-    networkPassphrase: Networks.TESTNET,
+    networkPassphrase: NETWORK_PASSPHRASE,
     timebounds: { minTime: 0, maxTime: Math.floor(Date.now() / 1000) + 600 },
   })
     .addOperation(
@@ -399,16 +524,65 @@ export async function unlistOnChainProject({
 
   const preparedTx = await sorobanServer.prepareTransaction(tx);
   const { signedTxXdr } = await kit.signTransaction(preparedTx.toXDR(), {
-    networkPassphrase: Networks.TESTNET,
+    networkPassphrase: NETWORK_PASSPHRASE,
     address: callerPublicKey,
   });
 
-  const signedTx = TransactionBuilder.fromXDR(signedTxXdr, Networks.TESTNET);
+  const signedTx = TransactionBuilder.fromXDR(signedTxXdr, NETWORK_PASSPHRASE);
   const sendRes = await sorobanServer.sendTransaction(signedTx);
   if (sendRes.status === "ERROR" || !sendRes.hash) {
-    throw new Error("Failed to submit unlist_project transaction to Stellar Testnet");
+    throw new Error("Failed to submit unlist_project transaction to Stellar Mainnet");
   }
 
+  await waitForSorobanTransaction(sendRes.hash);
+  return { txHash: sendRes.hash };
+}
+
+/** Transfers the on-chain maintainer authority after the current maintainer signs. */
+export async function transferMaintainerOnChainProject({
+  projectId,
+  newMaintainerPublicKey,
+  currentMaintainerPublicKey,
+  kit,
+}: {
+  projectId: bigint;
+  newMaintainerPublicKey: string;
+  currentMaintainerPublicKey: string;
+  kit: { signTransaction: (xdr: string, opts: { networkPassphrase: string; address: string }) => Promise<{ signedTxXdr: string }> };
+}): Promise<{ txHash: string }> {
+  const contract = new Contract(requireProjectRegistryContractId());
+  const accountRes = await fetchAccountFromHorizon(currentMaintainerPublicKey);
+  if (!accountRes) {
+    throw new Error("Current maintainer account is unfunded or not found on Stellar Mainnet.");
+  }
+  const sequenceNumber = (accountRes as { sequence?: string }).sequence || "0";
+  const sourceAccount = new Account(currentMaintainerPublicKey, sequenceNumber);
+
+  const tx = new TransactionBuilder(sourceAccount, {
+    fee: "1000000",
+    networkPassphrase: NETWORK_PASSPHRASE,
+    timebounds: { minTime: 0, maxTime: Math.floor(Date.now() / 1000) + 600 },
+  })
+    .addOperation(
+      contract.call(
+        "transfer_maintainer",
+        nativeToScVal(projectId, { type: "u64" }),
+        new Address(newMaintainerPublicKey).toScVal()
+      )
+    )
+    .build();
+
+  const preparedTx = await sorobanServer.prepareTransaction(tx);
+  const { signedTxXdr } = await kit.signTransaction(preparedTx.toXDR(), {
+    networkPassphrase: NETWORK_PASSPHRASE,
+    address: currentMaintainerPublicKey,
+  });
+  const signedTx = TransactionBuilder.fromXDR(signedTxXdr, NETWORK_PASSPHRASE);
+  const sendRes = await sorobanServer.sendTransaction(signedTx);
+  if (sendRes.status === "ERROR" || !sendRes.hash) {
+    throw new Error("Failed to submit transfer_maintainer transaction to Stellar Mainnet");
+  }
+  await waitForSorobanTransaction(sendRes.hash);
   return { txHash: sendRes.hash };
 }
 

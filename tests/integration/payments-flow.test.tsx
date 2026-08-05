@@ -45,13 +45,18 @@ vi.mock("@/lib/soroban-client", async (importOriginal) => {
       id: BigInt(0),
       owner: "GDWRICGODLLQE65PC5UHEOYOMI34DXJG2ML2VRPJQLRYYURUVIEPQ3SE",
       repoFullName: "stellar/stellar-core",
+      repositoryOwner: "stellar",
+      repositoryName: "stellar-core",
       name: "Stellar Core",
       description: "Stellar Core backbone.",
       totalRaised: "0",
       sponsorCount: 0,
+      totalDonations: BigInt(0),
       createdAt: BigInt(1785784403),
+      lastSponsoredAt: BigInt(0),
       active: true,
     }),
+    fetchOnChainSponsorshipsForProject: vi.fn().mockResolvedValue([]),
   };
 });
 

@@ -6,6 +6,8 @@
  * development it can be mocked.
  */
 
+import { fetchOnChainProject } from "@/lib/soroban-client";
+
 export interface CreateProjectParams {
   contractId: string;
   owner: string;
@@ -24,7 +26,7 @@ export interface UnsignedContractCall {
     description: string;
   };
   simulatedFee: string;
-  networkPassphrase: "Test SDF Network ; September 2015";
+  networkPassphrase: "Public Global Stellar Network ; September 2015";
 }
 
 /**
@@ -53,7 +55,7 @@ export function buildUnsignedCreateProjectCall(
       description: params.description,
     },
     simulatedFee: "0.00001 XLM",
-    networkPassphrase: "Test SDF Network ; September 2015",
+    networkPassphrase: "Public Global Stellar Network ; September 2015",
   };
 }
 
@@ -100,8 +102,18 @@ export async function fetchProjectFromChain(
   totalRaised: string;
   sponsorCount: number;
 }> {
-  // In production, simulates get_project(projectId) on the Soroban RPC.
-  throw new Error(`Chain fetch for project ${projectId} on contract ${contractId} not implemented`);
+  const project = await fetchOnChainProject(projectId);
+  if (!project) {
+    throw new Error(`Project ${projectId} was not found in the live ProjectRegistry.`);
+  }
+  return {
+    owner: project.owner,
+    repoFullName: project.repoFullName,
+    name: project.name,
+    description: project.description,
+    totalRaised: project.totalRaised,
+    sponsorCount: project.sponsorCount,
+  };
 }
 
 export { REGISTRY_CONTRACT_ID, MANAGER_CONTRACT_ID, XLM_SAC_ADDRESS } from "./contract-data";

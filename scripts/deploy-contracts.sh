@@ -5,18 +5,27 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CONTRACTS_DIR="$PROJECT_ROOT/contracts"
 
-RPC_URL="${SOROBAN_RPC_URL:-https://soroban-testnet.stellar.org}"
-NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
-IDENTITY="${STELLAR_IDENTITY:-PROJECT_TESTNET}"
-XLM_SAC_ADDRESS="CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
-EXPLORER_BASE="https://stellar.expert/explorer/testnet"
+NETWORK="${STELLAR_NETWORK:-mainnet}"
+if [[ "${NETWORK,,}" != "mainnet" && "${NETWORK,,}" != "public" ]]; then
+  echo "✗ This deployment script is Mainnet-only. Set STELLAR_NETWORK=mainnet."
+  exit 1
+fi
+
+RPC_URL="${SOROBAN_RPC_URL:-https://mainnet.sorobanrpc.com}"
+NETWORK_PASSPHRASE="Public Global Stellar Network ; September 2015"
+IDENTITY="${STELLAR_IDENTITY:?Set STELLAR_IDENTITY to the funded Mainnet deployer identity}"
+XLM_SAC_ADDRESS="${NEXT_PUBLIC_XLM_SAC_ADDRESS:?Set NEXT_PUBLIC_XLM_SAC_ADDRESS to the Mainnet native XLM SAC address}"
+EXPLORER_BASE="https://stellar.expert/explorer/public"
+
+if [[ "$RPC_URL" =~ (testnet|futurenet|friendbot|localhost|127\.0\.0\.1) ]]; then
+  echo "✗ SOROBAN_RPC_URL points to a non-Mainnet or local endpoint: $RPC_URL"
+  exit 1
+fi
 
 REGISTRY_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/project_registry.wasm"
 MANAGER_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/sponsorship_manager.wasm"
 
 ADMIN_ADDR="$(stellar keys address "$IDENTITY")"
-
-CLI_BASE="--rpc-url $RPC_URL --network-passphrase \"$NETWORK_PASSPHRASE\" --source $IDENTITY"
 
 ENV_LOCAL="$PROJECT_ROOT/.env.local"
 CONFIRMED=false
@@ -44,11 +53,30 @@ fi
 echo ""
 echo "=== Step 1: Building contracts ==="
 cd "$CONTRACTS_DIR"
-cargo build --target wasm32v1-none --release 2>&1 | grep -E "Compiling|Finished|error" || true
+cargo build --locked --target wasm32v1-none --release
 for wasm in "$REGISTRY_WASM" "$MANAGER_WASM"; do
   if [[ ! -f "$wasm" ]]; then echo "✗ Missing: $wasm"; exit 1; fi
 done
 echo "✓ Both WASMs ready ($(du -h "$REGISTRY_WASM" | cut -f1), $(du -h "$MANAGER_WASM" | cut -f1))"
+
+REGISTRY_LOCAL_HASH="$(stellar contract info hash --wasm "$REGISTRY_WASM")"
+MANAGER_LOCAL_HASH="$(stellar contract info hash --wasm "$MANAGER_WASM")"
+if [[ ! "$REGISTRY_LOCAL_HASH" =~ ^[a-f0-9]{64}$ || ! "$MANAGER_LOCAL_HASH" =~ ^[a-f0-9]{64}$ ]]; then
+  echo "✗ Could not compute deterministic WASM SHA-256 hashes"
+  exit 1
+fi
+for required_method in unlist_project transfer_maintainer; do
+  if ! stellar contract info interface --wasm "$REGISTRY_WASM" --output rust | grep -q "$required_method"; then
+    echo "✗ Registry WASM is missing required method: $required_method"
+    exit 1
+  fi
+done
+if ! stellar contract info interface --wasm "$MANAGER_WASM" --output rust | grep -q "sponsor_with_message"; then
+  echo "✗ SponsorshipManager WASM is missing sponsor_with_message"
+  exit 1
+fi
+echo "✓ Registry WASM hash: $REGISTRY_LOCAL_HASH"
+echo "✓ Manager WASM hash:  $MANAGER_LOCAL_HASH"
 
 # ---- Steps 2 & 3: Deploy ------------------------------------------
 stellar_invoke() {
@@ -65,7 +93,11 @@ echo "=== Steps 2-3: Deploying contracts ==="
 
 INSTALL_REG=$(stellar contract upload --wasm "$REGISTRY_WASM" \
   --rpc-url "$RPC_URL" --network-passphrase "$NETWORK_PASSPHRASE" \
-  --source "$IDENTITY" --fee 1000000 2>&1 | tail -1 | awk '{print $NF}')
+  --source "$IDENTITY" --fee 1000000 2>&1 | grep -oE '[a-f0-9]{64}' | tail -1)
+if [[ "$INSTALL_REG" != "$REGISTRY_LOCAL_HASH" ]]; then
+  echo "✗ Uploaded registry WASM hash does not match the audited artifact"
+  exit 1
+fi
 echo "  Registry WASM: $INSTALL_REG"
 
 REGISTRY_ADDRESS=$(stellar contract deploy \
@@ -76,7 +108,11 @@ echo "  Registry addr: $REGISTRY_ADDRESS"
 
 INSTALL_MGR=$(stellar contract upload --wasm "$MANAGER_WASM" \
   --rpc-url "$RPC_URL" --network-passphrase "$NETWORK_PASSPHRASE" \
-  --source "$IDENTITY" --fee 1000000 2>&1 | tail -1 | awk '{print $NF}')
+  --source "$IDENTITY" --fee 1000000 2>&1 | grep -oE '[a-f0-9]{64}' | tail -1)
+if [[ "$INSTALL_MGR" != "$MANAGER_LOCAL_HASH" ]]; then
+  echo "✗ Uploaded manager WASM hash does not match the audited artifact"
+  exit 1
+fi
 echo "  Manager WASM:  $INSTALL_MGR"
 
 MANAGER_ADDRESS=$(stellar contract deploy \
@@ -89,72 +125,53 @@ echo "  Manager addr:  $MANAGER_ADDRESS"
 echo ""
 echo "=== Step 4: Initializing ==="
 
-INIT_REG_OUT=$(stellar_invoke "$REGISTRY_ADDRESS" init --admin "$ADMIN_ADDR" || true)
-INIT_REG_TX=$(echo "$INIT_REG_OUT" | grep -oP 'tx/\K[a-f0-9]{64}' | head -1 || echo "already_init")
-if [[ "$INIT_REG_TX" == "already_init" ]]; then
-  echo "  Registry init: already initialized (skipping)"
-else
-  echo "  Registry init tx: $INIT_REG_TX"
-fi
+INIT_REG_OUT=$(stellar_invoke "$REGISTRY_ADDRESS" init --admin "$ADMIN_ADDR")
+INIT_REG_TX=$(echo "$INIT_REG_OUT" | grep -oP 'tx/\K[a-f0-9]{64}' | head -1)
+[[ "$INIT_REG_TX" =~ ^[a-f0-9]{64}$ ]] || { echo "✗ Registry init did not return a transaction hash"; exit 1; }
+echo "  Registry init tx: $INIT_REG_TX"
 
 INIT_MGR_OUT=$(stellar_invoke "$MANAGER_ADDRESS" init \
-  --admin "$ADMIN_ADDR" --project_registry "$REGISTRY_ADDRESS" --xlm_sac "$XLM_SAC_ADDRESS" || true)
-INIT_MGR_TX=$(echo "$INIT_MGR_OUT" | grep -oP 'tx/\K[a-f0-9]{64}' | head -1 || echo "already_init")
+  --admin "$ADMIN_ADDR" --project_registry "$REGISTRY_ADDRESS" --xlm_sac "$XLM_SAC_ADDRESS")
+INIT_MGR_TX=$(echo "$INIT_MGR_OUT" | grep -oP 'tx/\K[a-f0-9]{64}' | head -1)
+[[ "$INIT_MGR_TX" =~ ^[a-f0-9]{64}$ ]] || { echo "✗ Manager init did not return a transaction hash"; exit 1; }
 echo "  Manager init tx:  $INIT_MGR_TX"
 
 # ---- Step 5: Link -------------------------------------------------
 echo ""
 echo "=== Step 5: Linking ==="
 
-LINK_OUT=$(stellar_invoke "$REGISTRY_ADDRESS" set_sponsorship_manager --manager "$MANAGER_ADDRESS" || true)
-LINK_TX=$(echo "$LINK_OUT" | grep -oP 'tx/\K[a-f0-9]{64}' | head -1 || echo "already_linked")
+LINK_OUT=$(stellar_invoke "$REGISTRY_ADDRESS" set_sponsorship_manager --manager "$MANAGER_ADDRESS")
+LINK_TX=$(echo "$LINK_OUT" | grep -oP 'tx/\K[a-f0-9]{64}' | head -1)
+[[ "$LINK_TX" =~ ^[a-f0-9]{64}$ ]] || { echo "✗ Sponsorship manager link did not return a transaction hash"; exit 1; }
 echo "  Link tx: $LINK_TX"
 
-# ---- Step 6: Smoke test -------------------------------------------
+# ---- Step 6: Write files ------------------------------------------
 echo ""
-echo "=== Step 6: Smoke test ==="
-
-CREATE_OUT=$(stellar_invoke "$REGISTRY_ADDRESS" create_project \
-  --owner "$ADMIN_ADDR" --repo_full_name "sponsorchain/e2e-$(date +%s)" \
-  --name "E2E Smoke Test" --description "Automated e2e deployment verification" 2>&1)
-PROJECT_ID=$(echo "$CREATE_OUT" | grep -oP 'u64:\K\d+' | head -1 || echo "0")
-CREATE_TX=$(echo "$CREATE_OUT" | grep -oP 'tx/\K[a-f0-9]{64}' | head -1 || echo "none")
-echo "  create_project → ID: $PROJECT_ID  tx: $CREATE_TX"
-
-SPONSOR_AMOUNT="5000000000"
-SPONSOR_OUT=$(stellar_invoke "$MANAGER_ADDRESS" sponsor \
-  --sponsor "$ADMIN_ADDR" --project_id "$PROJECT_ID" --amount "$SPONSOR_AMOUNT" 2>&1)
-SPONSOR_TX=$(echo "$SPONSOR_OUT" | grep -oP 'tx/\K[a-f0-9]{64}' | head -1 || echo "none")
-echo "  sponsor tx: $SPONSOR_TX"
-
-VERIFY_OUT=$(stellar_invoke "$REGISTRY_ADDRESS" get_project --id "$PROJECT_ID" 2>&1)
-TOTAL_RAISED=$(echo "$VERIFY_OUT" | grep -oP '"total_raised":"?\K\d+' | head -1 || echo "0")
-SPONSOR_COUNT=$(echo "$VERIFY_OUT" | grep -oP '"sponsor_count":\s*\K\d+' | head -1 || echo "0")
-echo "  Verified: total_raised=$TOTAL_RAISED  sponsor_count=$SPONSOR_COUNT"
-
-if [[ "$TOTAL_RAISED" == "$SPONSOR_AMOUNT" ]] && [[ "$SPONSOR_COUNT" == "1" ]]; then
-  echo "  ✓ Smoke test PASSED"
-else
-  echo "  ⚠ Expected total=$SPONSOR_AMOUNT count=1"
-fi
-
-# ---- Step 7: Write files ------------------------------------------
-echo ""
-echo "=== Step 7: Writing files ==="
+echo "=== Step 6: Writing files ==="
 
 # .env.local
 {
-  grep -v "NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS\|NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS" "$ENV_LOCAL" 2>/dev/null || true
+  grep -v "NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS\|NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS\|NEXT_PUBLIC_XLM_SAC_ADDRESS\|NEXT_PUBLIC_STELLAR_NETWORK\|NEXT_PUBLIC_HORIZON_URL\|NEXT_PUBLIC_SOROBAN_RPC_URL\|NEXT_PUBLIC_EXPLORER_BASE" "$ENV_LOCAL" 2>/dev/null || true
   echo "NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS=$REGISTRY_ADDRESS"
   echo "NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS=$MANAGER_ADDRESS"
+  echo "NEXT_PUBLIC_XLM_SAC_ADDRESS=$XLM_SAC_ADDRESS"
+  echo "NEXT_PUBLIC_STELLAR_NETWORK=PUBLIC"
+  echo "NEXT_PUBLIC_HORIZON_URL=https://horizon.stellar.org"
+  echo "NEXT_PUBLIC_SOROBAN_RPC_URL=$RPC_URL"
+  echo "NEXT_PUBLIC_EXPLORER_BASE=$EXPLORER_BASE"
 } | sort -u > "$ENV_LOCAL.tmp" && mv "$ENV_LOCAL.tmp" "$ENV_LOCAL"
 echo "  ✓ .env.local"
 
 ENV_EXAMPLE="$PROJECT_ROOT/.env.example"
 {
-  grep -v "NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS\|NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS" "$ENV_EXAMPLE" 2>/dev/null || true
+  grep -v "NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS\|NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS\|NEXT_PUBLIC_XLM_SAC_ADDRESS\|NEXT_PUBLIC_STELLAR_NETWORK\|NEXT_PUBLIC_HORIZON_URL\|NEXT_PUBLIC_SOROBAN_RPC_URL\|NEXT_PUBLIC_EXPLORER_BASE" "$ENV_EXAMPLE" 2>/dev/null || true
   echo "NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS=# deployed contract address"
   echo "NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS=# deployed contract address"
+  echo "NEXT_PUBLIC_XLM_SAC_ADDRESS=# Mainnet native XLM SAC address"
+  echo "NEXT_PUBLIC_STELLAR_NETWORK=PUBLIC"
+  echo "NEXT_PUBLIC_HORIZON_URL=https://horizon.stellar.org"
+  echo "NEXT_PUBLIC_SOROBAN_RPC_URL=$RPC_URL"
+  echo "NEXT_PUBLIC_EXPLORER_BASE=$EXPLORER_BASE"
 } | sort -u > "$ENV_EXAMPLE.tmp" && mv "$ENV_EXAMPLE.tmp" "$ENV_EXAMPLE"
 echo "  ✓ .env.example"
 
@@ -182,23 +199,13 @@ Last deployed: $TIMESTAMP
 | WASM hash | \`$INSTALL_MGR\` |
 | Init tx | [$INIT_MGR_TX]($EXPLORER_BASE/tx/$INIT_MGR_TX) |
 
-## Smoke Test
-
-| Field | Value |
-|-------|-------|
-| Create project tx | [$CREATE_TX]($EXPLORER_BASE/tx/$CREATE_TX) |
-| Sponsor tx | [$SPONSOR_TX]($EXPLORER_BASE/tx/$SPONSOR_TX) |
-| Test project ID | \`$PROJECT_ID\` |
-| Amount | $SPONSOR_AMOUNT stroops |
-| Verified | total_raised=$TOTAL_RAISED, sponsor_count=$SPONSOR_COUNT |
-
 ## Native XLM SAC
 
 \`$XLM_SAC_ADDRESS\`
 
 ## Network
 
-- Network: Stellar Testnet
+- Network: Stellar Mainnet
 - RPC: $RPC_URL
 - Passphrase: \`$NETWORK_PASSPHRASE\`
 - Explorer: $EXPLORER_BASE
@@ -206,6 +213,32 @@ Last deployed: $TIMESTAMP
 > **Warning:** Re-running with \`--confirm-redeploy\` deploys **fresh** contracts at
 > **new** addresses. Projects under old addresses become unreachable. Update all
 > environment files and inform all users.
+
+## On-chain sponsorship storage
+
+`SponsorshipManager` stores each successful sponsorship as persistent Soroban
+data and maintains project/sponsor indexes. `ProjectRegistry` stores project
+funding totals, distinct sponsor count, donation count, timestamps, and active
+status. The frontend reads these values through the paginated contract methods;
+events are observability-only.
+
+## Project ownership and maintainer authorization
+
+The registration flow revalidates the exact GitHub repository and requires the
+authenticated user to be its owner or an administrator immediately before the
+wallet signs. The registry stores the repository owner/name, maintainer Stellar
+address, and registration timestamp. `unlist_project` only marks a project
+inactive and requires the registered maintainer; `transfer_maintainer` requires
+the current maintainer and appends permanent maintainer history.
+
+Authorization failures use deterministic `ProjectRegistryError` values. Direct
+project reads remain available after unlisting, while active project listings
+filter inactive records.
+
+Storage keys use version markers so an upgraded WASM can lazily decode the
+original v1 project and sponsorship layouts. A fresh deployment has a new
+storage namespace and is not a migration; preserve existing addresses when
+performing an in-place WASM upgrade.
 MDEOF
 echo "  ✓ CONTRACTS.md"
 
@@ -224,10 +257,10 @@ if ! grep -q "^## Contract Addresses" "$README" 2>/dev/null; then
 | SponsorshipManager | \`$MANAGER_ADDRESS\` |
 | Native XLM SAC | \`$XLM_SAC_ADDRESS\` |
 
-> Deployed on Stellar Testnet. See [CONTRACTS.md](./CONTRACTS.md) for full details.
+> Deployed on Stellar Mainnet. See [CONTRACTS.md](./CONTRACTS.md) for full details.
 READMEEOF
 fi
-echo "  ✓ README.md"
+  echo "  ✓ README.md"
 
 # ---- Summary -------------------------------------------------------
 echo ""
@@ -242,10 +275,6 @@ echo ""
 echo "  SponsorshipManager:"
 echo "    $MANAGER_ADDRESS"
 echo "    $EXPLORER_BASE/contract/$MANAGER_ADDRESS"
-echo ""
-echo "  Smoke test:"
-echo "    Create:  $EXPLORER_BASE/tx/$CREATE_TX"
-echo "    Sponsor: $EXPLORER_BASE/tx/$SPONSOR_TX"
 echo ""
 echo "  Files updated:"
 echo "    .env.local"

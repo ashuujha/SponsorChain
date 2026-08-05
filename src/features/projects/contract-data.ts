@@ -2,8 +2,8 @@
  * Contract data types and contract address definitions for ProjectRegistry and SponsorshipManager.
  *
  * All project data on SponsorChain originates directly from the on-chain
- * ProjectRegistry and SponsorshipManager Soroban smart contracts — no database,
- * no in-memory seed maps.
+ * ProjectRegistry and SponsorshipManager Soroban smart contracts — no
+ * off-chain project store and no in-memory project map.
  */
 
 /* ── Types (mirror contract structs) ──────────────────────────── */
@@ -12,30 +12,52 @@ export interface ProjectData {
   id: bigint;
   owner: string;
   repoFullName: string;
+  repositoryOwner: string;
+  repositoryName: string;
   name: string;
   description: string;
   totalRaised: string; // i128 as decimal string
-  sponsorCount: number;
+  sponsorCount: number; // distinct sponsor addresses
+  totalDonations: bigint;
   createdAt: bigint;
+  lastSponsoredAt: bigint;
   active: boolean;
 }
 
 export interface SponsorshipData {
   id: bigint;
-  sponsor: string;
   projectId: bigint;
+  sponsor: string;
   amount: string; // i128 as decimal string
   timestamp: bigint;
   txHash: string | null;
+  sponsorMessage: string | null;
+  donationNumber: bigint;
 }
 
 /* ── Contract Addresses ───────────────────────────────────────── */
 
 export const REGISTRY_CONTRACT_ID =
-  process.env.NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS ||
-  "CATJVEHP2UCMX3MMI2JOIY5TFXODM33ZKUXGGG5AE5QTBGEMXW4EUOQ3";
+  process.env.NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS || "";
 export const MANAGER_CONTRACT_ID =
-  process.env.NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS ||
-  "CDADO5ZDVBTTCLXPMDUGN4J4NMG7XMDNTNQDNEELRNIDE7SABASUMZTW";
+  process.env.NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS || "";
 export const XLM_SAC_ADDRESS =
-  "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC";
+  process.env.NEXT_PUBLIC_XLM_SAC_ADDRESS || "";
+
+export function requireProjectRegistryContractId(): string {
+  if (!REGISTRY_CONTRACT_ID) {
+    throw new Error(
+      "NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS is required for the Stellar Mainnet ProjectRegistry."
+    );
+  }
+  return REGISTRY_CONTRACT_ID;
+}
+
+export function requireSponsorshipManagerContractId(): string {
+  if (!MANAGER_CONTRACT_ID) {
+    throw new Error(
+      "NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS is required for Mainnet sponsorships."
+    );
+  }
+  return MANAGER_CONTRACT_ID;
+}

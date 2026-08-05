@@ -2,9 +2,7 @@ import { useEffect } from "react";
 import { useWalletStore } from "./wallet-store";
 import {
   fetchAccountFromHorizon,
-  checkNeedsFunding,
   getNativeBalance,
-  fundAccountViaFriendbot,
 } from "./wallet-service";
 import type { StellarWalletsKit, ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
 
@@ -24,7 +22,7 @@ export async function getKit() {
   } = await import("@creit.tech/stellar-wallets-kit");
 
   kitInstance = new KitClass({
-    network: WalletNetwork.TESTNET,
+    network: WalletNetwork.PUBLIC,
     modules: [
       new FreighterModule(),
       new xBullModule(),
@@ -46,23 +44,6 @@ export function useWallet() {
       const balance = getNativeBalance(account);
       store.setBalance(balance);
 
-      const needsFunding = checkNeedsFunding(account);
-      if (needsFunding) {
-        store.setFundingState({ isFunding: true, fundingError: null, hasFunded: false });
-        try {
-          await fundAccountViaFriendbot(address);
-          const fundedAccount = await fetchAccountFromHorizon(address);
-          const newBalance = getNativeBalance(fundedAccount);
-          store.setBalance(newBalance);
-          store.setFundingState({ isFunding: false, hasFunded: true });
-        } catch (fundErr) {
-          console.error("Funding failed:", fundErr);
-          store.setFundingState({
-            isFunding: false,
-            fundingError: "Friendbot funding failed. Your account may already be funded or rate limited.",
-          });
-        }
-      }
     } catch (err) {
       console.error("Failed to fetch balance from Horizon:", err);
     }
@@ -70,7 +51,7 @@ export function useWallet() {
 
   useEffect(() => {
     const savedAddress = localStorage.getItem("sponsorchain_wallet_pk") || store.publicKey;
-    const savedNetwork = localStorage.getItem("sponsorchain_wallet_net") || store.network || "TESTNET";
+    const savedNetwork = "PUBLIC";
     const savedType = localStorage.getItem("sponsorchain_wallet_type") || store.walletType;
 
     if (savedAddress) {
@@ -138,18 +119,18 @@ export function useWallet() {
                     ? currentNetwork
                     : currentNetwork?.network || "";
                 
-                if (networkName && networkName.toUpperCase() !== "TESTNET") {
+                if (networkName && !["PUBLIC", "MAINNET"].includes(networkName.toUpperCase())) {
                   store.setConnectionError(
-                    "Network mismatch detected. Please switch your Freighter wallet to Testnet."
+                    "Network mismatch detected. Please switch your wallet to Stellar Mainnet."
                   );
                   return;
                 }
               }
             }
 
-            store.setConnection(address, "TESTNET", option.id);
+            store.setConnection(address, "PUBLIC", option.id);
             localStorage.setItem("sponsorchain_wallet_pk", address);
-            localStorage.setItem("sponsorchain_wallet_net", "TESTNET");
+            localStorage.setItem("sponsorchain_wallet_net", "PUBLIC");
             localStorage.setItem("sponsorchain_wallet_type", option.id);
             
             await refreshBalance(address);

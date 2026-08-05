@@ -1,3 +1,5 @@
+import { HORIZON_URL } from "@/lib/stellar-config";
+
 export interface HorizonAccountResponse {
   balances: {
     asset_type: string;
@@ -29,7 +31,7 @@ export function getNativeBalance(account: HorizonAccountResponse | null): string
  * Queries the Stellar Horizon API for account details
  */
 export async function fetchAccountFromHorizon(publicKey: string): Promise<HorizonAccountResponse | null> {
-  const url = `https://horizon-testnet.stellar.org/accounts/${publicKey}`;
+  const url = `${HORIZON_URL}/accounts/${publicKey}`;
   
   try {
     const res = await fetch(url, {
@@ -53,35 +55,6 @@ export async function fetchAccountFromHorizon(publicKey: string): Promise<Horizo
       return null;
     }
     throw error;
-  }
-}
-
-/**
- * Invokes Stellar Friendbot to fund a testnet account
- */
-export async function fundAccountViaFriendbot(publicKey: string): Promise<void> {
-  const url = `https://friendbot.stellar.org/?addr=${publicKey}`;
-  
-  try {
-    const res = await fetch(url, {
-      method: "GET",
-    });
-
-    if (res.status === 429) {
-      throw new Error("Friendbot rate limit exceeded. Please try again in a few minutes.");
-    }
-
-    if (!res.ok) {
-      throw new Error(`Friendbot failed with status ${res.status}`);
-    }
-
-    // Success response indicates account is successfully funded
-    await res.json();
-  } catch (error) {
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error("Failed to contact Friendbot network.");
   }
 }
 

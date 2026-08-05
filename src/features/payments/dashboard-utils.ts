@@ -36,7 +36,7 @@ export interface SponsorshipInput {
 }
 
 /**
- * Pure function to group Postgres sponsorships by project, aggregating amounts and dates.
+ * Pure function to group sponsorship records by project, aggregating amounts and dates.
  */
 export function groupSponsorshipsByProject(sponsorships: SponsorshipInput[]): GroupedSponsorship[] {
   const groups: Record<string, GroupedSponsorship> = {};

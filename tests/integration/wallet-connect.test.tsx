@@ -16,7 +16,7 @@ function createMockWallet(overrides: Record<string, unknown> = {}) {
   return {
     publicKey: null,
     isConnected: false,
-    network: "TESTNET",
+    network: "PUBLIC",
     walletType: null as string | null,
     balance: "0.0000000",
     isFunding: false,

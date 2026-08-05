@@ -23,7 +23,7 @@ export default function TransactionsPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8 sm:mb-12 border-b border-hairline pb-6 sm:pb-8">
           <div>
             <div className="caption-uppercase text-muted mb-2 text-[10px] sm:text-xs">
-              STELLAR TESTNET // LEDGER TRANSACTIONS
+              STELLAR MAINNET // LEDGER TRANSACTIONS
             </div>
             <h1 className="display-lg font-normal text-foreground uppercase">
               TRANSACTION LOG
@@ -82,7 +82,7 @@ export default function TransactionsPage() {
               cloud_off
             </span>
             <h3 className="font-mono text-base sm:text-lg text-foreground uppercase tracking-[2px]">
-              COULDN&apos;T REACH STELLAR TESTNET
+              COULDN&apos;T REACH STELLAR MAINNET
             </h3>
             <p className="body-serif text-muted text-sm max-w-md mx-auto">
               Failed to fetch live transaction history from Horizon API. Please check network status and retry.
@@ -115,7 +115,7 @@ export default function TransactionsPage() {
               NO TRANSACTIONS RECORDED
             </h3>
             <p className="body-serif text-muted text-sm">
-              No on-chain transaction records found for this address on Stellar Testnet yet.
+              No on-chain transaction records found for this address on Stellar Mainnet yet.
             </p>
           </div>
         ) : (
