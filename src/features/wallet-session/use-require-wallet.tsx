@@ -31,11 +31,11 @@ export function RequireWallet({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-md">
-        <span className="animate-spin material-symbols-outlined text-[40px] text-primary">
+      <div className="flex-grow flex flex-col items-center justify-center py-24 gap-3 text-center min-h-[60vh]">
+        <span className="animate-spin material-symbols-outlined text-[36px] text-black/60">
           progress_activity
         </span>
-        <p className="font-semibold text-on-surface-variant text-body-md">
+        <p className="font-medium text-black/70 text-sm">
           Checking wallet session...
         </p>
       </div>
@@ -46,25 +46,28 @@ export function RequireWallet({
     if (fallback) return <>{fallback}</>;
 
     return (
-      <div className="flex-grow flex flex-col items-center justify-center p-xl text-center min-h-[60vh]">
-        <div className="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center mb-md border border-outline-variant">
-          <span className="material-symbols-outlined text-secondary text-[32px]">
-            account_balance_wallet
-          </span>
+      <div className="flex-grow flex flex-col items-center justify-center px-6 py-20 text-center min-h-[60vh]">
+        <div className="bg-white border border-black/10 rounded-2xl p-8 sm:p-10 max-w-md w-full shadow-sm flex flex-col items-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#2B2644] text-white flex items-center justify-center mb-6 shadow-md">
+            <span className="material-symbols-outlined text-[32px]">
+              account_balance_wallet
+            </span>
+          </div>
+          <h2 className="text-2xl font-medium text-black tracking-tight mb-2">
+            Connect Your Wallet
+          </h2>
+          <p className="text-black/70 text-sm max-w-sm mb-8 leading-relaxed">
+            You need a connected Stellar wallet to access this page. Connect
+            your Freighter, xBull, or Albedo wallet to continue.
+          </p>
+          <button
+            onClick={redirectToConnect}
+            className="bg-black text-white px-8 py-3.5 rounded-full font-medium text-sm hover:bg-gray-800 active:scale-95 transition-all shadow-md inline-flex items-center gap-2"
+          >
+            <span>Connect Wallet</span>
+            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </button>
         </div>
-        <h2 className="font-headline-md text-primary font-bold mb-xs">
-          Connect Your Wallet
-        </h2>
-        <p className="text-secondary max-w-sm mb-lg">
-          You need a connected Stellar wallet to access this page. Connect
-          your Freighter or Albedo wallet to continue.
-        </p>
-        <button
-          onClick={redirectToConnect}
-          className="bg-primary text-on-primary py-md px-xl rounded-full font-bold hover:opacity-90 active:scale-95 transition-all shadow-md"
-        >
-          Go to Wallet Setup
-        </button>
       </div>
     );
   }

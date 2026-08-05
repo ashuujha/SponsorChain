@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import WalletConnectPage from "@/app/(dashboard)/wallet/page";
+import WalletConnectPage from "@/app/(main)/wallet/page";
 import { useWallet } from "@/features/wallet/use-wallet";
 
 // Mock the wallet hook

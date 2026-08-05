@@ -1,8 +1,22 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 export default function LandingPage() {
+  const [scrollRatio, setScrollRatio] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const ratio = Math.min(Math.max(scrollY / 500, 0), 1);
+      setScrollRatio(ratio);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const heroBrands = [
     { name: "Stripe", style: { fontFamily: "Georgia, serif", fontWeight: 700, letterSpacing: "-0.02em", fontSize: "15px" } },
     { name: "Coinbase", style: { fontFamily: "Arial, sans-serif", fontWeight: 900, letterSpacing: "0.08em", fontSize: "13px", textTransform: "uppercase" as const } },
@@ -26,36 +40,66 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col bg-[#F5F5F5] min-h-screen text-black overflow-x-hidden">
-      {/* 1. HERO SECTION CONTAINER */}
+      {/* 1. HERO SECTION CONTAINER WITH DYNAMIC SCROLL BLUR ANIMATION */}
       <div className="h-screen flex flex-col overflow-hidden w-full max-w-[88rem] mx-auto px-6 pt-20 pb-6">
-        <div className="relative w-full rounded-2xl overflow-hidden flex-1" style={{ height: "calc(100vh - 96px)" }}>
-          {/* Background Video */}
+        <div
+          className="relative w-full rounded-2xl overflow-hidden flex-1 transition-all duration-300 shadow-lg"
+          style={{ height: "calc(100vh - 96px)" }}
+        >
+          {/* Background Video with Dynamic Scroll Blur */}
           <video
             autoPlay
             muted
             loop
             playsInline
-            className="object-cover absolute inset-0 w-full h-full"
+            className="object-cover absolute inset-0 w-full h-full transition-all duration-300 ease-out"
+            style={{
+              filter: `blur(${scrollRatio * 14}px) brightness(${1 - scrollRatio * 0.15})`,
+              transform: `scale(${1 + scrollRatio * 0.05})`,
+            }}
             src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260423_161253_c72b1869-400f-45ed-ac0c-52f68c2ed5bd.mp4"
           />
 
-          {/* Content Overlay */}
+          {/* Soft Blur Edge Overlays for Modern Dynamic Depth */}
+          <div
+            className="absolute inset-y-0 left-0 w-28 pointer-events-none transition-opacity duration-300"
+            style={{
+              background: "linear-gradient(to right, rgba(245, 245, 245, 0.4), transparent)",
+              backdropFilter: `blur(${Math.max(scrollRatio * 10, 2)}px)`,
+            }}
+          />
+          <div
+            className="absolute inset-y-0 right-0 w-28 pointer-events-none transition-opacity duration-300"
+            style={{
+              background: "linear-gradient(to left, rgba(245, 245, 245, 0.4), transparent)",
+              backdropFilter: `blur(${Math.max(scrollRatio * 10, 2)}px)`,
+            }}
+          />
+          <div
+            className="absolute inset-x-0 bottom-0 h-32 pointer-events-none transition-opacity duration-300"
+            style={{
+              background: "linear-gradient(to top, rgba(245, 245, 245, 0.6), transparent)",
+              backdropFilter: `blur(${Math.max(scrollRatio * 12, 4)}px)`,
+            }}
+          />
+
+          {/* Foreground Content Overlay */}
           <div className="relative z-10 flex flex-col items-start justify-start h-full p-8 md:p-12 pt-28 md:pt-36">
             <h1
-              className="text-black text-5xl md:text-6xl font-medium leading-tight max-w-xl mb-4 whitespace-pre-line"
+              className="text-black text-5xl md:text-6xl font-medium leading-tight max-w-xl mb-4 whitespace-pre-line drop-shadow-xs"
               style={{ letterSpacing: "-0.04em" }}
             >
               {"Fund Open Source.\nDirectly."}
             </h1>
 
-            <p className="text-black/70 text-base md:text-lg max-w-md mb-8 leading-relaxed font-sans">
+            <p className="text-black/80 text-base md:text-lg max-w-md mb-8 leading-relaxed font-sans">
               A decentralized open-source sponsorship platform built on Stellar. Verified GitHub maintainers receive direct, transparent XLM contributions over Soroban &amp; Horizon.
             </p>
 
             {/* Pill button "Start Sponsoring" with arrow circle */}
             <Link
               href="/explore"
-              className="inline-flex items-center gap-3 bg-black text-white text-base md:text-lg font-medium pl-8 pr-2 py-2 rounded-full hover:bg-gray-800 transition-colors duration-200 group shadow-md"
+              className="inline-flex items-center gap-3 bg-black text-white text-base md:text-lg font-medium pl-8 pr-2 py-2 rounded-full hover:bg-gray-800 transition-all duration-200 group shadow-md hover:shadow-lg active:scale-95"
             >
               <span>Start Sponsoring</span>
               <div className="bg-white rounded-full p-2 flex items-center justify-center transition-transform group-hover:translate-x-0.5">
@@ -167,23 +211,92 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 4. USE CASES SECTION */}
+      {/* 4. USE CASES & SPECIFICATION SECTION (Fills empty space in image 2) */}
       <section className="bg-[#F5F5F5] px-6 py-24">
-        <div className="max-w-[88rem] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          {/* Left Column */}
-          <div className="md:pr-12 md:pt-2">
-            <span className="text-black/60 text-sm mb-2 block uppercase tracking-wider font-mono">
-              SponsorChain in Practice
-            </span>
-            <h2 className="text-5xl md:text-6xl font-medium leading-none mb-6" style={{ letterSpacing: "-0.04em" }}>
-              Sponsor Open Source
-            </h2>
-            <p className="text-black/60 text-base leading-relaxed max-w-sm">
-              SponsorChain powers a wide range of modes for builders, companies, and treasuries wanting safe, transparent, and direct open-source sponsorship integrations.
-            </p>
+        <div className="max-w-[88rem] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-stretch">
+          {/* Left Column — Feature Specifications & Core Architecture (Fills the white space!) */}
+          <div className="flex flex-col justify-between space-y-8 md:pr-4">
+            <div>
+              <span className="text-black/60 text-xs font-mono uppercase tracking-widest block mb-3">
+                SPONSORCHAIN IN PRACTICE // ARCHITECTURE SPECIFICATION
+              </span>
+              <h2 className="text-5xl md:text-6xl font-medium leading-none mb-6" style={{ letterSpacing: "-0.04em" }}>
+                Sponsor Open Source
+              </h2>
+              <p className="text-black/70 text-base leading-relaxed max-w-lg mb-8 font-normal">
+                SponsorChain powers a wide range of modes for builders, companies, and treasuries wanting safe, transparent, and direct open-source sponsorship integrations.
+              </p>
+
+              {/* 4 Specification Feature Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div className="bg-white border border-black/10 rounded-2xl p-5 shadow-xs hover:border-black/30 transition-all duration-200 hover:-translate-y-0.5 space-y-2">
+                  <div className="flex items-center gap-2 text-black">
+                    <span className="material-symbols-outlined text-[22px]">shield_lock</span>
+                    <h4 className="font-medium text-sm">Soroban Smart Contracts</h4>
+                  </div>
+                  <p className="text-xs text-black/60 leading-relaxed">
+                    Automated, non-custodial WASM contract execution on Stellar Testnet for transparent project registration.
+                  </p>
+                </div>
+
+                <div className="bg-white border border-black/10 rounded-2xl p-5 shadow-xs hover:border-black/30 transition-all duration-200 hover:-translate-y-0.5 space-y-2">
+                  <div className="flex items-center gap-2 text-black">
+                    <span className="material-symbols-outlined text-[22px]">verified_user</span>
+                    <h4 className="font-medium text-sm">GitHub OAuth Verification</h4>
+                  </div>
+                  <p className="text-xs text-black/60 leading-relaxed">
+                    Cryptographic proof of repository maintainership via OAuth token verification and Soroban signatures.
+                  </p>
+                </div>
+
+                <div className="bg-white border border-black/10 rounded-2xl p-5 shadow-xs hover:border-black/30 transition-all duration-200 hover:-translate-y-0.5 space-y-2">
+                  <div className="flex items-center gap-2 text-black">
+                    <span className="material-symbols-outlined text-[22px]">bolt</span>
+                    <h4 className="font-medium text-sm">Stellar Horizon RPC</h4>
+                  </div>
+                  <p className="text-xs text-black/60 leading-relaxed">
+                    Sub-second transaction finality &amp; real-time event streaming for instant payment verification.
+                  </p>
+                </div>
+
+                <div className="bg-white border border-black/10 rounded-2xl p-5 shadow-xs hover:border-black/30 transition-all duration-200 hover:-translate-y-0.5 space-y-2">
+                  <div className="flex items-center gap-2 text-black">
+                    <span className="material-symbols-outlined text-[22px]">percent</span>
+                    <h4 className="font-medium text-sm">Zero Platform Fees</h4>
+                  </div>
+                  <p className="text-xs text-black/60 leading-relaxed">
+                    100% of sponsored XLM reaches the maintainer directly. Uncompromised open-source funding.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Platform Specifications Banner at Bottom of Left Column */}
+            <div className="bg-[#2B2644] text-white rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <span className="text-xs font-mono uppercase tracking-wider text-white/60">ENGINE METRICS</span>
+                <span className="text-xs font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-3 py-1 rounded-full">
+                  Stellar Testnet Live
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-center pt-1">
+                <div>
+                  <span className="block text-[10px] font-mono text-white/50 uppercase tracking-wider">SETTLEMENT</span>
+                  <span className="text-sm font-semibold text-white">&lt; 5s Finality</span>
+                </div>
+                <div className="border-x border-white/10">
+                  <span className="block text-[10px] font-mono text-white/50 uppercase tracking-wider">CUSTODY</span>
+                  <span className="text-sm font-semibold text-white">100% Direct</span>
+                </div>
+                <div>
+                  <span className="block text-[10px] font-mono text-white/50 uppercase tracking-wider">SECURITY</span>
+                  <span className="text-sm font-semibold text-white">Soroban WASM</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Right Column */}
+          {/* Right Column — Video Card */}
           <div className="relative rounded-3xl overflow-hidden min-h-[640px] flex items-end shadow-md">
             <video
               autoPlay
@@ -216,4 +329,3 @@ export default function LandingPage() {
     </div>
   );
 }
-

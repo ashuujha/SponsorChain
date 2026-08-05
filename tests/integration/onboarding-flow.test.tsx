@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import ListProjectPage from "@/app/list-project/page";
+import ListProjectPage from "@/app/(main)/list-project/page";
 
 // Mock next-auth react hooks
 vi.mock("next-auth/react", () => ({

@@ -123,56 +123,45 @@ export default function ExplorePage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filtered.map((project, idx) => {
-            const isFeaturedCard = idx % 3 === 1;
-            return (
-              <Link key={project.id.toString()} href={`/projects/${project.id}`} className="block group">
-                <div className={`rounded-2xl p-7 h-full flex flex-col justify-between transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md hover:-translate-y-1 ${
-                  isFeaturedCard ? "bg-[#2B2644] text-white border border-[#2B2644]" : "bg-white text-black border border-black/10 hover:border-black/30"
-                }`}>
-                  <div>
-                    <div className="flex items-start justify-between mb-6">
-                      <ProjectAvatar name={project.name} size="md" />
-                      <span className={`text-xs font-mono font-medium px-3 py-1 rounded-full border ${
-                        isFeaturedCard ? "border-white/20 text-white/90 bg-white/10" : "border-black/10 text-black/70 bg-black/5"
-                      }`}>
-                        On-Chain
-                      </span>
-                    </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+          {filtered.map((project) => (
+            <Link key={project.id.toString()} href={`/projects/${project.id}`} className="block group">
+              <div className="bg-white text-black border border-black/10 hover:border-black/30 rounded-2xl p-7 h-full flex flex-col justify-between transition-all duration-200 cursor-pointer shadow-xs hover:shadow-md hover:-translate-y-1">
+                <div>
+                  <div className="flex items-start justify-between mb-6">
+                    <ProjectAvatar name={project.name} size="md" />
+                    <span className="text-xs font-mono font-medium px-3 py-1 rounded-full border border-black/10 text-black/70 bg-black/5">
+                      On-Chain
+                    </span>
+                  </div>
 
-                    <div className="mb-3">
-                      <h3 className={`text-xl font-medium tracking-tight truncate transition-colors ${
-                        isFeaturedCard ? "group-hover:text-white/80" : "group-hover:text-black/70"
-                      }`}>
-                        {project.name}
-                      </h3>
-                      <p className={`text-xs font-mono truncate mt-1 ${isFeaturedCard ? "text-white/60" : "text-black/50"}`}>
-                        {project.repoFullName}
-                      </p>
-                    </div>
-
-                    <p className={`text-sm line-clamp-3 mb-6 font-normal ${isFeaturedCard ? "text-white/70" : "text-black/70"}`}>
-                      {project.description}
+                  <div className="mb-3">
+                    <h3 className="text-xl font-medium tracking-tight truncate group-hover:text-black/70 transition-colors">
+                      {project.name}
+                    </h3>
+                    <p className="text-xs font-mono truncate mt-1 text-black/50">
+                      {project.repoFullName}
                     </p>
                   </div>
 
-                  <div className={`pt-4 border-t flex items-center justify-between text-xs ${
-                    isFeaturedCard ? "border-white/10" : "border-black/10"
-                  }`}>
-                    <div>
-                      <span className={`block text-[11px] font-mono ${isFeaturedCard ? "text-white/50" : "text-black/40"}`}>RAISED</span>
-                      <span className="font-semibold text-sm">{formatXlm(project.totalRaised)} XLM</span>
-                    </div>
-                    <div className="text-right">
-                      <span className={`block text-[11px] font-mono ${isFeaturedCard ? "text-white/50" : "text-black/40"}`}>SPONSORS</span>
-                      <span className="font-semibold text-sm">{project.sponsorCount}</span>
-                    </div>
+                  <p className="text-sm line-clamp-3 mb-6 font-normal text-black/70">
+                    {project.description}
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-black/10 flex items-center justify-between text-xs">
+                  <div>
+                    <span className="block text-[11px] font-mono text-black/40 uppercase tracking-wider">RAISED</span>
+                    <span className="font-semibold text-sm">{formatXlm(project.totalRaised)} XLM</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="block text-[11px] font-mono text-black/40 uppercase tracking-wider">SPONSORS</span>
+                    <span className="font-semibold text-sm">{project.sponsorCount}</span>
                   </div>
                 </div>
-              </Link>
-            );
-          })}
+              </div>
+            </Link>
+          ))}
         </div>
       )}
     </div>
