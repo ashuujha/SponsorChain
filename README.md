@@ -55,7 +55,7 @@ Before deploying contracts or running the application, ensure your environment h
    ```
 4. **Stellar CLI**: `v22.0.0` or higher
    ```bash
-   cargo install --locked stellar-cli --features opt
+   cargo install --locked stellar-cli
    ```
 5. **Freighter Wallet**: Installed in browser and configured for **Testnet**.
 

@@ -58,7 +58,7 @@ jobs:
         run: |
           if ! command -v stellar &> /dev/null; then
             echo "Installing Stellar CLI..."
-            cargo install --locked stellar-cli --features opt
+            cargo install --locked stellar-cli
           fi
           stellar --version
 

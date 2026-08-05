@@ -26,7 +26,7 @@ echo ""
 # Tooling check
 if ! command -v stellar &> /dev/null; then
   echo -e "${RED}✗ Error: 'stellar' CLI is not installed or not in PATH.${NC}"
-  echo "  Please install Stellar CLI: cargo install --locked stellar-cli --features opt"
+  echo "  Please install Stellar CLI: cargo install --locked stellar-cli"
   exit 1
 fi
 
