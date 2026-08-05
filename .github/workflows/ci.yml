@@ -67,6 +67,10 @@ jobs:
         env:
           NEXTAUTH_SECRET: ci-nexthauth-secret-for-testing-only
           NEXTAUTH_URL: http://localhost:3000
+          # Test-only valid contract-shaped IDs. Production IDs remain
+          # deployment configuration and are never hardcoded in application code.
+          NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS: CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M
+          NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS: CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M
 
       - name: Build
         run: npm run build

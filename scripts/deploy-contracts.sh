@@ -33,7 +33,7 @@ if [[ "${1:-}" == "--confirm-redeploy" ]]; then
   CONFIRMED=true
 fi
 
-if [[ -f "$ENV_LOCAL" ]] && grep -q "NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS" "$ENV_LOCAL" 2>/dev/null; then
+if [[ -f "$ENV_LOCAL" ]] && grep -Eq '^NEXT_PUBLIC_(PROJECT_REGISTRY|SPONSORSHIP_MANAGER)_ADDRESS=C[A-Z2-7]{55}$' "$ENV_LOCAL" 2>/dev/null; then
   if [[ "$CONFIRMED" != true ]]; then
     echo "================================================================"
     echo " WARNING: Contract addresses already exist in .env.local"
