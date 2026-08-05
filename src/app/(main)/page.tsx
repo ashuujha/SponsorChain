@@ -46,40 +46,33 @@ export default function LandingPage() {
           className="relative w-full rounded-2xl overflow-hidden flex-1 transition-all duration-300 shadow-lg"
           style={{ height: "calc(100vh - 96px)" }}
         >
-          {/* Background Video with Dynamic Scroll Blur */}
+          {/* Background Video — Crisp & Clear */}
           <video
             autoPlay
             muted
             loop
             playsInline
-            className="object-cover absolute inset-0 w-full h-full transition-all duration-300 ease-out"
-            style={{
-              filter: `blur(${scrollRatio * 14}px) brightness(${1 - scrollRatio * 0.15})`,
-              transform: `scale(${1 + scrollRatio * 0.05})`,
-            }}
+            className="object-cover absolute inset-0 w-full h-full"
             src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260423_161253_c72b1869-400f-45ed-ac0c-52f68c2ed5bd.mp4"
           />
 
-          {/* Soft Blur Edge Overlays for Modern Dynamic Depth */}
+          {/* Left Side Dynamic Blur Scroll Animation */}
           <div
-            className="absolute inset-y-0 left-0 w-28 pointer-events-none transition-opacity duration-300"
+            className="absolute inset-y-0 left-0 w-24 sm:w-36 md:w-48 pointer-events-none transition-all duration-200 z-10"
             style={{
-              background: "linear-gradient(to right, rgba(245, 245, 245, 0.4), transparent)",
-              backdropFilter: `blur(${Math.max(scrollRatio * 10, 2)}px)`,
+              background: "linear-gradient(to right, rgba(245, 245, 245, 0.75), rgba(245, 245, 245, 0.25) 60%, transparent)",
+              backdropFilter: `blur(${scrollRatio * 16}px)`,
+              WebkitBackdropFilter: `blur(${scrollRatio * 16}px)`,
             }}
           />
+
+          {/* Right Side Dynamic Blur Scroll Animation */}
           <div
-            className="absolute inset-y-0 right-0 w-28 pointer-events-none transition-opacity duration-300"
+            className="absolute inset-y-0 right-0 w-24 sm:w-36 md:w-48 pointer-events-none transition-all duration-200 z-10"
             style={{
-              background: "linear-gradient(to left, rgba(245, 245, 245, 0.4), transparent)",
-              backdropFilter: `blur(${Math.max(scrollRatio * 10, 2)}px)`,
-            }}
-          />
-          <div
-            className="absolute inset-x-0 bottom-0 h-32 pointer-events-none transition-opacity duration-300"
-            style={{
-              background: "linear-gradient(to top, rgba(245, 245, 245, 0.6), transparent)",
-              backdropFilter: `blur(${Math.max(scrollRatio * 12, 4)}px)`,
+              background: "linear-gradient(to left, rgba(245, 245, 245, 0.75), rgba(245, 245, 245, 0.25) 60%, transparent)",
+              backdropFilter: `blur(${scrollRatio * 16}px)`,
+              WebkitBackdropFilter: `blur(${scrollRatio * 16}px)`,
             }}
           />
 
