@@ -69,9 +69,9 @@ const config: Config = {
         "container-max": "1536px",
       },
       fontFamily: {
-        sans: ["Space Mono", "monospace"],
-        serif: ["Space Mono", "monospace"],
-        mono: ["Space Mono", "monospace"],
+        sans: ["var(--font-inter)", "Saira Condensed", "system-ui", "-apple-system", "sans-serif"],
+        serif: ["Cormorant Garamond", "EB Garamond", "Garamond", "Times New Roman", "serif"],
+        mono: ["ui-monospace", "SF Mono", "JetBrains Mono", "Cascadia Mono", "monospace"],
       },
     },
   },
