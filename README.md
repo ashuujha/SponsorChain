@@ -242,10 +242,12 @@ npm run test            # Vitest unit test suite
 
 ## Contract Addresses
 
+## Contract Addresses
+
 | Contract | Address |
 |----------|---------|
-| ProjectRegistry | `CCFZTMW6EGAISQB6BYTXHTQVS4BHM6TK7MWI6AXIPI2W6HK2KADNATZB` |
-| SponsorshipManager | `CAT2V2RJAFMGNKVWKTUPBSX7TAUQMJV5DJWTGJRLSSGDC7L3AFABDVYX` |
+| ProjectRegistry | `CAEKKUPEMMHVT4GOFHFCPFNWTOCNQLZS4I6K3ZMTZ46U3NALLOFZF4KN` |
+| SponsorshipManager | `CBGXW4TNDANOCHWA7VXZJ2IUCHEKAUN3KN4TG72ZFNS3GMCRKU45JAZA` |
 | Native XLM SAC | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
 
-> Deployed on Stellar Testnet (2026-08-05T18:34:31Z). See [CONTRACTS.md](./CONTRACTS.md) for full deployment details.
+> Deployed on Stellar Testnet (2026-08-05T19:36:24Z). See [CONTRACTS.md](./CONTRACTS.md) for full deployment details.

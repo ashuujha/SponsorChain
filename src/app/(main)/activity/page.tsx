@@ -49,6 +49,27 @@ export default function ActivityPage() {
     loadMyProjects();
   }, [loadMyProjects]);
 
+  const formatActionError = (err: unknown): string => {
+    const rawMessage = err instanceof Error ? err.message : String(err || "");
+    if (rawMessage.includes("trying to invoke non-existent contract function")) {
+      return "The contract deployed at this address does not support unlisting. Please refresh your browser to use the updated Stellar Testnet contract.";
+    }
+    if (rawMessage.includes("UnauthorizedMaintainer") || rawMessage.includes("Error(Contract, #7)")) {
+      return "Unauthorized: Only the registered maintainer wallet can unlist this repository.";
+    }
+    if (rawMessage.includes("ProjectInactive") || rawMessage.includes("Error(Contract, #6)")) {
+      return "This project has already been unlisted.";
+    }
+    if (rawMessage.includes("User declined") || rawMessage.includes("rejected")) {
+      return "Transaction was cancelled in wallet.";
+    }
+    const diagnosticMatch = rawMessage.match(/data:\["([^"]+)"/);
+    if (diagnosticMatch && diagnosticMatch[1]) {
+      return `Unlist transaction failed: ${diagnosticMatch[1]}`;
+    }
+    return rawMessage.length > 180 ? `${rawMessage.slice(0, 180)}...` : rawMessage;
+  };
+
   const handleUnlist = async (projectId: bigint) => {
     if (!wallet.publicKey) return;
     setUnlistingId(projectId);
@@ -65,7 +86,7 @@ export default function ActivityPage() {
       refetchEvents();
     } catch (err) {
       console.error("Unlist error:", err);
-      setActionError(err instanceof Error ? err.message : "Failed to unlist project on-chain");
+      setActionError(formatActionError(err));
     } finally {
       setUnlistingId(null);
     }

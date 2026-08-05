@@ -1,23 +1,23 @@
 # Contract Addresses
 
-Last deployed: 2026-08-05T18:34:31Z
+Last deployed: 2026-08-05T19:36:24Z
 
 ## ProjectRegistry
 
 | Field | Value |
 |-------|-------|
-| Contract address | `CCFZTMW6EGAISQB6BYTXHTQVS4BHM6TK7MWI6AXIPI2W6HK2KADNATZB` |
+| Contract address | `CAEKKUPEMMHVT4GOFHFCPFNWTOCNQLZS4I6K3ZMTZ46U3NALLOFZF4KN` |
 | WASM hash | `1493a1b2178fca0412ccbcfe43babeebe5eb00c318375dcfdae1aa8126a97765` |
-| Init tx | [5d5c7f981cc3fd4172112a9a895b2055d7ad777b4b45d63e69b15136469f74a3](https://stellar.expert/explorer/testnet/tx/5d5c7f981cc3fd4172112a9a895b2055d7ad777b4b45d63e69b15136469f74a3) |
-| Link tx | [9e513b7909fbc334cf027295a7468324e6220b7b14b6ddf66844b9075b031fbc](https://stellar.expert/explorer/testnet/tx/9e513b7909fbc334cf027295a7468324e6220b7b14b6ddf66844b9075b031fbc) |
+| Init tx | [44a96e81b908b433e91289dc9d97356fb8a46a1b1d98f0e7db3eedd4b8269d05](https://stellar.expert/explorer/testnet/tx/44a96e81b908b433e91289dc9d97356fb8a46a1b1d98f0e7db3eedd4b8269d05) |
+| Link tx | [0f559699922ea6bd6890804a5d022cf895c05a1699ebc33e2c85cc3cccfdfd88](https://stellar.expert/explorer/testnet/tx/0f559699922ea6bd6890804a5d022cf895c05a1699ebc33e2c85cc3cccfdfd88) |
 
 ## SponsorshipManager
 
 | Field | Value |
 |-------|-------|
-| Contract address | `CAT2V2RJAFMGNKVWKTUPBSX7TAUQMJV5DJWTGJRLSSGDC7L3AFABDVYX` |
+| Contract address | `CBGXW4TNDANOCHWA7VXZJ2IUCHEKAUN3KN4TG72ZFNS3GMCRKU45JAZA` |
 | WASM hash | `ffff037db971b0bd470a9143909b16e281fdbd5f81333e717f1b83934a67f401` |
-| Init tx | [80c35194c6cd43f5fb5e5f1bd15415ac62802ff146c81087bfb3f5c83b2cbf0f](https://stellar.expert/explorer/testnet/tx/80c35194c6cd43f5fb5e5f1bd15415ac62802ff146c81087bfb3f5c83b2cbf0f) |
+| Init tx | [4a1aff005447159ea55308b51c7eae4a4be9cea97c3a6981dab1e0909ff86fb4](https://stellar.expert/explorer/testnet/tx/4a1aff005447159ea55308b51c7eae4a4be9cea97c3a6981dab1e0909ff86fb4) |
 
 ## Native XLM SAC
 
