@@ -1,22 +1,8 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 export default function LandingPage() {
-  const [scrollRatio, setScrollRatio] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const ratio = Math.min(Math.max(scrollY / 500, 0), 1);
-      setScrollRatio(ratio);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   const heroBrands = [
     { name: "Stripe", style: { fontFamily: "Georgia, serif", fontWeight: 700, letterSpacing: "-0.02em", fontSize: "15px" } },
     { name: "Coinbase", style: { fontFamily: "Arial, sans-serif", fontWeight: 900, letterSpacing: "0.08em", fontSize: "13px", textTransform: "uppercase" as const } },
@@ -40,13 +26,13 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col bg-[#F5F5F5] min-h-screen text-black overflow-x-hidden">
-      {/* 1. HERO SECTION CONTAINER WITH DYNAMIC SCROLL BLUR ANIMATION */}
+      {/* 1. HERO SECTION CONTAINER */}
       <div className="h-screen flex flex-col overflow-hidden w-full max-w-[88rem] mx-auto px-6 pt-20 pb-6">
         <div
-          className="relative w-full rounded-2xl overflow-hidden flex-1 transition-all duration-300 shadow-lg"
+          className="relative w-full rounded-2xl overflow-hidden flex-1 shadow-lg"
           style={{ height: "calc(100vh - 96px)" }}
         >
-          {/* Background Video — Crisp & Clear */}
+          {/* Background Video */}
           <video
             autoPlay
             muted
@@ -54,26 +40,6 @@ export default function LandingPage() {
             playsInline
             className="object-cover absolute inset-0 w-full h-full"
             src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260423_161253_c72b1869-400f-45ed-ac0c-52f68c2ed5bd.mp4"
-          />
-
-          {/* Left Side Dynamic Blur Scroll Animation */}
-          <div
-            className="absolute inset-y-0 left-0 w-24 sm:w-36 md:w-48 pointer-events-none transition-all duration-200 z-10"
-            style={{
-              background: "linear-gradient(to right, rgba(245, 245, 245, 0.75), rgba(245, 245, 245, 0.25) 60%, transparent)",
-              backdropFilter: `blur(${scrollRatio * 16}px)`,
-              WebkitBackdropFilter: `blur(${scrollRatio * 16}px)`,
-            }}
-          />
-
-          {/* Right Side Dynamic Blur Scroll Animation */}
-          <div
-            className="absolute inset-y-0 right-0 w-24 sm:w-36 md:w-48 pointer-events-none transition-all duration-200 z-10"
-            style={{
-              background: "linear-gradient(to left, rgba(245, 245, 245, 0.75), rgba(245, 245, 245, 0.25) 60%, transparent)",
-              backdropFilter: `blur(${scrollRatio * 16}px)`,
-              WebkitBackdropFilter: `blur(${scrollRatio * 16}px)`,
-            }}
           />
 
           {/* Foreground Content Overlay */}
