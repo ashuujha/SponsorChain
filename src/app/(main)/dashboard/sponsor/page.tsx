@@ -1,12 +1,6 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 export default function SponsorDashboardRedirect() {
-  const router = useRouter();
-  useEffect(() => {
-    router.replace("/activity");
-  }, [router]);
-  return null;
+  redirect("/activity");
 }
+
