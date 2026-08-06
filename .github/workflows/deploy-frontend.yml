@@ -50,7 +50,6 @@ jobs:
         run: |
           vercel link --yes \
             --project="$VERCEL_PROJECT_ID" \
-            --team="$VERCEL_ORG_ID" \
             --token="$VERCEL_TOKEN"
 
       - name: Pull Vercel project settings and production environment
@@ -62,7 +61,6 @@ jobs:
           vercel pull --yes \
             --environment=production \
             --project="$VERCEL_PROJECT_ID" \
-            --scope="$VERCEL_ORG_ID" \
             --token="$VERCEL_TOKEN"
 
       - name: Build frontend with Vercel settings
