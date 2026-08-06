@@ -29,6 +29,10 @@ jobs:
       - name: Soroban CLI
         uses: stellar/stellar-cli@v27.0.0
 
+      - name: Build ProjectRegistry WASM dependency
+        run: stellar contract build --package project-registry
+        working-directory: contracts
+
       - name: Node setup
         uses: actions/setup-node@v4
         with:
@@ -61,7 +65,7 @@ jobs:
         working-directory: contracts
 
       - name: Build Rust contracts
-        run: cargo build --locked --workspace --target wasm32v1-none --release
+        run: stellar contract build --package sponsorship-manager
         working-directory: contracts
 
       - name: Verify WASM artifacts
