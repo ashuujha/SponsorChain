@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  attestations: read
 
 jobs:
   checks:
@@ -20,10 +21,13 @@ jobs:
         with:
           targets: wasm32v1-none
 
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: contracts -> target
+
       - name: Soroban CLI
-        run: |
-          cargo install --locked stellar-cli
-          stellar --version
+        uses: stellar/stellar-cli@v27.0.0
 
       - name: Node setup
         uses: actions/setup-node@v4
