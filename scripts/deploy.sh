@@ -8,7 +8,6 @@ set -euo pipefail
 #   --identity NAME       Specify Stellar identity name (default: sponsorchain-deployer)
 #   --network NET         Specify Stellar network (default: testnet)
 #   --rpc-url URL         Specify Soroban RPC endpoint URL
-#   --skip-verify         Skip post-deployment automated verification
 #   -h, --help            Show usage guidance
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -18,7 +17,6 @@ CONFIRM_REDEPLOY=""
 IDENTITY=""
 NETWORK=""
 RPC_URL=""
-SKIP_VERIFY="false"
 
 show_help() {
   echo "SponsorChain Deployment CLI Tool"
@@ -30,7 +28,6 @@ show_help() {
   echo "  --identity NAME       Stellar identity name to use for deployment source key"
   echo "  --network NET         Target network (default: testnet)"
   echo "  --rpc-url URL         Soroban RPC endpoint URL (default: https://soroban-testnet.stellar.org)"
-  echo "  --skip-verify         Skip post-deployment verification script"
   echo "  -h, --help            Show this help menu"
   echo ""
 }
@@ -53,10 +50,6 @@ while [[ $# -gt 0 ]]; do
       RPC_URL="$2"
       shift 2
       ;;
-    --skip-verify)
-      SKIP_VERIFY="true"
-      shift
-      ;;
     -h|--help)
       show_help
       exit 0
@@ -76,9 +69,6 @@ if [[ -n "$RPC_URL" ]]; then export SOROBAN_RPC_URL="$RPC_URL"; fi
 # Execute contract deployment
 bash "$SCRIPT_DIR/deploy-contracts.sh" $CONFIRM_REDEPLOY
 
-# Optionally run post-deployment verification if not skipped
-if [[ "$SKIP_VERIFY" != "true" ]]; then
-  echo ""
-  echo "Running automated verification..."
-  bash "$SCRIPT_DIR/verify-deployment.sh" "$PROJECT_ROOT/.env.local"
-fi
+echo ""
+echo "Running automated verification..."
+bash "$SCRIPT_DIR/verify-deployment.sh" "$PROJECT_ROOT/.env.local"

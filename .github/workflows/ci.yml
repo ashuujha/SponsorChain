@@ -3,57 +3,35 @@ name: CI
 on:
   pull_request:
     branches: [main]
-  push:
-    branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  contracts:
-    name: Contracts — Build & Test
+  checks:
+    name: Lint, test, and build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Install Rust toolchain
+      - name: Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          target: wasm32v1-none
+          targets: wasm32v1-none
 
-      - name: Cache Cargo
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            contracts/target
-          key: cargo-v3-${{ runner.os }}-${{ hashFiles('contracts/**/Cargo.toml') }}
-          restore-keys: cargo-v3-${{ runner.os }}-
-
-      - name: Build contracts
+      - name: Soroban CLI
         run: |
-          cargo build --target wasm32v1-none --release -p project-registry
-          cargo build --target wasm32v1-none --release
-        working-directory: contracts
+          cargo install --locked stellar-cli
+          stellar --version
 
-      - name: Run contract tests
-        run: cargo test -- --nocapture
-        working-directory: contracts
-
-  frontend:
-    name: Frontend — Lint, Typecheck, Test, Build
-    runs-on: ubuntu-latest
-    needs: contracts
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: Node setup
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: Install packages
         run: npm ci
 
       - name: Lint
@@ -62,24 +40,35 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Test
-        run: npm run test -- --run
+      - name: Unit tests
+        run: npm run test -- --run tests/unit
         env:
-          NEXTAUTH_SECRET: ci-nexthauth-secret-for-testing-only
+          NEXTAUTH_SECRET: ci-test-secret
           NEXTAUTH_URL: http://localhost:3000
-          # Test-only valid contract-shaped IDs. Production IDs remain
-          # deployment configuration and are never hardcoded in application code.
-          NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS: CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M
-          NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS: CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M
 
-      - name: Build
+      - name: Integration tests
+        run: npm run test -- --run tests/integration
+        env:
+          NEXTAUTH_SECRET: ci-test-secret
+          NEXTAUTH_URL: http://localhost:3000
+
+      - name: Contract tests
+        run: cargo test --locked --workspace -- --nocapture
+        working-directory: contracts
+
+      - name: Build Rust contracts
+        run: cargo build --locked --workspace --target wasm32v1-none --release
+        working-directory: contracts
+
+      - name: Verify WASM artifacts
+        run: |
+          test -s contracts/target/wasm32v1-none/release/project_registry.wasm
+          test -s contracts/target/wasm32v1-none/release/sponsorship_manager.wasm
+
+      - name: Build frontend
         run: npm run build
         env:
-          NEXTAUTH_SECRET: ci-build-secret-for-build-only
+          NEXTAUTH_SECRET: ci-build-secret
           NEXTAUTH_URL: http://localhost:3000
           GITHUB_CLIENT_ID: ci_mock_id
           GITHUB_CLIENT_SECRET: ci_mock_secret
-          NEXT_PUBLIC_STELLAR_NETWORK: TESTNET
-          NEXT_PUBLIC_HORIZON_URL: https://horizon-testnet.stellar.org
-          NEXT_PUBLIC_SOROBAN_RPC_URL: https://soroban-testnet.stellar.org
-          NEXT_PUBLIC_EXPLORER_BASE: https://stellar.expert/explorer/testnet

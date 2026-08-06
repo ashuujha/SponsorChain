@@ -4,13 +4,14 @@ set -euo pipefail
 # SponsorChain Soroban Smart Contract Deployment Script
 # Compiles WASM, audits hashes & interfaces, uploads & deploys contracts,
 # initializes & links contracts, non-destructively syncs environment files,
-# updates CONTRACTS.md & README.md, and runs automated verification.
+# updates deployment artifacts and CONTRACTS.md, and runs automated verification.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CONTRACTS_DIR="$PROJECT_ROOT/contracts"
 UPDATE_ENV_SCRIPT="$SCRIPT_DIR/update-env.sh"
 VERIFY_SCRIPT="$SCRIPT_DIR/verify-deployment.sh"
+ARTIFACT_SCRIPT="$SCRIPT_DIR/write-deployment-artifacts.mjs"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -266,7 +267,7 @@ LINK_OUT=$(stellar_invoke "$REGISTRY_ADDRESS" set_sponsorship_manager --manager 
 LINK_TX=$(echo "$LINK_OUT" | grep -oP 'tx/\K[a-f0-9]{64}' | head -1 || echo "")
 
 if [[ ! "$LINK_TX" =~ ^[a-f0-9]{64}$ ]]; then
-  if echo "$LINK_OUT" | grep -q "AlreadyInitialized"; then
+  if echo "$LINK_OUT" | grep -qE "AlreadyInitialized|SponsorshipManagerAlreadySet"; then
     echo -e "${YELLOW}  SponsorshipManager already linked.${NC}"
     LINK_TX="already_linked"
   else
@@ -301,9 +302,26 @@ if [[ -f "$ENV_FILE" ]]; then
   sync_env "$ENV_FILE"
 fi
 
-# ---- Step 7: Documentation Updates ---------------------------------
+# ---- Step 7: Synchronize Deployment Artifacts ----------------------
 echo ""
-echo -e "${BLUE}=== Step 7: Updating Documentation Artifacts ===${NC}"
+echo -e "${BLUE}=== Step 7: Generating Deployment Artifacts ===${NC}"
+
+PROJECT_ROOT="$PROJECT_ROOT" \
+STELLAR_NETWORK="$NETWORK" \
+SOROBAN_RPC_URL="$RPC_URL" \
+HORIZON_URL="$HORIZON_URL" \
+EXPLORER_BASE="$EXPLORER_BASE" \
+node "$ARTIFACT_SCRIPT" \
+  "$REGISTRY_ADDRESS" "$MANAGER_ADDRESS" "$XLM_SAC_ADDRESS" \
+  "$INSTALL_REG" "$INSTALL_MGR" \
+  "$INIT_REG_TX" "$INIT_MGR_TX" "$LINK_TX"
+
+sync_env "$ENV_FILE"
+echo -e "${GREEN}  ✓ Generated deployment.json and deployment.env${NC}"
+
+# Keep the human-readable record in sync, but never rewrite README content
+# during CI. README is documentation; deployment.json is the automation API.
+echo -e "${BLUE}=== Step 8: Updating Contract Record ===${NC}"
 
 CONTRACTS_MD="$PROJECT_ROOT/CONTRACTS.md"
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -345,28 +363,9 @@ Last deployed: $TIMESTAMP
 MDEOF
 echo -e "${GREEN}  ✓ Updated CONTRACTS.md${NC}"
 
-README="$PROJECT_ROOT/README.md"
-if grep -q "^## Contract Addresses" "$README" 2>/dev/null; then
-  sed -i '/^## Contract Addresses/,/^## /{ /^## Contract Addresses/!{ /^## /!d; }; }' "$README" 2>/dev/null || true
-fi
-
-cat >> "$README" << READMEEOF
-
-## Contract Addresses
-
-| Contract | Address |
-|----------|---------|
-| ProjectRegistry | \`$REGISTRY_ADDRESS\` |
-| SponsorshipManager | \`$MANAGER_ADDRESS\` |
-| Native XLM SAC | \`$XLM_SAC_ADDRESS\` |
-
-> Deployed on Stellar Testnet ($TIMESTAMP). See [CONTRACTS.md](./CONTRACTS.md) for full deployment details.
-READMEEOF
-echo -e "${GREEN}  ✓ Updated README.md${NC}"
-
 # ---- Step 8: Post-Deployment Verification -------------------------
 echo ""
-echo -e "${BLUE}=== Step 8: Running Post-Deployment Verification ===${NC}"
+echo -e "${BLUE}=== Step 9: Running Post-Deployment Verification ===${NC}"
 bash "$VERIFY_SCRIPT" "$ENV_LOCAL"
 
 echo ""
@@ -379,6 +378,7 @@ echo "  SponsorshipManager:  $MANAGER_ADDRESS"
 echo "  Native XLM SAC:      $XLM_SAC_ADDRESS"
 echo "  Network:             Stellar Testnet"
 echo "  RPC URL:             $RPC_URL"
+echo "  Deployment artifact: $PROJECT_ROOT/deployment.json"
 echo ""
 echo "Next steps:"
 echo "  1. Run 'npm run dev' to start the local Next.js frontend."

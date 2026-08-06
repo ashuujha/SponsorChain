@@ -9,6 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 ENV_FILE="${1:-$PROJECT_ROOT/.env.local}"
+DEPLOYMENT_FILE="${DEPLOYMENT_FILE:-$PROJECT_ROOT/deployment.json}"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -23,12 +24,16 @@ echo ""
 
 ERRORS=0
 
+fail() {
+  echo -e "${RED}FAILED${NC}"
+  echo "  ✗ $1"
+  ERRORS=$((ERRORS + 1))
+}
+
 # 1. Environment File Check
 echo -n "Checking environment file ($ENV_FILE)... "
 if [[ ! -f "$ENV_FILE" ]]; then
-  echo -e "${RED}FAILED${NC}"
-  echo "  ✗ Environment file $ENV_FILE does not exist."
-  ERRORS=$((ERRORS + 1))
+  fail "Environment file $ENV_FILE does not exist."
 else
   echo -e "${GREEN}PASSED${NC}"
 fi
@@ -56,9 +61,14 @@ HORIZON_URL="${HORIZON_URL:-https://horizon-testnet.stellar.org}"
 NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
 IDENTITY="${STELLAR_IDENTITY:-sponsorchain-deployer}"
 
-# Ensure identity exists for source argument if needed
-if ! stellar keys address "$IDENTITY" &>/dev/null; then
-  stellar keys generate "$IDENTITY" --network testnet &>/dev/null || true
+if [[ -f "$DEPLOYMENT_FILE" ]]; then
+  if ! node -e 'const fs=require("node:fs"); const d=JSON.parse(fs.readFileSync(process.argv[1], "utf8")); if (!d.initialization?.complete || !d.contracts?.projectRegistry?.id || !d.contracts?.sponsorshipManager?.id) process.exit(1)' "$DEPLOYMENT_FILE" 2>/dev/null; then
+    fail "Deployment artifact $DEPLOYMENT_FILE is missing complete initialization metadata."
+  else
+    echo "Deployment artifact: $DEPLOYMENT_FILE"
+  fi
+else
+  fail "Deployment artifact $DEPLOYMENT_FILE does not exist."
 fi
 
 # 2. Contract ID Syntax Validation
@@ -97,9 +107,7 @@ RPC_HEALTH=$(curl -s -X POST -H "Content-Type: application/json" \
 if echo "$RPC_HEALTH" | grep -q '"status":"healthy"'; then
   echo -e "${GREEN}HEALTHY${NC}"
 else
-  echo -e "${RED}FAILED${NC}"
-  echo "  ✗ Could not reach Soroban RPC endpoint or RPC returned unhealthy: $RPC_HEALTH"
-  ERRORS=$((ERRORS + 1))
+  fail "Could not reach Soroban RPC endpoint or RPC returned unhealthy: $RPC_HEALTH"
 fi
 
 # 4. Horizon Endpoint Verification
@@ -109,9 +117,7 @@ HORIZON_RES=$(curl -s "$HORIZON_URL" 2>/dev/null || echo "")
 if echo "$HORIZON_RES" | grep -q 'horizon_version'; then
   echo -e "${GREEN}HEALTHY${NC}"
 else
-  echo -e "${RED}FAILED${NC}"
-  echo "  ✗ Could not reach Horizon endpoint: $HORIZON_URL"
-  ERRORS=$((ERRORS + 1))
+  fail "Could not reach Horizon endpoint: $HORIZON_URL"
 fi
 
 # 5. On-chain Contract Existence & Read Verification
@@ -121,12 +127,10 @@ if [[ "$REGISTRY_ADDR" =~ ^C[A-Z2-7]{55}$ && "$RPC_HEALTH" =~ healthy ]]; then
     --rpc-url "$RPC_URL" --network-passphrase "$NETWORK_PASSPHRASE" \
     --source "$IDENTITY" \
     -- get_projects --page 1 --limit 1 2>&1 || echo "")
-  if echo "$REG_READ_PAGE" | grep -qE "\[|\{|total|items|[]]"; then
+  if echo "$REG_READ_PAGE" | grep -qE '\[|\{|total|items'; then
     echo -e "${GREEN}DEPLOYED & RESPONDING${NC}"
   else
-    echo -e "${RED}FAILED${NC}"
-    echo "  ✗ ProjectRegistry on-chain read failed for ID $REGISTRY_ADDR: $REG_READ_PAGE"
-    ERRORS=$((ERRORS + 1))
+    fail "ProjectRegistry on-chain read failed for ID $REGISTRY_ADDR: $REG_READ_PAGE"
   fi
 fi
 
@@ -136,12 +140,10 @@ if [[ "$MANAGER_ADDR" =~ ^C[A-Z2-7]{55}$ && "$RPC_HEALTH" =~ healthy ]]; then
     --rpc-url "$RPC_URL" --network-passphrase "$NETWORK_PASSPHRASE" \
     --source "$IDENTITY" \
     -- get_recent_sponsorships --limit 1 2>&1 || echo "")
-  if echo "$MGR_READ_PAGE" | grep -qE "\[|\{|total|items|[]]"; then
+  if echo "$MGR_READ_PAGE" | grep -qE '\[|\{|total|items'; then
     echo -e "${GREEN}DEPLOYED & RESPONDING${NC}"
   else
-    echo -e "${RED}FAILED${NC}"
-    echo "  ✗ SponsorshipManager on-chain read failed for ID $MANAGER_ADDR: $MGR_READ_PAGE"
-    ERRORS=$((ERRORS + 1))
+    fail "SponsorshipManager on-chain read failed for ID $MANAGER_ADDR: $MGR_READ_PAGE"
   fi
 fi
 
