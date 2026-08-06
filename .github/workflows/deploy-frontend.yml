@@ -1,74 +1,72 @@
-name: Deploy frontend to Vercel
+name: Deploy Frontend to Vercel
 
 on:
   push:
     branches: [main]
-    tags: ["v*"]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-concurrency:
-  group: sponsorchain-frontend-${{ github.ref }}
-  cancel-in-progress: false
 
 jobs:
-  deploy-frontend:
-    name: Build and deploy frontend
+  check-secrets:
+    name: Check Vercel Secrets
     runs-on: ubuntu-latest
-    env:
-      VERCEL_DISABLE_TELEMETRY: "1"
+    outputs:
+      has-secrets: ${{ steps.check.outputs.has-secrets }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Check Vercel secrets
+      - name: Check secret presence
+        id: check
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          test -n "$VERCEL_TOKEN" || { echo "Missing required secret VERCEL_TOKEN"; exit 1; }
-          test -n "$VERCEL_ORG_ID" || { echo "Missing required secret VERCEL_ORG_ID"; exit 1; }
-          test -n "$VERCEL_PROJECT_ID" || { echo "Missing required secret VERCEL_PROJECT_ID"; exit 1; }
+          if [ -n "$VERCEL_TOKEN" ]; then
+            echo "has-secrets=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-secrets=false" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Node setup
-        uses: actions/setup-node@v4
+  deploy:
+    name: Deploy Next.js
+    needs: check-secrets
+    if: needs.check-secrets.outputs.has-secrets == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Install Vercel CLI
-        run: npm install --global vercel@58.7.1
+        run: npm install --global vercel@latest
 
-      - name: Link Vercel project
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          vercel link --yes \
-            --project="$VERCEL_PROJECT_ID" \
-            --token="$VERCEL_TOKEN"
 
-      - name: Pull Vercel project settings and production environment
+      - name: Build
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          vercel pull --yes \
-            --environment=production \
-            --project="$VERCEL_PROJECT_ID" \
-            --token="$VERCEL_TOKEN"
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+          NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS: ${{ secrets.NEXT_PUBLIC_PROJECT_REGISTRY_ADDRESS }}
+          NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS: ${{ secrets.NEXT_PUBLIC_SPONSORSHIP_MANAGER_ADDRESS }}
+          NEXT_PUBLIC_XLM_SAC_ADDRESS: ${{ secrets.NEXT_PUBLIC_XLM_SAC_ADDRESS }}
+          NEXT_PUBLIC_STELLAR_NETWORK: TESTNET
+          NEXT_PUBLIC_HORIZON_URL: https://horizon-testnet.stellar.org
+          NEXT_PUBLIC_SOROBAN_RPC_URL: ${{ secrets.NEXT_PUBLIC_SOROBAN_RPC_URL || 'https://soroban-testnet.stellar.org' }}
+          NEXT_PUBLIC_EXPLORER_BASE: https://stellar.expert/explorer/testnet
 
-      - name: Build frontend with Vercel settings
+      - name: Deploy to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: vercel build --prod --token="$VERCEL_TOKEN"
-
-      - name: Deploy frontend
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN" --yes
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
